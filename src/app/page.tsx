@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AppNav from "@/components/AppNav";
 
 interface RecentSession {
@@ -31,17 +32,27 @@ interface Stats {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats>({
     jobs: 0, applications: 0, sessions: 0, avgScore: 0,
     documents: 0, leetcodeSnapshots: 0, recentSessions: [], recentApplications: [],
   });
 
   useEffect(() => {
+    fetch("/api/profile")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.profile?.name) {
+          router.replace("/onboarding");
+        }
+      })
+      .catch(() => {});
+
     fetch("/api/dashboard/stats")
       .then((r) => r.json())
       .then(setStats)
       .catch(() => {});
-  }, []);
+  }, [router]);
 
   return (
     <>
