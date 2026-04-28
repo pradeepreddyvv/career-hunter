@@ -27,28 +27,51 @@
 - **n8n Integration** -- Optional Docker service for scraping Workday, LinkedIn, and other non-API portals
 - **Profile System** -- Save your background once, auto-fill everywhere
 
-## Quick Start
+## Quick Start (4 steps, ~2 minutes)
+
+**1. Clone and install**
 
 ```bash
 git clone https://github.com/pradeepreddyvv/career-hunter.git
 cd career-hunter
+npm install
+```
+
+**2. Get a free Gemini API key**
+
+Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and click "Create API Key". Free tier gives 15 requests/minute -- more than enough.
+
+**3. Configure**
+
+```bash
 cp .env.example .env.local
 ```
 
-Add your Gemini API key to `.env.local` ([get one free](https://aistudio.google.com/apikey) -- 15 req/min):
+Open `.env.local` and paste your key:
 
 ```
 GEMINI_API_KEY=your_key_here
 ```
 
-Then:
+That's the only required config. Everything else is optional.
+
+**4. Run**
 
 ```bash
-npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The onboarding wizard will guide you through setup.
+Open [http://localhost:3000](http://localhost:3000).
+
+### What happens next
+
+The **onboarding wizard** walks you through 3 quick steps:
+
+1. **Profile** -- Your name, background, and skills (used to personalize AI output)
+2. **Resume** -- Paste your resume text or upload a PDF/DOCX (powers resume tailoring, cover letters, and outreach)
+3. **Target** -- Pick your target role and company
+
+After that, you land on the dashboard with access to all features. No accounts, no sign-ups -- your data stays in a local SQLite file (`data/career-hunter.db`).
 
 ## Docker
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, getDefaultUserId } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: NextRequest) {
@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
 
     const id = uuidv4();
     db.prepare(
-      "INSERT INTO applications (id, user_id, job_id, status, updated_at) VALUES (?, 'anonymous', ?, 'new', datetime('now'))"
-    ).run(id, actualJobId);
+      "INSERT INTO applications (id, user_id, job_id, status, updated_at) VALUES (?, ?, ?, 'new', datetime('now'))"
+    ).run(id, getDefaultUserId(), actualJobId);
 
     return NextResponse.json({ id, status: "saved" }, { status: 201 });
   } catch (error) {

@@ -243,10 +243,9 @@ export default function JobsPage() {
                   )}
                   {isExpanded && job.description && (
                     <div className="mt-3 pt-3 border-t border-gray-800">
-                      <div
-                        className="text-xs text-gray-400 leading-relaxed max-h-64 overflow-y-auto prose prose-invert prose-xs"
-                        dangerouslySetInnerHTML={{ __html: job.description.slice(0, 5000) }}
-                      />
+                      <div className="text-xs text-gray-400 leading-relaxed max-h-64 overflow-y-auto whitespace-pre-wrap">
+                        {job.description.replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ").slice(0, 5000)}
+                      </div>
                     </div>
                   )}
                 </div>

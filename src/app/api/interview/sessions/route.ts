@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, getDefaultUserId } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: NextRequest) {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     db.prepare(
       `INSERT INTO sessions (id, user_id, company, role) VALUES (?, ?, ?, ?)`
-    ).run(id, userId || "anonymous", company || "", role || "");
+    ).run(id, userId || getDefaultUserId(), company || "", role || "");
 
     const session = db.prepare("SELECT * FROM sessions WHERE id = ?").get(id);
     return NextResponse.json(session, { status: 201 });

@@ -172,6 +172,19 @@ function initSchema() {
   seedDefaultQuestions();
 }
 
+export function getDefaultUserId(): string {
+  const d = getDb();
+  const row = d.prepare("SELECT id FROM users LIMIT 1").get() as { id: string } | undefined;
+  if (row) return row.id;
+
+  const { v4: uuidv4 } = require("uuid");
+  const id = uuidv4();
+  d.prepare(
+    "INSERT INTO users (id, name, email) VALUES (?, 'User', 'user@local')"
+  ).run(id);
+  return id;
+}
+
 function seedDefaultQuestions() {
   const count = (db.prepare("SELECT COUNT(*) as c FROM questions_to_ask").get() as { c: number }).c;
   if (count > 0) return;

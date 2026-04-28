@@ -17,6 +17,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [error, setError] = useState("");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,8 +53,9 @@ export default function OnboardingPage() {
 
   async function finish() {
     setLoading(true);
+    setError("");
     try {
-      await fetch("/api/profile", {
+      const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,9 +69,10 @@ export default function OnboardingPage() {
           target_company: COMPANY_PRESETS.includes(targetCompany) ? targetCompany : customCompany || targetCompany,
         }),
       });
+      if (!res.ok) throw new Error("Save failed");
       router.push("/");
     } catch {
-      // silently fail
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -248,6 +251,10 @@ export default function OnboardingPage() {
                 )}
               </div>
             </div>
+          )}
+
+          {error && (
+            <div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-lg text-sm text-red-400">{error}</div>
           )}
 
           {/* Navigation */}

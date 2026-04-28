@@ -83,8 +83,8 @@ async function handleAnalyzeProgress(body: {
   ).all() as { area: string; avg_score: number; total_occurrences: number; trend: string }[];
 
   const recentSessions = db.prepare(
-    "SELECT company, role, avg_score, created_at FROM sessions ORDER BY created_at DESC LIMIT 10"
-  ).all() as { company: string; role: string; avg_score: number; created_at: string }[];
+    "SELECT company, role, avg_score, started_at FROM sessions ORDER BY started_at DESC LIMIT 10"
+  ).all() as { company: string; role: string; avg_score: number; started_at: string }[];
 
   const prompt = `Analyze this candidate's interview practice progress.
 
@@ -92,7 +92,7 @@ WEAK AREAS (from all sessions):
 ${weakAreas.map(w => `- ${w.area}: avg ${w.avg_score}/100, seen ${w.total_occurrences}x, trend: ${w.trend}`).join("\n") || "No data yet"}
 
 RECENT SESSIONS:
-${recentSessions.map(s => `- ${s.company} ${s.role}: ${s.avg_score}/100 (${s.created_at})`).join("\n") || "No sessions yet"}
+${recentSessions.map(s => `- ${s.company} ${s.role}: ${s.avg_score}/100 (${s.started_at})`).join("\n") || "No sessions yet"}
 
 ${body.sessions?.length ? `ADDITIONAL SESSION DATA:\n${JSON.stringify(body.sessions)}\n` : ""}
 

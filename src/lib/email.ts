@@ -8,6 +8,10 @@ interface JobAlert {
   location?: string;
 }
 
+function esc(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 export async function sendJobAlert(jobs: JobAlert[]): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.NOTIFICATION_EMAIL;
@@ -21,12 +25,12 @@ export async function sendJobAlert(jobs: JobAlert[]): Promise<boolean> {
     .map(
       (j) =>
         `<tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #333">${j.title}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #333">${j.company}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #333">${esc(j.title)}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #333">${esc(j.company)}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #333;text-align:center">${j.score ?? "—"}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #333">${j.location || "—"}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #333">${esc(j.location || "—")}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #333">
-            ${j.url ? `<a href="${j.url}" style="color:#3b82f6">View</a>` : "—"}
+            ${j.url ? `<a href="${esc(j.url)}" style="color:#3b82f6">View</a>` : "—"}
           </td>
         </tr>`
     )
