@@ -9,9 +9,30 @@ services:
       - NODE_ENV=production
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - JWT_SECRET=${JWT_SECRET:-career-hunter-docker-secret}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL:-}
+      - N8N_URL=${N8N_URL:-}
     volumes:
       - career-hunter-data:/app/data
     restart: unless-stopped
 
+  # Optional: n8n for scraping non-API job portals (Workday, LinkedIn, etc.)
+  # Start with: docker-compose --profile scraping up
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-changeme}
+      - CAREER_HUNTER_URL=http://career-hunter:3000
+      - APIFY_TOKEN=${APIFY_TOKEN:-}
+    volumes:
+      - n8n-data:/home/node/.n8n
+    profiles:
+      - scraping
+    restart: unless-stopped
+
 volumes:
   career-hunter-data:
+  n8n-data:

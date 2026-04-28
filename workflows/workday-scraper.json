@@ -1,0 +1,76 @@
+{
+  "name": "Career Hunter — Workday Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "scrape-workday",
+        "responseMode": "responseNode"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.query.url }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "name": "Fetch Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $input.first().json.data || '';\nconst url = $input.first().json.query?.url || '';\n\n// Extract job listings from Workday career pages\n// Workday uses JSON-LD or specific data attributes\nconst jobs = [];\n\n// Try to find structured data\nconst jsonLdMatch = html.match(/<script type=\"application\\/ld\\+json\">(.*?)<\\/script>/gs);\nif (jsonLdMatch) {\n  for (const match of jsonLdMatch) {\n    try {\n      const data = JSON.parse(match.replace(/<\\/?script[^>]*>/g, ''));\n      if (data['@type'] === 'JobPosting') {\n        jobs.push({\n          title: data.title,\n          company: data.hiringOrganization?.name || '',\n          location: data.jobLocation?.address?.addressLocality || '',\n          description: data.description || '',\n          url: data.url || url,\n          source: 'workday'\n        });\n      }\n    } catch (e) { /* skip */ }\n  }\n}\n\nreturn [{ json: { jobs, source_url: url, count: jobs.length } }];"
+      },
+      "name": "Extract Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CAREER_HUNTER_URL || 'http://career-hunter:3000' }}/api/jobs/ingest",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "jobs",
+              "value": "={{ JSON.stringify($json.jobs) }}"
+            },
+            {
+              "name": "source",
+              "value": "workday"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Send to Career Hunter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, count: $json.jobs?.length || 0 }) }}"
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Fetch Page", "type": "main", "index": 0 }]] },
+    "Fetch Page": { "main": [[{ "node": "Extract Jobs", "type": "main", "index": 0 }]] },
+    "Extract Jobs": { "main": [[{ "node": "Send to Career Hunter", "type": "main", "index": 0 }]] },
+    "Send to Career Hunter": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  }
+}

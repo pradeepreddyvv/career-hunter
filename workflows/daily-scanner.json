@@ -1,0 +1,69 @@
+{
+  "name": "Career Hunter — Daily Job Scanner",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 7,18 * * *" }
+          ]
+        }
+      },
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CAREER_HUNTER_URL || 'http://career-hunter:3000' }}/api/jobs?refresh=true&days=1",
+        "options": { "timeout": 120000 }
+      },
+      "name": "Trigger Job Refresh",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst jobs = response.jobs || [];\nconst newJobs = jobs.filter(j => {\n  const posted = new Date(j.posted_at || j.created_at);\n  const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);\n  return posted > dayAgo;\n});\n\nreturn [{ json: { total: jobs.length, new_count: newJobs.length, jobs: newJobs.slice(0, 20) } }];"
+      },
+      "name": "Filter New Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [{ "value1": "={{ $json.new_count }}", "operation": "larger", "value2": 0 }]
+        }
+      },
+      "name": "Has New Jobs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CAREER_HUNTER_URL || 'http://career-hunter:3000' }}/api/jobs/notify",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "trigger", "value": "daily_scan" }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Cron": { "main": [[{ "node": "Trigger Job Refresh", "type": "main", "index": 0 }]] },
+    "Trigger Job Refresh": { "main": [[{ "node": "Filter New Jobs", "type": "main", "index": 0 }]] },
+    "Filter New Jobs": { "main": [[{ "node": "Has New Jobs?", "type": "main", "index": 0 }]] },
+    "Has New Jobs?": { "main": [[{ "node": "Notify", "type": "main", "index": 0 }]] }
+  }
+}

@@ -293,6 +293,13 @@ export async function fetchAllJobs(options?: {
     } catch { /* ignore */ }
   }
 
+  if (!options?.source || options.source === "all" || options.source === "n8n") {
+    try {
+      const n8nJobs = await fetchFromN8n();
+      allJobs.push(...n8nJobs);
+    } catch { /* ignore */ }
+  }
+
   const deduped = deduplicateJobs(allJobs);
 
   let filtered = deduped;
@@ -307,6 +314,34 @@ export async function fetchAllJobs(options?: {
   for (const j of filtered) sources[j.source] = (sources[j.source] || 0) + 1;
 
   return { jobs: filtered, cached: false, sources };
+}
+
+async function fetchFromN8n(): Promise<Job[]> {
+  const n8nUrl = process.env.N8N_URL;
+  if (!n8nUrl) return [];
+
+  try {
+    const db = getDb();
+    const rows = db.prepare(
+      "SELECT * FROM jobs WHERE source IN ('n8n', 'workday', 'scraper') AND cached_at > datetime('now', '-24 hours')"
+    ).all() as Array<Record<string, string>>;
+
+    return rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      company: row.company,
+      location: row.location || "",
+      url: row.url || "",
+      description: row.description || "",
+      source: row.source || "n8n",
+      ats: "n8n",
+      score: undefined,
+      postedAt: row.posted_at || null,
+      fetchedAt: row.cached_at || new Date().toISOString(),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function getRegistryCompanies(): CompanyEntry[] {

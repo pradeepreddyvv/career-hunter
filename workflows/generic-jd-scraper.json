@@ -1,0 +1,53 @@
+{
+  "name": "Career Hunter — Generic JD Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "scrape-jd",
+        "responseMode": "responseNode"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.query.url }}",
+        "options": {
+          "timeout": 30000,
+          "redirect": { "redirect": { "followRedirects": true } }
+        }
+      },
+      "name": "Fetch Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $input.first().json.data || '';\nconst url = $input.first().json.query?.url || '';\n\n// Try structured data first\nlet title = '', company = '', description = '', location = '';\n\n// JSON-LD\nconst jsonLdMatch = html.match(/<script type=\"application\\/ld\\+json\">(.*?)<\\/script>/gs);\nif (jsonLdMatch) {\n  for (const m of jsonLdMatch) {\n    try {\n      const d = JSON.parse(m.replace(/<\\/?script[^>]*>/g, ''));\n      if (d['@type'] === 'JobPosting') {\n        title = d.title || '';\n        company = d.hiringOrganization?.name || '';\n        description = d.description || '';\n        location = d.jobLocation?.address?.addressLocality || '';\n      }\n    } catch (e) {}\n  }\n}\n\n// Greenhouse API detection\nif (url.includes('boards.greenhouse.io')) {\n  const ghMatch = url.match(/greenhouse\\.io\\/([^/]+)\\/jobs\\/(\\d+)/);\n  if (ghMatch) {\n    try {\n      // Will be fetched in next node if detected\n      return [{ json: { ats: 'greenhouse', slug: ghMatch[1], jobId: ghMatch[2], url } }];\n    } catch (e) {}\n  }\n}\n\n// Lever API detection\nif (url.includes('jobs.lever.co')) {\n  const lvMatch = url.match(/lever\\.co\\/([^/]+)\\/([a-f0-9-]+)/);\n  if (lvMatch) {\n    return [{ json: { ats: 'lever', slug: lvMatch[1], jobId: lvMatch[2], url } }];\n  }\n}\n\n// Fallback: extract text from common selectors\nif (!description) {\n  const selectors = ['job-description', 'job-details', 'posting-requirements', 'content-payload'];\n  for (const sel of selectors) {\n    const regex = new RegExp(`class=\"[^\"]*${sel}[^\"]*\"[^>]*>([\\\\s\\\\S]*?)<\\/div>`, 'i');\n    const match = html.match(regex);\n    if (match) {\n      description = match[1].replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' ').trim();\n      break;\n    }\n  }\n}\n\n// Meta tags fallback\nif (!title) {\n  const titleMatch = html.match(/<title>([^<]+)<\\/title>/);\n  title = titleMatch ? titleMatch[1].trim() : '';\n}\n\nreturn [{ json: { title, company, location, description: description.slice(0, 5000), url, source: 'scraper' } }];"
+      },
+      "name": "Extract JD",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Fetch Page", "type": "main", "index": 0 }]] },
+    "Fetch Page": { "main": [[{ "node": "Extract JD", "type": "main", "index": 0 }]] },
+    "Extract JD": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  }
+}
