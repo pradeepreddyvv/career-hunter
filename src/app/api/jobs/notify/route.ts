@@ -16,8 +16,8 @@ export async function POST() {
     const jobs = db.prepare(`
       SELECT title, company, score, url, location
       FROM jobs
-      WHERE cached_at > datetime('now', '-24 hours')
-      ORDER BY score DESC NULLS LAST, cached_at DESC
+      WHERE fetched_at > datetime('now', '-24 hours')
+      ORDER BY score DESC NULLS LAST, fetched_at DESC
       LIMIT 20
     `).all() as { title: string; company: string; score: number | null; url: string; location: string }[];
 

@@ -9,7 +9,6 @@ interface IngestedJob {
   description?: string;
   url?: string;
   source?: string;
-  salary?: string;
   posted_at?: string;
 }
 
@@ -28,8 +27,8 @@ export async function POST(request: NextRequest) {
     let duplicates = 0;
 
     const insertStmt = db.prepare(`
-      INSERT OR IGNORE INTO jobs (id, title, company, location, description, url, source, salary, posted_at, cached_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      INSERT OR IGNORE INTO jobs (id, title, company, location, description, url, source, posted_at, fetched_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `);
 
     for (const job of jobs) {
@@ -54,7 +53,6 @@ export async function POST(request: NextRequest) {
         (job.description || "").slice(0, 10000),
         job.url || "",
         source,
-        job.salary || "",
         job.posted_at || new Date().toISOString()
       );
       inserted++;

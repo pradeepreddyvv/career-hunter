@@ -323,7 +323,7 @@ async function fetchFromN8n(): Promise<Job[]> {
   try {
     const db = getDb();
     const rows = db.prepare(
-      "SELECT * FROM jobs WHERE source IN ('n8n', 'workday', 'scraper') AND cached_at > datetime('now', '-24 hours')"
+      "SELECT * FROM jobs WHERE source IN ('n8n', 'workday', 'scraper') AND fetched_at > datetime('now', '-24 hours')"
     ).all() as Array<Record<string, string>>;
 
     return rows.map(row => ({
@@ -337,7 +337,7 @@ async function fetchFromN8n(): Promise<Job[]> {
       ats: "n8n",
       score: undefined,
       postedAt: row.posted_at || null,
-      fetchedAt: row.cached_at || new Date().toISOString(),
+      fetchedAt: row.fetched_at || new Date().toISOString(),
     }));
   } catch {
     return [];
