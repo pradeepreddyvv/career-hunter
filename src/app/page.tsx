@@ -37,6 +37,9 @@ export default function Dashboard() {
     jobs: 0, applications: 0, sessions: 0, avgScore: 0,
     documents: 0, leetcodeSnapshots: 0, recentSessions: [], recentApplications: [],
   });
+  const [emailConfigured, setEmailConfigured] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -51,6 +54,11 @@ export default function Dashboard() {
     fetch("/api/dashboard/stats")
       .then((r) => r.json())
       .then(setStats)
+      .catch(() => {});
+
+    fetch("/api/jobs/notify")
+      .then((r) => r.json())
+      .then((d) => { if (d.configured) setEmailConfigured(true); })
       .catch(() => {});
   }, [router]);
 
@@ -81,6 +89,23 @@ export default function Dashboard() {
                 <ActionButton href="/leetcode" label="LeetCode Coach" description="3 AI personas" />
                 <ActionButton href="/resume" label="Generate Resume" description="ATS-tailored per job" />
                 <ActionButton href="/pipeline" label="Track Applications" description="Kanban pipeline" />
+                {emailConfigured && (
+                  <button
+                    onClick={async () => {
+                      setEmailSending(true);
+                      try {
+                        const res = await fetch("/api/jobs/notify", { method: "POST" });
+                        const data = await res.json();
+                        if (data.sent) { setEmailSent(true); setTimeout(() => setEmailSent(false), 3000); }
+                      } catch {} finally { setEmailSending(false); }
+                    }}
+                    disabled={emailSending}
+                    className="block w-full text-left p-3 rounded-lg border border-gray-700 hover:border-blue-500/50 hover:bg-gray-800/50 transition-colors disabled:opacity-50"
+                  >
+                    <p className="font-medium text-sm">{emailSent ? "Email sent!" : emailSending ? "Sending..." : "Email me new jobs"}</p>
+                    <p className="text-xs text-gray-500">Send top jobs to your email</p>
+                  </button>
+                )}
               </div>
             </div>
 
