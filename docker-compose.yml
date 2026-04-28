@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  career-hunter:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET:-career-hunter-docker-secret}
+    volumes:
+      - career-hunter-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  career-hunter-data:
