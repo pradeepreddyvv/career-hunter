@@ -158,12 +158,34 @@ export default function OnboardingPage() {
             <div className="space-y-4">
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
                 <h2 className="text-lg font-semibold">Your Resume</h2>
-                <p className="text-sm text-gray-400">Paste your full resume text. This powers personalized resumes, cover letters, outreach, and interview prep.</p>
+                <p className="text-sm text-gray-400">Upload a PDF/DOCX or paste your resume text. This powers personalized resumes, cover letters, outreach, and interview prep.</p>
+                <label className="flex items-center justify-center gap-3 px-4 py-6 rounded-lg border-2 border-dashed border-gray-700 hover:border-blue-500 cursor-pointer transition-colors bg-gray-800/50">
+                  <span className="text-sm text-gray-300">Upload PDF, DOCX, or TXT</span>
+                  <input
+                    type="file"
+                    accept=".pdf,.docx,.txt,.md"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setLoading(true);
+                      try {
+                        const fd = new FormData();
+                        fd.append("file", file);
+                        const res = await fetch("/api/resume/parse", { method: "POST", body: fd });
+                        const data = await res.json();
+                        if (data.text) setResumeText(data.text);
+                      } catch { /* ignore */ }
+                      finally { setLoading(false); }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
                 <textarea
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
-                  placeholder="Paste your complete resume text here..."
-                  rows={14}
+                  placeholder="Or paste your complete resume text here..."
+                  rows={12}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none resize-y font-mono"
                 />
                 {resumeText && (

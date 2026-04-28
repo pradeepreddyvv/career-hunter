@@ -27,6 +27,7 @@ export default function ProfilePage() {
   });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -84,11 +85,45 @@ export default function ProfilePage() {
 
             <div>
               <label className="text-xs text-gray-400 block mb-1">Master Resume Text</label>
+              <div className="flex gap-2 mb-2">
+                <label className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                  uploading ? "bg-gray-700 opacity-50" : "bg-gray-700 hover:bg-gray-600"
+                }`}>
+                  {uploading ? "Parsing..." : "Upload PDF/DOCX"}
+                  <input
+                    type="file"
+                    accept=".pdf,.docx,.txt,.md"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setUploading(true);
+                      try {
+                        const fd = new FormData();
+                        fd.append("file", file);
+                        const res = await fetch("/api/resume/parse", { method: "POST", body: fd });
+                        const data = await res.json();
+                        if (data.text) {
+                          update("resume_text", data.text);
+                        }
+                      } catch { /* ignore */ }
+                      finally { setUploading(false); }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                {profile.resume_text && (
+                  <span className="text-xs text-green-400 self-center">
+                    {profile.resume_text.split(/\s+/).length} words loaded
+                  </span>
+                )}
+              </div>
               <textarea
                 value={profile.resume_text}
                 onChange={(e) => update("resume_text", e.target.value)}
-                placeholder="Paste your full resume text here. This is used as the source for AI-tailored resumes."
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm min-h-[200px] focus:border-blue-500 focus:outline-none resize-none"
+                placeholder="Paste your full resume text here, or upload a PDF/DOCX above. This is used as the source for AI-tailored resumes."
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm min-h-[200px] focus:border-blue-500 focus:outline-none resize-y"
               />
             </div>
 
