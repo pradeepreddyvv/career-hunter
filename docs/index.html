@@ -120,6 +120,32 @@ tr:hover td{background:var(--surface2)}
 @media(max-width:600px){.sidebar{display:none}.main{flex-direction:column}}
 
 .hidden{display:none!important}
+
+/* Onboarding wizard */
+.onboarding-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.onboarding-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:600px}
+.onboarding-box h2{font-size:22px;margin-bottom:4px}
+.onboarding-box .subtitle{color:var(--text2);font-size:14px;margin-bottom:24px}
+.onboarding-steps{display:flex;gap:8px;margin-bottom:28px}
+.onboarding-step{flex:1;height:4px;border-radius:2px;background:var(--surface2);transition:background .3s}
+.onboarding-step.done{background:var(--green)}
+.onboarding-step.active{background:var(--accent)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent)}
+.upload-zone p{color:var(--text2);font-size:13px;margin-top:8px}
+.upload-zone .icon{font-size:32px;margin-bottom:8px}
+.or-divider{text-align:center;color:var(--text2);font-size:12px;margin:12px 0;position:relative}
+.or-divider::before,.or-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
+.or-divider::before{left:0}
+.or-divider::after{right:0}
+.parsed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.parsed-grid .parsed-item{background:var(--surface2);padding:10px 14px;border-radius:var(--radius)}
+.parsed-grid .parsed-item .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.parsed-grid .parsed-item .value{font-size:13px;color:var(--text)}
+.parsed-skills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.parsed-skills .skill-tag{padding:4px 10px;border-radius:20px;font-size:12px;background:rgba(99,102,241,.15);color:var(--accent2);border:1px solid rgba(99,102,241,.2)}
+.onboarding-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}
+@media(max-width:500px){.parsed-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -152,6 +178,10 @@ const state = {
   prefMinScore: 30,
   prefLocations: '',
   activeTasks: {},
+  onboarding: false,
+  onboardingStep: 1,
+  parsedProfile: null,
+  resumeText: '',
 };
 
 async function api(method, path, body = null) {
@@ -188,8 +218,9 @@ async function register(name, email, password) {
   state.token = d.token;
   state.user = d.user;
   localStorage.setItem('cp_token', d.token);
+  state.onboarding = true;
+  state.onboardingStep = 1;
   render();
-  loadDashboard();
 }
 
 function logout() {
@@ -205,8 +236,16 @@ async function loadUser() {
   if (!state.token) return;
   try {
     state.user = await api('GET', '/api/v1/auth/me');
+    // Check if profile is set — if not, show onboarding
+    try {
+      const profile = await api('GET', '/api/v1/profile/');
+      if (!profile.profile_json || profile.profile_json.length < 50) {
+        state.onboarding = true;
+        state.onboardingStep = 1;
+      }
+    } catch {}
     render();
-    loadDashboard();
+    if (!state.onboarding) loadDashboard();
   } catch { logout(); }
 }
 
@@ -390,10 +429,201 @@ function renderActiveTaskBar() {
   `).join('');
 }
 
+function renderOnboarding() {
+  const step = state.onboardingStep;
+  const steps = [1,2,3];
+
+  if (step === 1) {
+    return `<div class="onboarding-page"><div class="onboarding-box">
+      <div class="onboarding-steps">${steps.map(s => `<div class="onboarding-step ${s < step ? 'done' : s === step ? 'active' : ''}"></div>`).join('')}</div>
+      <h2>Welcome! Let's set up your profile</h2>
+      <p class="subtitle">Upload or paste your resume — we'll extract your skills, experience, and preferences automatically.</p>
+      <div class="upload-zone" id="upload-zone">
+        <div class="icon">&#128196;</div>
+        <strong>Drop your resume here or click to upload</strong>
+        <p>Supports PDF, DOCX, or TXT files</p>
+        <input type="file" id="resume-file" accept=".pdf,.docx,.txt,.doc" style="display:none">
+      </div>
+      <div class="or-divider">or paste your resume text</div>
+      <div class="form-group">
+        <textarea id="resume-paste" rows="8" placeholder="Paste your full resume here — include education, experience, skills, projects...">${esc(state.resumeText)}</textarea>
+      </div>
+      <div class="onboarding-actions">
+        <button class="btn btn-outline" onclick="skipOnboarding()">Skip for now</button>
+        <button class="btn btn-primary" id="resume-next-btn">Next: Add API Key</button>
+      </div>
+    </div></div>`;
+  }
+
+  if (step === 2) {
+    return `<div class="onboarding-page"><div class="onboarding-box">
+      <div class="onboarding-steps">${steps.map(s => `<div class="onboarding-step ${s < step ? 'done' : s === step ? 'active' : ''}"></div>`).join('')}</div>
+      <h2>Add your Gemini API Key</h2>
+      <p class="subtitle">We use Google's Gemini AI to parse your resume and score jobs. Your key is encrypted and stored securely. <strong>It's free!</strong></p>
+      <div class="card" style="padding:16px;margin-bottom:16px;border-color:var(--accent);background:rgba(99,102,241,.05)">
+        <p style="font-size:13px;margin:0"><strong>How to get a free key:</strong></p>
+        <ol style="font-size:13px;color:var(--text2);margin:8px 0 0 16px;line-height:1.8">
+          <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></li>
+          <li>Sign in with your Google account</li>
+          <li>Click "Create API Key" and copy it</li>
+        </ol>
+      </div>
+      <div class="form-group">
+        <label>Gemini API Key</label>
+        <input id="onboard-api-key" type="password" placeholder="AIzaSy..." autofocus>
+      </div>
+      <div id="onboard-error" class="error-msg"></div>
+      <div class="onboarding-actions">
+        <button class="btn btn-outline" onclick="state.onboardingStep=1;render()">Back</button>
+        <button class="btn btn-primary" id="parse-resume-btn">Parse My Resume</button>
+      </div>
+    </div></div>`;
+  }
+
+  if (step === 3) {
+    const p = state.parsedProfile || {};
+    const skills = p.skills || [];
+    const roles = p.target_roles || [];
+    const locs = p.preferred_locations || [];
+    return `<div class="onboarding-page"><div class="onboarding-box">
+      <div class="onboarding-steps">${steps.map(s => `<div class="onboarding-step ${s < step ? 'done' : s === step ? 'active' : ''}"></div>`).join('')}</div>
+      <h2>Here's what we found</h2>
+      <p class="subtitle">Review the extracted profile. Everything is already saved — you can edit details later in Settings.</p>
+      <div class="parsed-grid">
+        ${p.name ? `<div class="parsed-item"><div class="label">Name</div><div class="value">${esc(p.name)}</div></div>` : ''}
+        ${p.email ? `<div class="parsed-item"><div class="label">Email</div><div class="value">${esc(p.email)}</div></div>` : ''}
+        ${p.phone ? `<div class="parsed-item"><div class="label">Phone</div><div class="value">${esc(p.phone)}</div></div>` : ''}
+        ${p.education ? `<div class="parsed-item"><div class="label">Education</div><div class="value">${esc(p.education)}</div></div>` : ''}
+        ${p.linkedin ? `<div class="parsed-item"><div class="label">LinkedIn</div><div class="value">${esc(p.linkedin)}</div></div>` : ''}
+        ${p.github ? `<div class="parsed-item"><div class="label">GitHub</div><div class="value">${esc(p.github)}</div></div>` : ''}
+      </div>
+      ${p.experience_summary ? `<div class="card" style="padding:12px;margin-bottom:16px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Experience</div><div style="font-size:13px">${esc(p.experience_summary)}</div></div>` : ''}
+      ${skills.length ? `<div style="margin-bottom:16px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Skills (${skills.length})</div><div class="parsed-skills">${skills.map(s => `<span class="skill-tag">${esc(s)}</span>`).join('')}</div></div>` : ''}
+      ${roles.length ? `<div class="card" style="padding:12px;margin-bottom:16px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Target Roles</div><div style="font-size:13px">${roles.map(r => esc(r)).join(', ')}</div></div>` : ''}
+      ${locs.length ? `<div class="card" style="padding:12px;margin-bottom:16px"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Preferred Locations</div><div style="font-size:13px">${locs.map(l => esc(l)).join(', ')}</div></div>` : ''}
+      <div class="onboarding-actions">
+        <button class="btn btn-primary" onclick="finishOnboarding()" style="padding:12px 32px;font-size:15px">Start Finding Jobs</button>
+      </div>
+    </div></div>`;
+  }
+}
+
+function setupOnboardingListeners() {
+  const step = state.onboardingStep;
+
+  if (step === 1) {
+    const zone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('resume-file');
+    const pasteArea = document.getElementById('resume-paste');
+    const nextBtn = document.getElementById('resume-next-btn');
+
+    zone?.addEventListener('click', () => fileInput?.click());
+    zone?.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone?.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone?.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleResumeFile(e.dataTransfer.files[0]);
+    });
+    fileInput?.addEventListener('change', () => {
+      if (fileInput.files.length) handleResumeFile(fileInput.files[0]);
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      const text = pasteArea?.value?.trim() || state.resumeText;
+      if (!text || text.length < 50) { toast('Please paste or upload your resume (at least 50 characters)', 'error'); return; }
+      state.resumeText = text;
+      state.onboardingStep = 2;
+      render();
+    });
+  }
+
+  if (step === 2) {
+    const parseBtn = document.getElementById('parse-resume-btn');
+    const keyInput = document.getElementById('onboard-api-key');
+
+    parseBtn?.addEventListener('click', async () => {
+      const key = keyInput?.value?.trim();
+      const errEl = document.getElementById('onboard-error');
+      if (!key) { errEl.textContent = 'Please enter your Gemini API key'; return; }
+      errEl.textContent = '';
+      parseBtn.disabled = true;
+      parseBtn.innerHTML = '<span class="spinner"></span> Parsing resume...';
+      try {
+        const result = await api('POST', '/api/v1/profile/parse-resume', {
+          resume_text: state.resumeText,
+          gemini_api_key: key
+        });
+        state.parsedProfile = result.parsed;
+        state.user.has_api_key = true;
+        state.profileText = state.resumeText;
+        state.onboardingStep = 3;
+        render();
+      } catch(e) {
+        errEl.textContent = e.detail || e.error || 'Failed to parse resume. Check your API key.';
+        parseBtn.disabled = false;
+        parseBtn.textContent = 'Parse My Resume';
+      }
+    });
+
+    keyInput?.addEventListener('keypress', e => {
+      if (e.key === 'Enter') parseBtn?.click();
+    });
+  }
+}
+
+async function handleResumeFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'txt') {
+    state.resumeText = await file.text();
+    const el = document.getElementById('resume-paste');
+    if (el) el.value = state.resumeText;
+    toast('Resume text loaded');
+    return;
+  }
+  if (ext === 'pdf' || ext === 'docx' || ext === 'doc') {
+    // Read as text — browsers can read basic text from these
+    try {
+      const text = await file.text();
+      if (text.length > 100 && !text.includes('%PDF')) {
+        state.resumeText = text;
+        const el = document.getElementById('resume-paste');
+        if (el) el.value = state.resumeText;
+        toast('Resume loaded');
+        return;
+      }
+    } catch {}
+    toast('For PDF/DOCX: please copy-paste the text content instead', 'error');
+    return;
+  }
+  toast('Unsupported file type. Please use TXT, PDF, or DOCX.', 'error');
+}
+
+function skipOnboarding() {
+  state.onboarding = false;
+  render();
+  loadDashboard();
+}
+
+function finishOnboarding() {
+  state.onboarding = false;
+  const p = state.parsedProfile;
+  if (p) {
+    if (p.target_roles) state.prefRoles = p.target_roles.join(', ');
+    if (p.preferred_locations) state.prefLocations = p.preferred_locations.join(', ');
+  }
+  render();
+  loadDashboard();
+}
+
 function renderAuth() {
   return `<div class="auth-page"><div class="auth-box">
     <h2>Career Pipeline</h2>
-    <p>AI-powered job discovery & document generation</p>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:8px">AI-powered job discovery & document generation</p>
+    <div style="background:var(--surface2);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7">
+      <strong style="color:var(--text)">What you'll get:</strong><br>
+      Upload your resume once — AI discovers jobs from 69+ company boards, scores them against your profile, and generates tailored resumes, cover letters, and outreach messages for each match.
+    </div>
     <div id="auth-form">
       <div id="register-fields">
         <div class="form-group"><label>Name</label><input id="reg-name" placeholder="Your name"></div>
@@ -821,6 +1051,9 @@ function render() {
   if (!state.token || !state.user) {
     app.innerHTML = renderAuth();
     setupAuthListeners();
+  } else if (state.onboarding) {
+    app.innerHTML = renderOnboarding();
+    setupOnboardingListeners();
   } else {
     app.innerHTML = renderApp();
   }

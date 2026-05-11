@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends
@@ -11,9 +12,14 @@ from pipeline.api.deps import get_auth_service, get_current_user, get_db
 from pipeline.db.repositories.user_repo import UserRepository
 from pipeline.exceptions import NotFoundError, ValidationError
 from pipeline.models.user import User
+from pipeline.scoring.gemini_client import GeminiClient
 from pipeline.services.auth_service import AuthService
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/profile", tags=["profile"])
+
+_gemini = GeminiClient(max_concurrent=3)
 
 # ── Request / Response schemas ────────────────────────────────────────
 
@@ -55,6 +61,32 @@ class SettingsUpdate(BaseModel):
 
 
 class MessageResponse(BaseModel):
+    message: str
+
+
+class ResumeParseRequest(BaseModel):
+    resume_text: str = Field(..., min_length=50)
+    gemini_api_key: str = Field(..., min_length=1)
+
+    model_config = {"strict": True}
+
+
+class ParsedProfile(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    education: Optional[str] = None
+    experience_summary: Optional[str] = None
+    skills: Optional[List[str]] = None
+    target_roles: Optional[List[str]] = None
+    preferred_locations: Optional[List[str]] = None
+    profile_text: str = ""
+
+
+class ResumeParseResponse(BaseModel):
+    parsed: ParsedProfile
     message: str
 
 
@@ -209,3 +241,108 @@ async def update_settings(
     if refreshed is None:
         raise NotFoundError(detail="User not found after update.")
     return _profile_response(refreshed)
+
+
+# ── Resume parsing ───────────────────────────────────────────────────
+
+RESUME_PARSE_PROMPT = """\
+You are a resume parser. Extract structured information from the resume below.
+Return ONLY valid JSON with these fields (use null for missing fields):
+
+{
+  "name": "Full Name",
+  "email": "email@example.com",
+  "phone": "+1 (555) 000-0000",
+  "linkedin": "linkedin.com/in/handle",
+  "github": "github.com/handle",
+  "education": "Degree, University, GPA if available",
+  "experience_summary": "Brief 1-2 sentence summary of work experience",
+  "skills": ["Python", "Java", "React", "AWS"],
+  "target_roles": ["Software Engineer", "Backend Developer"],
+  "preferred_locations": ["Remote", "San Francisco", "New York"],
+  "years_of_experience": 3
+}
+
+Rules:
+- skills: list every technical skill, language, framework, and tool mentioned
+- target_roles: infer from their experience and job titles (e.g. if they did backend work, suggest "Backend Engineer", "Software Engineer")
+- preferred_locations: extract from any location preferences, or infer from current location
+- education: combine degree + university + GPA into one string
+- experience_summary: summarize their work history in 1-2 sentences with key metrics if present
+
+RESUME:
+"""
+
+
+@router.post("/parse-resume", response_model=ResumeParseResponse)
+async def parse_resume(
+    body: ResumeParseRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    auth: AuthService = Depends(get_auth_service),
+) -> ResumeParseResponse:
+    """Parse a resume with AI and auto-fill profile fields.
+
+    Uses the provided Gemini API key to extract structured data from
+    resume text, saves the API key and profile, and returns the parsed result.
+    """
+    try:
+        raw = await _gemini.generate_json(
+            api_key=body.gemini_api_key,
+            prompt=RESUME_PARSE_PROMPT + body.resume_text,
+            temperature=0.2,
+            max_tokens=4096,
+        )
+    except Exception as e:
+        logger.warning("Resume parse failed: %s", e)
+        raise ValidationError(detail=f"AI parsing failed: {e}")
+
+    parsed = ParsedProfile(
+        name=raw.get("name"),
+        email=raw.get("email"),
+        phone=raw.get("phone"),
+        linkedin=raw.get("linkedin"),
+        github=raw.get("github"),
+        education=raw.get("education"),
+        experience_summary=raw.get("experience_summary"),
+        skills=raw.get("skills") if isinstance(raw.get("skills"), list) else None,
+        target_roles=raw.get("target_roles") if isinstance(raw.get("target_roles"), list) else None,
+        preferred_locations=raw.get("preferred_locations") if isinstance(raw.get("preferred_locations"), list) else None,
+        profile_text=body.resume_text,
+    )
+
+    repo = UserRepository(db)
+
+    # Save the API key (encrypted)
+    encrypted = auth.encrypt_api_key(body.gemini_api_key)
+    await repo.update_api_key(user_id=str(user.id), encrypted_key=encrypted)
+
+    # Save the raw resume as the profile
+    await repo.update_profile(
+        user_id=str(user.id),
+        profile_json=body.resume_text,
+        connections_json=None,
+    )
+
+    # Save extracted settings (target roles, locations)
+    settings: Dict[str, Any] = {}
+    if parsed.target_roles:
+        settings["target_roles"] = parsed.target_roles
+    if parsed.preferred_locations:
+        settings["preferred_locations"] = parsed.preferred_locations
+    if settings:
+        settings["min_score"] = 30
+        await repo.update_settings(
+            user_id=str(user.id),
+            settings_json=json.dumps(settings, ensure_ascii=False),
+        )
+
+    # Update name if parsed and user used a placeholder
+    if parsed.name and user.name in ("User", "user", ""):
+        user.name = parsed.name  # type: ignore[assignment]
+        await db.commit()
+
+    return ResumeParseResponse(
+        parsed=parsed,
+        message="Resume parsed successfully. Profile and API key saved.",
+    )
