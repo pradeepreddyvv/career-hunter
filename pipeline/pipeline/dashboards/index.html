@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Pipeline</title>
+<style>
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#232736;--border:#2d3148;--text:#e4e6f0;--text2:#8b8fa8;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+input,select,textarea,button{font-family:inherit;font-size:14px}
+button{cursor:pointer}
+
+.app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+header h1{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .user-info{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2)}
+header .user-info .name{color:var(--text)}
+.btn{padding:8px 16px;border-radius:var(--radius);border:none;font-weight:500;font-size:13px;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:40px;width:100%;max-width:400px}
+.auth-box h2{font-size:24px;margin-bottom:8px;text-align:center}
+.auth-box p{color:var(--text2);text-align:center;margin-bottom:24px;font-size:14px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:80px}
+.auth-box .btn{width:100%;padding:12px;font-size:15px;margin-top:8px}
+.auth-toggle{text-align:center;margin-top:16px;font-size:13px;color:var(--text2)}
+.error-msg{color:var(--red);font-size:13px;margin-top:8px;text-align:center}
+
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:300px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:12px 16px;border-bottom:1px solid var(--border)}
+.sidebar-header input{width:100%;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none;font-size:13px}
+.sidebar-count{padding:6px 16px;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sidebar-filters{padding:8px 16px;display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--border)}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.job-list{flex:1;overflow-y:auto;padding:8px}
+.job-card{padding:10px 12px;border-radius:var(--radius);cursor:pointer;margin-bottom:2px;transition:background .15s}
+.job-card:hover{background:var(--surface2)}
+.job-card.active{background:var(--surface2);border-left:3px solid var(--accent)}
+.job-card .title{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-card .company{font-size:12px;color:var(--text2)}
+.job-card .meta{display:flex;gap:6px;margin-top:4px;font-size:11px;color:var(--text2);align-items:center}
+.score-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.score-high{background:rgba(34,197,94,.15);color:var(--green)}
+.score-mid{background:rgba(234,179,8,.15);color:var(--yellow)}
+.score-low{background:rgba(239,68,68,.15);color:var(--red)}
+
+.content{flex:1;overflow-y:auto;padding:24px}
+.content-header{margin-bottom:24px}
+.content-header h2{font-size:22px;font-weight:700;margin-bottom:4px}
+.content-header p{color:var(--text2);font-size:14px}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 24px;background:var(--surface)}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;position:relative}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.tab .badge{position:absolute;top:6px;right:4px;background:var(--accent);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:600}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-card .label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:700;margin-top:4px}
+.stat-card .value.accent{color:var(--accent2)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:12px}
+
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border)}
+th{color:var(--text2);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+tr:hover td{background:var(--surface2)}
+
+.source-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:var(--surface2);color:var(--text2);margin:2px}
+
+.job-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.job-detail-header h2{font-size:20px;font-weight:700}
+.job-detail-header .company{font-size:16px;color:var(--accent2)}
+.job-detail-header .location{font-size:13px;color:var(--text2);margin-top:4px}
+
+.doc-section{margin-bottom:20px}
+.doc-section h4{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--accent2);display:flex;justify-content:space-between;align-items:center}
+.doc-section pre{background:var(--surface2);padding:16px;border-radius:var(--radius);font-size:13px;line-height:1.6;white-space:pre-wrap;word-wrap:break-word;max-height:400px;overflow-y:auto}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 20px;font-size:13px;z-index:1000;animation:slideIn .3s ease}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--text2);gap:12px}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state h3{font-size:18px;margin-bottom:8px;color:var(--text)}
+.empty-state p{font-size:14px;margin-bottom:20px}
+
+.progress-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-bar .fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.settings-grid{grid-template-columns:1fr}}
+
+.load-more{text-align:center;padding:12px}
+.load-more button{width:100%}
+
+@media(max-width:900px){.sidebar{width:240px}}
+@media(max-width:600px){.sidebar{display:none}.main{flex-direction:column}}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+
+<script>
+const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:' || location.hostname.includes('github.io')
+  ? 'http://localhost:8000'
+  : location.origin);
+
+const state = {
+  token: localStorage.getItem('cp_token') || '',
+  user: null,
+  jobs: [],
+  totalJobs: 0,
+  selectedJob: null,
+  selectedJobDocs: null,
+  tasks: [],
+  metrics: null,
+  activeTab: 'dashboard',
+  searchQuery: '',
+  roleFilter: '',
+  sourceFilter: '',
+  jobsOffset: 0,
+  jobsLimit: 100,
+  loading: {},
+  profileText: '',
+  prefBlacklist: '',
+  prefRoles: '',
+  prefMinScore: 30,
+  prefLocations: '',
+  activeTasks: {},
+};
+
+async function api(method, path, body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (state.token) opts.headers['Authorization'] = `Bearer ${state.token}`;
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  if (r.status === 204) return {};
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw { status: r.status, ...data };
+  return data;
+}
+
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// === Auth ===
+async function login(email, password) {
+  const d = await api('POST', '/api/v1/auth/login', { email, password });
+  state.token = d.token;
+  state.user = d.user;
+  localStorage.setItem('cp_token', d.token);
+  render();
+  loadDashboard();
+}
+
+async function register(name, email, password) {
+  const d = await api('POST', '/api/v1/auth/register', { name, email, password });
+  state.token = d.token;
+  state.user = d.user;
+  localStorage.setItem('cp_token', d.token);
+  render();
+  loadDashboard();
+}
+
+function logout() {
+  state.token = '';
+  state.user = null;
+  state.jobs = [];
+  state.totalJobs = 0;
+  localStorage.removeItem('cp_token');
+  render();
+}
+
+async function loadUser() {
+  if (!state.token) return;
+  try {
+    state.user = await api('GET', '/api/v1/auth/me');
+    render();
+    loadDashboard();
+  } catch { logout(); }
+}
+
+// === Data Loading ===
+async function loadDashboard() {
+  state.loading.dashboard = true; render();
+  try {
+    const params = new URLSearchParams({ limit: String(state.jobsLimit), offset: '0' });
+    if (state.sourceFilter) params.set('source', state.sourceFilter);
+    if (state.roleFilter) params.set('role_category', state.roleFilter);
+    if (state.searchQuery) params.set('search', state.searchQuery);
+
+    const [metrics, jobsData, tasks] = await Promise.all([
+      api('GET', '/api/v1/metrics'),
+      api('GET', `/api/v1/jobs/?${params}`),
+      api('GET', '/api/v1/tasks/'),
+    ]);
+    state.metrics = metrics;
+    state.jobs = jobsData.jobs || [];
+    state.totalJobs = jobsData.total || 0;
+    state.jobsOffset = 0;
+    state.tasks = Array.isArray(tasks) ? tasks : (tasks.tasks || []);
+  } catch(e) { console.error('Dashboard load:', e); }
+  state.loading.dashboard = false; render();
+}
+
+async function loadMoreJobs() {
+  const newOffset = state.jobsOffset + state.jobsLimit;
+  state.loading.moreJobs = true; render();
+  try {
+    const params = new URLSearchParams({ limit: String(state.jobsLimit), offset: String(newOffset) });
+    if (state.sourceFilter) params.set('source', state.sourceFilter);
+    if (state.roleFilter) params.set('role_category', state.roleFilter);
+    if (state.searchQuery) params.set('search', state.searchQuery);
+    const d = await api('GET', `/api/v1/jobs/?${params}`);
+    state.jobs = state.jobs.concat(d.jobs || []);
+    state.totalJobs = d.total || state.totalJobs;
+    state.jobsOffset = newOffset;
+  } catch(e) { toast('Failed to load more jobs', 'error'); }
+  state.loading.moreJobs = false; render();
+}
+
+async function searchJobs() {
+  state.jobsOffset = 0;
+  state.loading.dashboard = true; render();
+  try {
+    const params = new URLSearchParams({ limit: String(state.jobsLimit), offset: '0' });
+    if (state.sourceFilter) params.set('source', state.sourceFilter);
+    if (state.roleFilter) params.set('role_category', state.roleFilter);
+    if (state.searchQuery) params.set('search', state.searchQuery);
+    const d = await api('GET', `/api/v1/jobs/?${params}`);
+    state.jobs = d.jobs || [];
+    state.totalJobs = d.total || 0;
+  } catch(e) { console.error(e); }
+  state.loading.dashboard = false; render();
+}
+
+let _searchTimer;
+function onSearchInput(val) {
+  state.searchQuery = val;
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(searchJobs, 400);
+}
+
+async function loadJobDocs(jobId) {
+  state.loading.docs = true; render();
+  try {
+    const d = await api('GET', `/api/v1/documents/${jobId}`);
+    state.selectedJobDocs = d.documents || [];
+  } catch {
+    state.selectedJobDocs = [];
+  }
+  state.loading.docs = false; render();
+}
+
+async function fetchJobs() {
+  state.loading.fetch = true; render();
+  try {
+    const d = await api('POST', '/api/v1/jobs/fetch', { sources: null, intern_only: false });
+    toast(`Fetching jobs from 69 company boards...`);
+    trackTask(d.task_id, 'fetch_jobs', () => loadDashboard());
+  } catch(e) { toast(e.detail || e.error || 'Fetch failed', 'error'); }
+  state.loading.fetch = false; render();
+}
+
+async function runPipeline() {
+  state.loading.pipeline = true; render();
+  try {
+    const profile = await api('GET', '/api/v1/profile/');
+    if (!profile.profile_json || profile.profile_json.length < 50) {
+      toast('Add your career profile first (Profile tab)', 'error');
+      state.loading.pipeline = false; render(); return;
+    }
+    const d = await api('POST', '/api/v1/pipeline/run', { min_score: 30, max_jobs: 20 });
+    toast('Pipeline started');
+    trackTask(d.task_id, 'pipeline', () => loadDashboard());
+  } catch(e) { toast(e.detail || e.error || 'Pipeline failed', 'error'); }
+  state.loading.pipeline = false; render();
+}
+
+async function scoreJobs() {
+  state.loading.score = true; render();
+  try {
+    const d = await api('POST', '/api/v1/pipeline/score', {});
+    toast('Scoring started');
+    trackTask(d.task_id, 'score', () => loadDashboard());
+  } catch(e) { toast(e.detail || e.error || 'Scoring failed', 'error'); }
+  state.loading.score = false; render();
+}
+
+async function generateDocs(jobId) {
+  state.loading[`gen_${jobId}`] = true; render();
+  try {
+    const d = await api('POST', `/api/v1/pipeline/generate/${jobId}`, {});
+    toast('Doc generation started');
+    trackTask(d.task_id, 'generate', () => { loadDashboard(); loadJobDocs(jobId); });
+  } catch(e) { toast(e.detail || e.error || 'Generation failed', 'error'); }
+  state.loading[`gen_${jobId}`] = false; render();
+}
+
+async function deleteJob(jobId) {
+  if (!confirm('Delete this job?')) return;
+  try {
+    await api('DELETE', `/api/v1/jobs/${jobId}`);
+    state.jobs = state.jobs.filter(j => j.id !== jobId);
+    state.totalJobs = Math.max(0, state.totalJobs - 1);
+    if (state.selectedJob?.id === jobId) {
+      state.selectedJob = null;
+      state.selectedJobDocs = null;
+    }
+    toast('Job deleted');
+    render();
+  } catch(e) { toast(e.detail || 'Delete failed', 'error'); }
+}
+
+function trackTask(taskId, label, onDone) {
+  state.activeTasks[taskId] = { label, progress: 0, status: 'running' };
+  render();
+  const check = async () => {
+    try {
+      const t = await api('GET', `/api/v1/tasks/${taskId}`);
+      const pct = Math.min(t.progress || 0, 100);
+      state.activeTasks[taskId] = { label, progress: pct, status: t.status, message: t.progress_message || '' };
+      render();
+      if (t.status === 'completed') {
+        delete state.activeTasks[taskId];
+        toast(`${label} completed!`);
+        onDone();
+        return;
+      }
+      if (t.status === 'failed') {
+        delete state.activeTasks[taskId];
+        toast(`${label} failed: ${t.error_message || 'unknown'}`, 'error');
+        render();
+        return;
+      }
+      setTimeout(check, 3000);
+    } catch { setTimeout(check, 5000); }
+  };
+  setTimeout(check, 2000);
+}
+
+// === Render ===
+function scoreClass(s) { return s >= 70 ? 'score-high' : s >= 50 ? 'score-mid' : 'score-low'; }
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function tryParseJSON(s) { try { JSON.parse(s); return true; } catch { return false; } }
+
+function renderActiveTaskBar() {
+  const tasks = Object.entries(state.activeTasks);
+  if (!tasks.length) return '';
+  return tasks.map(([id, t]) => `
+    <div style="padding:8px 24px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-size:13px">
+      <div class="spinner" style="width:14px;height:14px;border-width:2px"></div>
+      <span>${esc(t.label)}</span>
+      <span style="color:var(--text2)">${t.message || t.status}</span>
+      <div style="flex:1;max-width:200px">
+        <div class="progress-bar"><div class="fill" style="width:${t.progress}%"></div></div>
+      </div>
+      <span style="color:var(--text2)">${t.progress}%</span>
+    </div>
+  `).join('');
+}
+
+function renderAuth() {
+  return `<div class="auth-page"><div class="auth-box">
+    <h2>Career Pipeline</h2>
+    <p>AI-powered job discovery & document generation</p>
+    <div id="auth-form">
+      <div id="register-fields">
+        <div class="form-group"><label>Name</label><input id="reg-name" placeholder="Your name"></div>
+      </div>
+      <div class="form-group"><label>Email</label><input id="auth-email" type="email" placeholder="you@example.com"></div>
+      <div class="form-group"><label>Password</label><input id="auth-pass" type="password" placeholder="Min 8 characters"></div>
+      <div id="auth-error" class="error-msg"></div>
+      <button class="btn btn-primary" id="auth-submit">Create Account</button>
+      <div class="auth-toggle">
+        <span id="auth-toggle-text">Already have an account?</span>
+        <a href="#" id="auth-toggle-link">Sign in</a>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;padding:12px">
+      <div class="form-group" style="margin:0"><label>API Server URL</label>
+      <input id="api-url-input" value="${esc(API)}" placeholder="http://your-server:8000" style="font-size:12px"></div>
+    </div>
+  </div></div>`;
+}
+
+function renderApp() {
+  const u = state.user || {};
+  const sj = state.selectedJob;
+
+  return `<header>
+    <h1>Career Pipeline</h1>
+    <div class="user-info">
+      <span class="name">${esc(u.name || '')}</span>
+      <span style="font-size:12px">${u.has_api_key ? 'API key set' : 'No API key'}</span>
+      <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </header>
+  <div style="padding:4px 24px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;gap:12px;font-size:12px;overflow-x:auto">
+    <a href="./interview_coach.html">Interview Coach</a>
+    <a href="./interview_command_center.html">Interview Prep</a>
+    <a href="./interview_recorder.html">Recording Studio</a>
+    <a href="./interview_scorecard.html">Scorecard</a>
+    <a href="./amazon_sde_prep.html">Company Prep</a>
+    <a href="./career_dashboard.html">Analytics</a>
+    <a href="./task_hub.html">Tasks</a>
+  </div>
+  ${renderActiveTaskBar()}
+  <div class="tabs">
+    ${['dashboard','jobs','pipeline','profile'].map(t => {
+      let badge = '';
+      if (t === 'jobs' && state.totalJobs > 0) badge = `<span class="badge">${state.totalJobs > 999 ? Math.round(state.totalJobs/1000)+'k' : state.totalJobs}</span>`;
+      return `<div class="tab ${state.activeTab===t?'active':''}" onclick="setTab('${t}')">${t[0].toUpperCase()+t.slice(1)}${badge}</div>`;
+    }).join('')}
+  </div>
+  <div class="main">
+    ${state.activeTab === 'jobs' ? renderJobSidebar() : ''}
+    <div class="content">
+      ${renderTabContent()}
+    </div>
+  </div>`;
+}
+
+function renderJobSidebar() {
+  const roles = [...new Set(state.jobs.map(j => j.role_category).filter(Boolean))].sort();
+  const sj = state.selectedJob;
+  return `
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <input placeholder="Search jobs..." value="${esc(state.searchQuery)}" oninput="onSearchInput(this.value)">
+    </div>
+    <div class="sidebar-count">
+      <span>Showing ${state.jobs.length} of ${state.totalJobs.toLocaleString()}</span>
+      <button class="btn btn-outline btn-sm" onclick="loadDashboard()" style="padding:2px 8px;font-size:11px">Refresh</button>
+    </div>
+    <div class="sidebar-filters">
+      <div class="chip ${!state.roleFilter?'active':''}" onclick="state.roleFilter='';searchJobs()">All</div>
+      ${roles.map(r => `<div class="chip ${state.roleFilter===r?'active':''}" onclick="state.roleFilter='${esc(r)}';searchJobs()">${esc(r)}</div>`).join('')}
+    </div>
+    <div class="job-list">
+      ${state.jobs.length === 0 ? '<div class="empty-state" style="padding:30px"><p>No jobs found</p></div>' :
+        state.jobs.map(j => `
+        <div class="job-card ${sj&&sj.id===j.id?'active':''}" onclick="selectJob(${j.id})">
+          <div class="title">${esc(j.title)}</div>
+          <div class="company">${esc(j.company)}</div>
+          <div class="meta">
+            ${j.score ? `<span class="score-badge ${scoreClass(j.score)}">${j.score}</span>` : ''}
+            <span>${esc(j.source||'')}</span>
+            <span>${esc((j.location||'').slice(0,25))}</span>
+          </div>
+        </div>`).join('')}
+      ${state.jobs.length < state.totalJobs ? `
+      <div class="load-more">
+        <button class="btn btn-outline btn-sm" onclick="loadMoreJobs()" ${state.loading.moreJobs?'disabled':''}>
+          ${state.loading.moreJobs?'Loading...':'Load More'}
+        </button>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderTabContent() {
+  switch(state.activeTab) {
+    case 'dashboard': return renderDashboard();
+    case 'jobs': return renderJobDetail();
+    case 'pipeline': return renderPipeline();
+    case 'profile': return renderProfile();
+    default: return '';
+  }
+}
+
+function renderDashboard() {
+  if (state.loading.dashboard) return '<div class="loading-overlay"><div class="spinner"></div> Loading...</div>';
+  const m = state.metrics || {};
+  return `
+    <div class="content-header"><h2>Dashboard</h2><p>Your career pipeline at a glance</p></div>
+    <div class="stats">
+      <div class="stat-card"><div class="label">Total Jobs</div><div class="value accent">${(m.job_count||0).toLocaleString()}</div></div>
+      <div class="stat-card"><div class="label">Scored</div><div class="value">${m.scored_count||0}</div></div>
+      <div class="stat-card"><div class="label">Documents</div><div class="value">${m.docs_generated||0}</div></div>
+      <div class="stat-card"><div class="label">Pipeline Runs</div><div class="value">${m.pipeline_runs||0}</div></div>
+    </div>
+    <div class="card">
+      <h3>Quick Actions</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-primary" onclick="fetchJobs()" ${state.loading.fetch?'disabled':''}>
+          ${state.loading.fetch?'<span class="spinner"></span>':'Fetch Jobs'}
+        </button>
+        <button class="btn btn-outline" onclick="scoreJobs()" ${state.loading.score?'disabled':''}>
+          ${state.loading.score?'<span class="spinner"></span>':'Score Jobs'}
+        </button>
+        <button class="btn btn-primary" onclick="runPipeline()" ${state.loading.pipeline?'disabled':''}>
+          ${state.loading.pipeline?'<span class="spinner"></span>':'Run Full Pipeline'}
+        </button>
+      </div>
+    </div>
+    ${state.jobs.length > 0 ? `
+    <div class="card">
+      <h3>Top Jobs by Score</h3>
+      <table>
+        <thead><tr><th>Title</th><th>Company</th><th>Score</th><th>Category</th><th>Source</th></tr></thead>
+        <tbody>
+          ${state.jobs.slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,10).map(j => `
+          <tr onclick="selectJob(${j.id});setTab('jobs')" style="cursor:pointer">
+            <td>${esc(j.title)}</td><td>${esc(j.company)}</td>
+            <td><span class="score-badge ${scoreClass(j.score||0)}">${j.score||'-'}</span></td>
+            <td><span class="source-tag">${esc(j.role_category||'-')}</span></td>
+            <td>${esc(j.source||'')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : `
+    <div class="empty-state">
+      <h3>No jobs yet</h3>
+      <p>Click "Fetch Jobs" to discover opportunities from 69 company boards</p>
+    </div>`}
+    ${state.tasks.length > 0 ? `
+    <div class="card">
+      <h3>Recent Tasks</h3>
+      <table>
+        <thead><tr><th>Type</th><th>Status</th><th>Progress</th><th>Created</th></tr></thead>
+        <tbody>${state.tasks.slice(0,5).map(t => `
+          <tr><td>${esc(t.task_type||'')}</td>
+          <td><span class="score-badge ${t.status==='completed'?'score-high':t.status==='failed'?'score-low':'score-mid'}">${esc(t.status)}</span></td>
+          <td>${Math.min(t.progress||0,100)}%</td><td>${esc(t.created_at||'')}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : ''}`;
+}
+
+function renderJobDetail() {
+  const sj = state.selectedJob;
+  if (!sj) return '<div class="empty-state"><h3>Select a job</h3><p>Click a job in the sidebar to see details and generated documents</p></div>';
+  if (state.loading.docs) return '<div class="loading-overlay"><div class="spinner"></div> Loading job details...</div>';
+  const docs = state.selectedJobDocs || [];
+  return `
+    <div class="job-detail-header">
+      <div>
+        <h2>${esc(sj.title)}</h2>
+        <div class="company">${esc(sj.company)}</div>
+        <div class="location">${esc(sj.location||'')}</div>
+        ${sj.posted_at ? `<div style="font-size:12px;color:var(--text2);margin-top:4px">Posted: ${esc(sj.posted_at)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${sj.score ? `<span class="score-badge ${scoreClass(sj.score)}" style="font-size:16px;padding:6px 14px">${sj.score}</span>` : ''}
+        <button class="btn btn-primary btn-sm" onclick="generateDocs(${sj.id})" ${state.loading[`gen_${sj.id}`]?'disabled':''}>
+          ${state.loading[`gen_${sj.id}`]?'<span class="spinner"></span>':'Generate Docs'}
+        </button>
+        ${sj.url ? `<a href="${esc(sj.url)}" target="_blank" class="btn btn-outline btn-sm">Apply</a>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteJob(${sj.id})" title="Delete job">Del</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <span class="source-tag">${esc(sj.source||'')}</span>
+      <span class="source-tag">${esc(sj.role_category||'')}</span>
+    </div>
+    ${sj.score_summary ? `<div class="card"><h3>Score Summary</h3><p style="font-size:13px;color:var(--text2);line-height:1.6">${esc(sj.score_summary)}</p></div>` : ''}
+    ${docs.length > 0 ? docs.map(d => {
+      const content = typeof d.content === 'string'
+        ? (tryParseJSON(d.content) ? JSON.stringify(JSON.parse(d.content),null,2) : d.content)
+        : JSON.stringify(d.content,null,2);
+      const label = d.doc_type.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+      return `
+      <div class="doc-section">
+        <h4><span>${esc(label)}</span><button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(${esc(JSON.stringify(content))});toast('Copied!')">Copy</button></h4>
+        <pre>${esc(content)}</pre>
+      </div>`;
+    }).join('') : `
+      <div class="empty-state" style="padding:30px">
+        <p>No documents generated yet. Click "Generate Docs" to create tailored application materials.</p>
+      </div>`}`;
+}
+
+function renderPipeline() {
+  const sourceCounts = {};
+  state.jobs.forEach(j => { const s = j.source || 'unknown'; sourceCounts[s] = (sourceCounts[s]||0)+1; });
+  const roleCounts = {};
+  state.jobs.forEach(j => { const r = j.role_category || 'Other'; roleCounts[r] = (roleCounts[r]||0)+1; });
+
+  return `
+    <div class="content-header"><h2>Pipeline</h2><p>Run the full job discovery, scoring, and document generation pipeline</p></div>
+    <div class="card">
+      <h3>Full Pipeline</h3>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Fetches jobs from all company boards, scores them against your profile, and generates tailored documents for top matches.</p>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="runPipeline()" ${state.loading.pipeline?'disabled':''}>
+          ${state.loading.pipeline?'<span class="spinner"></span> Running...':'Run Full Pipeline'}
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Individual Steps</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-outline" onclick="fetchJobs()" ${state.loading.fetch?'disabled':''}>
+          ${state.loading.fetch?'Fetching...':'1. Fetch Jobs'}
+        </button>
+        <button class="btn btn-outline" onclick="scoreJobs()" ${state.loading.score?'disabled':''}>
+          ${state.loading.score?'Scoring...':'2. Score Jobs'}
+        </button>
+      </div>
+      <p style="color:var(--text2);font-size:12px;margin-top:12px">Step 3 (Generate Docs) runs per-job from the Jobs tab.</p>
+    </div>
+    ${state.totalJobs > 0 ? `
+    <div class="settings-grid">
+      <div class="card">
+        <h3>Jobs by Source</h3>
+        <table>
+          <thead><tr><th>Source</th><th>Count</th></tr></thead>
+          <tbody>${Object.entries(sourceCounts).sort((a,b)=>b[1]-a[1]).map(([s,c]) => `
+            <tr><td>${esc(s)}</td><td>${c}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Jobs by Role</h3>
+        <table>
+          <thead><tr><th>Category</th><th>Count</th></tr></thead>
+          <tbody>${Object.entries(roleCounts).sort((a,b)=>b[1]-a[1]).map(([r,c]) => `
+            <tr><td>${esc(r)}</td><td>${c}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}
+    ${state.tasks.length > 0 ? `
+    <div class="card">
+      <h3>Task History</h3>
+      <table>
+        <thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Progress</th><th>Message</th></tr></thead>
+        <tbody>${state.tasks.map(t => `
+          <tr>
+            <td style="font-family:monospace;font-size:12px">${esc((t.id||'').slice(0,8))}...</td>
+            <td>${esc(t.task_type||'')}</td>
+            <td><span class="score-badge ${t.status==='completed'?'score-high':t.status==='failed'?'score-low':'score-mid'}">${esc(t.status)}</span></td>
+            <td>${Math.min(t.progress||0,100)}%</td>
+            <td style="color:var(--text2);font-size:12px">${esc(t.progress_message||t.error_message||'')}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : ''}`;
+}
+
+function renderProfile() {
+  const u = state.user || {};
+  return `
+    <div class="content-header"><h2>Profile</h2><p>Your career profile, API key, and preferences</p></div>
+    <div class="settings-grid">
+      <div class="card">
+        <h3>Gemini API Key</h3>
+        <p style="color:var(--text2);font-size:13px;margin-bottom:12px">
+          ${u.has_api_key ? 'API key is set and encrypted.' : 'Required for scoring and document generation.'}
+          <a href="https://aistudio.google.com/apikey" target="_blank">Get a free key</a>
+        </p>
+        <div class="form-group">
+          <input id="api-key-input" type="password" placeholder="AIzaSy..." value="">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Save Key</button>
+          ${u.has_api_key ? '<button class="btn btn-danger btn-sm" onclick="deleteApiKey()">Remove</button>' : ''}
+        </div>
+      </div>
+      <div class="card">
+        <h3>Account</h3>
+        <div style="font-size:13px;color:var(--text2);line-height:2">
+          <p><strong>Name:</strong> ${esc(u.name||'')}</p>
+          <p><strong>Email:</strong> ${esc(u.email||'')}</p>
+          <p><strong>Member since:</strong> ${esc(u.created_at||'')}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Career Profile (Resume Vault)</h3>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Paste your full resume, skills, experience. This is used to score jobs and generate tailored documents.</p>
+      <div class="form-group">
+        <textarea id="profile-text" rows="10" placeholder="MS CS at MIT. 3 years backend experience. Python, Java, React, AWS, Docker, K8s. Built scalable APIs handling 1000 req/s...">${esc(state.profileText||'')}</textarea>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Profile</button>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Preferences</h3>
+      <div class="settings-grid">
+        <div class="form-group">
+          <label>Blacklisted Companies (comma-separated)</label>
+          <input id="pref-blacklist" placeholder="TikTok, ByteDance" value="${esc(state.prefBlacklist||'')}">
+        </div>
+        <div class="form-group">
+          <label>Target Roles (comma-separated)</label>
+          <input id="pref-roles" placeholder="SDE, ML/AI, Fullstack" value="${esc(state.prefRoles||'')}">
+        </div>
+        <div class="form-group">
+          <label>Minimum Score (0-100)</label>
+          <input id="pref-min-score" type="number" min="0" max="100" value="${state.prefMinScore||30}">
+        </div>
+        <div class="form-group">
+          <label>Preferred Locations</label>
+          <input id="pref-locations" placeholder="SF, NYC, Remote" value="${esc(state.prefLocations||'')}">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()" style="margin-top:12px">Save Settings</button>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Server</h3>
+      <div class="form-group">
+        <label>API Server URL</label>
+        <input id="settings-api-url" value="${esc(API)}" style="font-size:12px">
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="changeApiUrl()">Update Server URL</button>
+    </div>`;
+}
+
+// === Actions ===
+function setTab(t) {
+  state.activeTab = t;
+  if (t === 'jobs' && state.jobs.length === 0) loadDashboard();
+  render();
+}
+
+function selectJob(id) {
+  state.selectedJob = state.jobs.find(j => j.id === id) || null;
+  state.selectedJobDocs = null;
+  render();
+  if (state.selectedJob) loadJobDocs(id);
+}
+
+async function saveApiKey() {
+  const key = document.getElementById('api-key-input')?.value;
+  if (!key) { toast('Enter an API key', 'error'); return; }
+  try {
+    await api('PUT', '/api/v1/profile/api-key', { gemini_api_key: key });
+    toast('API key saved');
+    await loadUser();
+  } catch(e) { toast(e.detail || e.error || 'Failed', 'error'); }
+}
+
+async function deleteApiKey() {
+  try {
+    await api('DELETE', '/api/v1/profile/api-key');
+    toast('API key removed');
+    await loadUser();
+  } catch(e) { toast(e.detail || e.error || 'Failed', 'error'); }
+}
+
+async function saveProfile() {
+  const text = document.getElementById('profile-text')?.value || '';
+  try {
+    await api('PUT', '/api/v1/profile/', { profile_json: text });
+    state.profileText = text;
+    toast('Profile saved');
+  } catch(e) { toast(e.detail || e.error || 'Failed', 'error'); }
+}
+
+async function saveSettings() {
+  const bl = (document.getElementById('pref-blacklist')?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const roles = (document.getElementById('pref-roles')?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const minScore = parseInt(document.getElementById('pref-min-score')?.value||'30');
+  const locs = (document.getElementById('pref-locations')?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  try {
+    await api('PUT', '/api/v1/profile/settings', {
+      blacklist: bl, target_roles: roles, min_score: minScore, preferred_locations: locs
+    });
+    state.prefBlacklist = bl.join(', ');
+    state.prefRoles = roles.join(', ');
+    state.prefMinScore = minScore;
+    state.prefLocations = locs.join(', ');
+    toast('Settings saved');
+  } catch(e) { toast(e.detail || e.error || 'Failed', 'error'); }
+}
+
+function changeApiUrl() {
+  const url = document.getElementById('settings-api-url')?.value?.replace(/\/+$/, '');
+  if (url) {
+    localStorage.setItem('cp_api_url', url);
+    location.reload();
+  }
+}
+
+async function loadProfile() {
+  try {
+    const p = await api('GET', '/api/v1/profile/');
+    state.profileText = p.profile_json || '';
+    const s = p.settings || {};
+    state.prefBlacklist = (s.blacklist||[]).join(', ');
+    state.prefRoles = (s.target_roles||[]).join(', ');
+    state.prefMinScore = s.min_score || 30;
+    state.prefLocations = (s.preferred_locations||[]).join(', ');
+  } catch {}
+}
+
+// === Render Engine ===
+function render() {
+  const app = document.getElementById('app');
+  if (!state.token || !state.user) {
+    app.innerHTML = renderAuth();
+    setupAuthListeners();
+  } else {
+    app.innerHTML = renderApp();
+  }
+}
+
+function setupAuthListeners() {
+  let isLogin = false;
+  const toggle = () => {
+    isLogin = !isLogin;
+    const regFields = document.getElementById('register-fields');
+    const submitBtn = document.getElementById('auth-submit');
+    const toggleText = document.getElementById('auth-toggle-text');
+    const toggleLink = document.getElementById('auth-toggle-link');
+    if (isLogin) {
+      regFields.classList.add('hidden');
+      submitBtn.textContent = 'Sign In';
+      toggleText.textContent = "Don't have an account?";
+      toggleLink.textContent = 'Create one';
+    } else {
+      regFields.classList.remove('hidden');
+      submitBtn.textContent = 'Create Account';
+      toggleText.textContent = 'Already have an account?';
+      toggleLink.textContent = 'Sign in';
+    }
+  };
+
+  document.getElementById('auth-toggle-link')?.addEventListener('click', (e) => { e.preventDefault(); toggle(); });
+
+  document.getElementById('auth-submit')?.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email')?.value;
+    const pass = document.getElementById('auth-pass')?.value;
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = '';
+    try {
+      if (isLogin) {
+        await login(email, pass);
+      } else {
+        const name = document.getElementById('reg-name')?.value;
+        if (!name) { errEl.textContent = 'Name is required'; return; }
+        await register(name, email, pass);
+      }
+      loadProfile();
+    } catch(e) {
+      errEl.textContent = e.detail || e.error || 'Authentication failed';
+    }
+  });
+
+  ['auth-email','auth-pass','reg-name'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') document.getElementById('auth-submit')?.click();
+    });
+  });
+
+  document.getElementById('api-url-input')?.addEventListener('change', (e) => {
+    const url = e.target.value.replace(/\/+$/, '');
+    localStorage.setItem('cp_api_url', url);
+    location.reload();
+  });
+}
+
+// === Init ===
+render();
+if (state.token) {
+  loadUser();
+  loadProfile();
+}
+</script>
+</body>
+</html>

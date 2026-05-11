@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User's Interview Readiness Scorecard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0c10;--bg2:#12151c;--bg3:#1a1e2a;--bg4:#252a3a;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--orange:#f97316;--cyan:#06b6d4;--pink:#ec4899;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#1e293b;--radius:10px}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+button{cursor:pointer;font-family:inherit;border:none;outline:none}
+.app{max-width:1400px;margin:0 auto;padding:20px 24px;margin-left:42px}
+
+/* Header */
+.header{text-align:center;padding:32px 0 24px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.header h1{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.header p{color:var(--text2);font-size:13px}
+
+/* Overall Score */
+.overall{display:flex;align-items:center;justify-content:center;gap:40px;padding:32px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:24px}
+.big-score{width:140px;height:140px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:42px;font-weight:800;position:relative}
+.big-score::before{content:'';position:absolute;inset:-4px;border-radius:50%;padding:4px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor}
+.big-score .label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.overall-breakdown{display:flex;flex-direction:column;gap:10px;flex:1;max-width:500px}
+.ob-row{display:flex;align-items:center;gap:12px}
+.ob-label{width:140px;font-size:13px;color:var(--text2)}
+.ob-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.ob-fill{height:100%;border-radius:4px;transition:width .8s}
+.ob-val{width:40px;font-size:13px;font-weight:600;text-align:right}
+
+/* Section */
+.section{margin-bottom:24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-header h2{font-size:18px;font-weight:700}
+.section-header .badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+
+/* Cards Grid */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:.2s}
+.card:hover{border-color:var(--accent)}.card{position:relative}
+/* Edit Infrastructure */
+.edit-icon{position:absolute;top:8px;right:8px;opacity:0;transition:.2s;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;color:var(--accent2);z-index:10}
+.card:hover .edit-icon,.decision:hover .edit-icon,.gap-item:hover .edit-icon,.q-block:hover .edit-icon,.company-card:hover .edit-icon{opacity:.8}
+.edit-icon:hover{opacity:1;background:var(--accent);color:#fff}
+.edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.edit-overlay.open{display:flex}
+.edit-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto}
+.edit-box h3{font-size:16px;margin-bottom:16px;color:var(--accent2)}
+.edit-field{margin-bottom:12px}
+.edit-field label{display:block;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.edit-field input,.edit-field textarea,.edit-field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;font-family:inherit}
+.edit-field textarea{min-height:60px;resize:vertical}
+.edit-field input[type=number]{width:80px}
+.edit-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.edit-actions button{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600}
+.edit-save{background:var(--accent);color:#fff}.edit-save:hover{opacity:.9}
+.edit-cancel{background:var(--bg3);color:var(--text2)}.edit-cancel:hover{background:var(--bg4)}
+.edit-toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;z-index:2000;font-size:13px;font-weight:600;animation:toastIn .3s}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.decision{position:relative}.gap-item{position:relative}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600}
+.card-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.score-badge{padding:4px 10px;border-radius:6px;font-size:13px;font-weight:700;min-width:42px;text-align:center}
+.s-green{background:#22c55e20;color:var(--green)}.s-yellow{background:#eab30820;color:var(--yellow)}.s-red{background:#ef444420;color:var(--red)}.s-orange{background:#f9731620;color:var(--orange)}.s-cyan{background:#06b6d420;color:var(--cyan)}.s-accent{background:#6366f120;color:var(--accent2)}
+
+/* Score Dimensions */
+.dims{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.dim{display:flex;align-items:center;gap:8px;font-size:11px}
+.dim-label{width:100px;color:var(--text3)}
+.dim-bar{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.dim-fill{height:100%;border-radius:2px}
+.dim-val{width:24px;color:var(--text2);text-align:right;font-weight:500}
+
+/* Tags */
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:500;margin:1px}
+.t-g{background:#22c55e18;color:var(--green)}.t-y{background:#eab30818;color:var(--yellow)}.t-r{background:#ef444418;color:var(--red)}.t-a{background:#6366f118;color:var(--accent2)}.t-c{background:#06b6d418;color:var(--cyan)}.t-o{background:#f9731618;color:var(--orange)}.t-p{background:#ec489918;color:var(--pink)}
+
+/* Expand */
+.expandable{cursor:pointer}
+.expand-content{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.6}
+.expand-content.show{display:block}
+.expand-arrow{transition:.3s;color:var(--text3);font-size:10px}.expand-arrow.open{transform:rotate(180deg)}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}th{color:var(--text3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.5px}
+
+/* Gap */
+.gap-item{display:flex;align-items:flex-start;gap:10px;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:6px}
+.gap-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+.gap-text{font-size:13px;line-height:1.5}
+.gap-text strong{color:var(--text)}
+
+/* Nav */
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;border-bottom:1px solid var(--border)}
+.nav-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;background:var(--bg2);color:var(--text2);transition:.2s}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:var(--accent);color:#fff}
+
+/* Decision cards */
+.decision{background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:8px}
+.decision-q{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--cyan)}
+.decision-a{font-size:12px;color:var(--text2);line-height:1.5}
+.decision-score{font-size:11px;margin-top:4px}
+
+/* Responsive */
+@media(max-width:700px){.cards{grid-template-columns:1fr}.overall{flex-direction:column;gap:20px}}
+
+.hidden{display:none}
+
+/* Platform Nav */
+.platform-nav{position:fixed;left:0;top:0;height:100vh;width:42px;background:#0d1117;border-right:1px solid #1e293b;z-index:9999;display:flex;flex-direction:column;gap:2px;padding:8px 4px;transition:width .2s;overflow:hidden}
+.platform-nav:hover{width:200px}
+.platform-nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#94a3b8;font-size:12px;text-decoration:none;white-space:nowrap;transition:.15s}
+.platform-nav a:hover{background:#1e293b;color:#e2e8f0}
+.platform-nav a.active{background:#3b82f620;color:#3b82f6}
+.platform-nav .nav-icon{width:22px;text-align:center;flex-shrink:0;font-size:16px}
+.platform-nav .nav-label{opacity:0;transition:opacity .2s}
+.platform-nav:hover .nav-label{opacity:1}
+.platform-nav .nav-divider{height:1px;background:#1e293b;margin:4px 6px}
+</style>
+</head>
+<body>
+<nav class="platform-nav" id="platformNav">
+  <a href="./index.html"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
+  <a href="./task_hub.html"><span class="nav-icon">&#9745;</span><span class="nav-label">Task Hub</span></a>
+  <div class="nav-divider"></div>
+  <a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
+  <a href="./amazon_sde_prep.html"><span class="nav-icon">&#127919;</span><span class="nav-label">Amazon Prep</span></a>
+  <a href="./interview_command_center.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Command Center</span></a>
+  <a href="./interview_scorecard.html"><span class="nav-icon">&#128202;</span><span class="nav-label">Scorecard</span></a>
+  <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
+  <div class="nav-divider"></div>
+  <a href="./career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
+</nav>
+<div class="app">
+<div class="header">
+  <h1>Interview Readiness Scorecard</h1>
+  <p>Comprehensive scoring of every answerable question, project, decision, and difficulty from User's vault</p>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="content"></div>
+</div>
+
+<script>
+// Highlight active nav item
+(function(){
+  var path = location.pathname;
+  document.querySelectorAll('.platform-nav a').forEach(function(a) {
+    if (path.includes(a.getAttribute('href'))) a.classList.add('active');
+  });
+})();
+
+// ==================== SCORING ENGINE ====================
+// Score each item on 5 dimensions (0-20 each, total 0-100):
+// 1. METRICS: Has concrete, verified numbers
+// 2. DEPTH: Can go 3+ levels deep on follow-ups (HLD/LLD/interview Q&A available)
+// 3. STAR: Complete Situation-Task-Action-Result structure
+// 4. UNIQUE: Differentiating — not a generic intern answer
+// 5. DELIVER: Can confidently deliver in 2 minutes (practiced, clear narrative)
+
+function scoreColor(s){return s>=80?'green':s>=65?'cyan':s>=50?'yellow':s>=35?'orange':'red'}
+function scoreBg(s){return s>=80?'s-green':s>=65?'s-cyan':s>=50?'s-yellow':s>=35?'s-orange':'s-red'}
+function scoreTag(s){return s>=80?'t-g':s>=65?'t-c':s>=50?'t-y':s>=35?'t-o':'t-r'}
+
+// ==================== ALL SCORED DATA ====================
+
+let PROJECTS = [
+  {
+    name: "API Inventory & Compliance Portal",
+    company: "Previous Company", role: "SWE",
+    metrics: 19, depth: 20, star: 19, unique: 17, deliver: 18,
+    metricsList: ["60% productivity improvement","40% RBI compliance lag reduction","2,000+ APIs unified","6,000+ endpoints","100s of APIs tracked"],
+    hld: "React.js UI <-> Spring Boot Backend <-> Oracle DB. Scheduled sync every 4hrs from AnyPoint, GoCD, Kong Admin APIs. RBI compliance rules engine (7 rules R1-R7). Strategy pattern for compliance rules.",
+    lld: "DEVPORTAL_APIDETAILS (30+ cols), DEVPORTAL_FLOWCHART_CASESTUDY (BLOB), API_SERVICENOW_RITM, API_ASSET_COMPLIANCE_DETAILS. Repository/Builder/Strategy/Filter patterns.",
+    starStories: 3, interviewQAs: 21,
+    keyDecisions: [
+      {q:"Why Strategy pattern for compliance?", a:"Each rule is an independent check function. New RBI rules = new strategy class, zero changes to existing code. Collect ALL violations (not fail-fast) so teams fix everything in one pass.", score:92},
+      {q:"Why dual-write (DB + Exchange)?", a:"DB first (source of truth, ACID), then async Exchange call. If Exchange fails, DB still correct. Retry queue handles Exchange sync. Eventual consistency acceptable for metadata.", score:88},
+      {q:"Why tree view by manager hierarchy?", a:"Users said 'I need to find MY team's APIs'. Manager hierarchy matches org chart — O(n) build, O(1) expand/collapse. Beats flat list search for 2,000+ APIs.", score:85}
+    ],
+    difficulties: [
+      {d:"SUBSTR blocker during prod Oracle cutover", how:"SUBSTR function unavailable on production Oracle version. Required formal infrastructure change request. 2-day delay but proper process followed. Learned: always test on exact prod version, not just 'Oracle'.", score:90},
+      {d:"MySQL→Oracle migration — 47 query rewrites", how:"Systematically audited all 200+ queries. Created compatibility test suite. Found 3 latent bugs: NULL comparison, GROUP BY implicit column, ORDER BY ordering assumptions. Built automated validation scripts.", score:95},
+      {d:"DuplicateKeyCheckFilter security pushback", how:"Senior engineer accepted vulnerability as 'low risk'. I built the filter + CachedBodyHttpServletRequest in 1 day, wrote tests, demonstrated zero-overhead. Pattern reused in 3 other services.", score:88}
+    ],
+    lps: ["Customer Obsession","Deliver Results","Insist on Highest Standards","Dive Deep"],
+    tags: ["React.js","Spring Boot","Oracle","RBAC","RBI Compliance","OpenAPI"]
+  },
+  {
+    name: "Partner Developer Portal",
+    company: "Previous Company", role: "SWE",
+    metrics: 20, depth: 20, star: 20, unique: 18, deliver: 19,
+    metricsList: ["83% efficiency improvement (12→2 days)","6x faster partner onboarding","50+ fintech partners","23 production APIs","1.08 MB API catalog cached"],
+    hld: "Flutter Web frontend → Spring Boot WAR on Tomcat 9.0.99 → Oracle DB. Kong API Gateway for rate limiting. JourneyId anonymous session + OAuth2 Client Credentials. AES-256 encryption.",
+    lld: "SwaggerObject recursive Java record with custom StdDeserializer. Materialized Path Model for 4-level category tree (O(n) build, no recursive SQL). OncePerRequestFilter for JWT. Redis cache with explicit flush endpoint.",
+    starStories: 2, interviewQAs: 12,
+    keyDecisions: [
+      {q:"Why spec-level simulation vs live sandbox?", a:"Live sandbox = maintain stub endpoints for 23 APIs + manage state + infrastructure cost. Spec simulation = validate against OpenAPI spec, return example response. Zero execution overhead. Partners need to understand the CONTRACT, not execute it. Spec IS the contract.", score:95},
+      {q:"Why Materialized Path over Adjacency List?", a:"Adjacency List needs recursive SQL (WITH RECURSIVE) for tree traversal — slow on Oracle. Materialized Path: store '/Corporate/Payment/Bulk Payment' as string, query with LIKE '/Corporate/%'. O(n) build, reads are trivial. Beats Nested Sets too (expensive writes).", score:92},
+      {q:"Why Redis flush endpoint instead of just TTL?", a:"Long TTL for performance (1.08 MB catalog). But when admin updates data, partners must see fresh data immediately. Flush endpoint = explicit invalidation. ValidateService EXCLUDED from cache because developers vary payloads to explore API contract.", score:88}
+    ],
+    difficulties: [
+      {d:"Recursive OpenAPI schema rendering", how:"SwaggerObject has properties that are also SwaggerObjects (recursive $ref). Built custom Jackson TypeReference<Map<String, SwaggerObject>> with depth limit to prevent infinite recursion. Tested with deeply nested specs.", score:90},
+      {d:"OncePerRequestFilter for JWT", how:"JWT filter was running multiple times on request forwards. OncePerRequestFilter ensures exactly-once execution per request lifecycle. Critical for auth — double-run could cause issues.", score:82}
+    ],
+    lps: ["Think Big","Invent and Simplify","Are Right A Lot"],
+    tags: ["Spring Boot","Flutter","OpenAPI","OAuth 2.0","Kong","Redis","AES-256"]
+  },
+  {
+    name: "High-Throughput high-throughput APIs",
+    company: "Previous Company", role: "SWE",
+    metrics: 20, depth: 20, star: 19, unique: 19, deliver: 19,
+    metricsList: ["100+ TPS sustained","<1s latency","30/70 weighted routing","40% Centerprise cache hit rate","800ms→<50ms cache hit","99.98% Kafka write success"],
+    hld: "Kong 30/70 weighted upstream routing (primary 3 nodes weight=30, secondary 5 nodes weight=70). Least-connections balancing. Redis caching with SHA-256(PAN) keys. Kafka async writes with DLQ.",
+    lld: "Centerprise TTL 24hr, negative cache 1hr. JWT cache TTL = expires_in - 300s. Idempotent Kafka consumer (UNIQUE constraint). 3x retry exponential backoff (1s,2s,4s). Spring WebClient pool: 200 max connections, 80 in-flight at peak.",
+    starStories: 5, interviewQAs: 8,
+    keyDecisions: [
+      {q:"Why least-connections over round-robin?", a:"Response times vary: Centerprise ~800ms, PAN ~200ms, Aadhaar OTP ~1.2s. Round-robin assumes equal capacity — sends same traffic to node processing 800ms Centerprise and node doing 200ms PAN. Least-connections routes to whoever finishes first = better utilization.", score:95},
+      {q:"Why SHA-256(PAN) as Redis key?", a:"PAN is PII. If Redis is compromised (keyspace scan, slowlog, dashboard), raw PAN visible. SHA-256 is one-way — can look up by hash but can't reverse to get PAN. Defense in depth.", score:93},
+      {q:"Why 30/70 split not 50/50?", a:"Primary cluster: 3 nodes. Secondary: 5 nodes. 30/70 matches cluster CAPACITY, not just count. Equal split would overload smaller primary. Least-connections within each upstream handles micro-balancing.", score:90},
+      {q:"Why Kafka for DB writes?", a:"Decouples DB latency from API response. 200ms reduction in OTP verification response. If DB slow, API still responds fast — Kafka absorbs. DLQ catches permanent failures for manual review.", score:88}
+    ],
+    difficulties: [
+      {d:"JWT token expiry race condition", how:"Token expires during in-flight API call → 401. Solution: TTL = expiry - 300s (5-min buffer). On 401: delete cache → regenerate → retry once. Prevents cascade of 401s from stale token.", score:92},
+      {d:"Aadhaar PII compliance (RBI)", how:"Custom Log4j2 filter with regex masking for Aadhaar numbers. AES-256 encryption before any logging. Masked storage only. Verified via Splunk audit trail — zero incidents.", score:88},
+      {d:"MuleSoft→Spring Boot migration", how:"Feature flags: 5%→25%→100% traffic shift. Kong routing split between old and new service. Zero downtime cutover. Rollback possible at any stage.", score:85}
+    ],
+    lps: ["Deliver Results","Bias for Action","Frugality"],
+    tags: ["REST APIs","Redis","Kong","Kafka","MuleSoft","AES-256","Spring Boot"]
+  },
+  {
+    name: "Collections App APIs (Internship)",
+    company: "Previous Company", role: "Intern",
+    metrics: 16, depth: 17, star: 17, unique: 14, deliver: 16,
+    metricsList: ["500+ field agents served","30% data fetch reduction","~95% cache hit rate","700ms→180ms with cache","50 customers/page pagination"],
+    hld: "Salesforce OAuth2 Client Credentials → RestTemplate → SFDC → {access_token, expires_in}. Redis cache AES-256 encrypted. Cursor-based pagination using SFDC nextRecordsUrl.",
+    lld: "Redis key='sfdc_jwt_token', TTL = expires_in - 300s. Cursor-based > offset-based (SFDC cursor remembers query state, doesn't re-run SOQL). First page: {groups:[...50...], hasMore:true, nextPageToken:'01g...'}",
+    starStories: 2, interviewQAs: 5,
+    keyDecisions: [
+      {q:"Why cursor-based over offset pagination?", a:"SFDC's cursor remembers query state — page 2 doesn't re-run full SOQL. Offset re-runs entire query + SKIP N = O(n) degradation on large datasets. For 500+ agents with large portfolios, cursor is dramatically faster.", score:87},
+      {q:"Why AES-256 for Redis tokens?", a:"Defense in depth. Even if Redis compromised, tokens unusable without decryption key. Banking context = every layer secured.", score:82},
+      {q:"OAuth2 Client Credentials vs Password grant?", a:"Client Credentials: server-to-server, no user session. Password grant: deprecated, requires user credentials stored on server. For backend service talking to SFDC, Client Credentials is correct and secure.", score:80}
+    ],
+    difficulties: [
+      {d:"Rate limit violations from SFDC", how:"Without caching, every request generated new JWT token. Hit SFDC rate limits. Redis caching (95% hit rate) eliminated the problem entirely.", score:78},
+      {d:"Mobile timeout errors on large portfolios", how:"Agents with 200+ customers caused 5+ second loads. Cursor pagination (50/page) + predictive caching of next page made scrolling instant.", score:80}
+    ],
+    lps: ["Learn and Be Curious","Ownership"],
+    tags: ["Salesforce","Redis","OAuth 2.0","Spring Boot","REST APIs"]
+  },
+  {
+    name: "Backend Scheduler + LLM Email Assistant",
+    company: "Previous Company", role: "SWE",
+    metrics: 18, depth: 18, star: 17, unique: 18, deliver: 17,
+    metricsList: ["100s→13s (8x speedup)","200+ API services monitored","30% email drafting time reduction","15-min polling interval","Temperature=0.3"],
+    hld: "Scheduler: Kong Admin API → GET /services → parallelStream() → /actuator/health + /actuator/info → bulk save Oracle. Email: MS Graph API (Application permissions) → LLM → privacy filter → draft response.",
+    lld: "Health state machine: UP→DEGRADED (3 consecutive >2x avg), UP→DOWN (3 consecutive 5xx), DOWN→UP (2 consecutive 200). fixedDelay (not fixedRate) prevents overlap. LLM privacy: 3-layer (keyword routing, PII masking, domain whitelist).",
+    starStories: 2, interviewQAs: 7,
+    keyDecisions: [
+      {q:"Why fixedDelay not fixedRate?", a:"fixedRate: starts 15 min after previous STARTED. If run takes 14 min due to timeouts, only 1 min gap — overlap risk. fixedDelay: starts 15 min after previous COMPLETED. Guarantees safe gap. With shared Oracle DB, concurrent runs = deadlocks.", score:90},
+      {q:"Why internal LLM not OpenAI?", a:"RBI data localization policy + DPDP Act 2023: PII cannot leave India. Internal LLM runs on Previous Company's network. All data stays within Indian data centers. Non-negotiable for banking.", score:95},
+      {q:"Why Temperature=0.3?", a:"0.0 = deterministic but robotic repetition. 0.7+ = creative but hallucination risk for emails. 0.3 = natural variation + factual grounding. Tested on 50 sample emails — best balance.", score:82},
+      {q:"Why parallelStream() not CompletableFuture?", a:"Homogeneous HTTP health checks, same operation per service. parallelStream() is simpler for embarrassingly parallel. CompletableFuture better for heterogeneous async chains with dependencies.", score:85}
+    ],
+    difficulties: [
+      {d:"Human-in-the-loop for LLM emails", how:"Regulatory requirement: even 100% accurate AI needs human accountability. LLM drafts, human approves. Zero auto-sends. Audit trail for every email.", score:88},
+      {d:"LLM unavailability handling", how:"Fallback to rule-based templates keyed by intent classification. Email categorized by regex patterns → template selected → human reviews. No downtime even if LLM crashes.", score:85}
+    ],
+    lps: ["Ownership","Invent and Simplify","Bias for Action"],
+    tags: ["Java","parallelStream","Kong","Oracle","LLM","MS Graph API","Privacy"]
+  },
+  {
+    name: "ProjectA Platform",
+    company: "Personal Project", role: "Full-Stack",
+    metrics: 16, depth: 17, star: 16, unique: 15, deliver: 17,
+    metricsList: ["<200ms latency all endpoints","50ms search P95 (pg_trgm)","200 concurrent users tested","4 microservices","Live at v0-freshbite.vercel.app"],
+    hld: "4 microservices: User (Spring Boot), Dish (Spring Boot), Review (FastAPI), Search (FastAPI). PostgreSQL per-service. Docker Compose. Nginx gateway. GitHub Actions CI/CD.",
+    lld: "Freshness algorithm: recency-weighted score = Sum(freshness_rating x decay_weight) / Sum(decay_weight). Decay: e^(-0.05 x days). Cached in Redis, recomputed on new review. Blue-green deploy with health check rollback. pg_trgm trigram index for fuzzy search.",
+    starStories: 1, interviewQAs: 3,
+    keyDecisions: [
+      {q:"Why database-per-service?", a:"True microservice isolation. Review service outage doesn't affect User service. Trade-off: denormalization needed (dish_name stored in review service). Sync via REST webhooks (production: Kafka).", score:85},
+      {q:"Why exponential decay for freshness?", a:"Linear decay: 14-day review same weight as 7-day. Exponential: lambda=0.05 → 14-day review has ~50% weight of today's. Models real-world freshness — recent reviews matter more.", score:82},
+      {q:"Why blue-green not rolling update?", a:"4 services with dependencies. Rolling update mid-deploy = version mismatch between services. Blue-green: switch all at once, instant rollback to previous stable set.", score:80}
+    ],
+    difficulties: [
+      {d:"Data consistency across microservices", how:"Denormalization: review service stores dish_name directly. On dish rename, REST webhook updates all copies. Eventual consistency acceptable for display data.", score:78}
+    ],
+    lps: ["Deliver Results"],
+    tags: ["Spring Boot","FastAPI","PostgreSQL","Docker","CI/CD","Nginx","Next.js"]
+  },
+  {
+    name: "ProjectB Analytics",
+    company: "Personal Project", role: "Backend/ML",
+    metrics: 18, depth: 18, star: 17, unique: 18, deliver: 17,
+    metricsList: ["P95 <600ms on 2M+ records","P50=210ms, P99=820ms","50 concurrent users load-tested"],
+    hld: "User text → LLM → MongoDB aggregation query → Results on 2M+ records. Vector search for semantic queries. Airflow DAG for daily ingestion + pre-computation. EC2 deployment.",
+    lld: "Indexes: (timestamp, intersection_id), geospatial 2dsphere, (incident_type, timestamp DESC). Aggregation: $match first → $project early → $limit before $sort. Ambiguity: LLM returns clarification request (not guess). Query validated against schema before execution.",
+    starStories: 1, interviewQAs: 4,
+    keyDecisions: [
+      {q:"Why MongoDB over PostgreSQL?", a:"Varying schemas (different sensor types). Native geospatial 2dsphere indexing. Built-in vector search. No schema migrations needed. Document model fits semi-structured traffic data.", score:88},
+      {q:"Why $match before $sort in aggregation?", a:"$match reduces record count FIRST. $sort on 2M records = slow. $match → $project (reduce doc size) → $limit → $sort. Each stage reduces work for the next.", score:85},
+      {q:"Why LLM clarification instead of guessing?", a:"User asks 'show me bad intersections' — 'bad' is ambiguous (high accidents? slow traffic? complaints?). LLM returns clarification request, not a guess. Better to ask than give wrong answer on 2M records.", score:82}
+    ],
+    difficulties: [
+      {d:"NLQ accuracy on complex queries", how:"Structured prompt with schema definition + example queries. Validation layer: generated MongoDB query checked against schema before execution. If validation fails, returns 'I couldn't parse that' instead of running bad query.", score:85}
+    ],
+    lps: ["Frugality","Invent and Simplify"],
+    tags: ["MongoDB","AWS EC2","LLM","Vector Search","Airflow","Locust","Python"]
+  },
+  {
+    name: "Published Research Assistance",
+    company: "PES University", role: "Research",
+    metrics: 17, depth: 17, star: 17, unique: 20, deliver: 17,
+    metricsList: [">90% accuracy on 43 sign classes","25+ FPS (GPU)","15+ FPS (CPU)","Published Published Conference 2023"],
+    hld: "Two-stage: YOLO v3 detection → CNN classification. Parallel: lane detection thread + sign detection thread. Row-based lane detection (novel approach). Voice alerts via pyttsx3.",
+    lld: "Lane: Canny edge → ROI trapezoid → HoughLinesP → row-based point selection → polynomial fit. CNN: Conv2D(32)→MaxPool→Conv2D(64)→MaxPool→Conv2D(128)→Dense(512)→Dropout(0.5)→Dense(43,softmax). Frame skipping: signs every 3rd frame. TFLite quantization.",
+    starStories: 1, interviewQAs: 3,
+    keyDecisions: [
+      {q:"Why row-based lane detection?", a:"Slope-based (standard) fails on curves — slopes change continuously. Row-based: divide frame into horizontal rows, find leftmost/rightmost edge points per row, fit polynomial through points. Handles curves naturally. Novel contribution in the paper.", score:92},
+      {q:"Why two-stage (YOLO+CNN) not end-to-end?", a:"YOLO detects bounding box (any sign). CNN classifies (which of 43 signs). Two-stage: YOLO crops tiny bbox, CNN only runs on crop = much faster than running classifier on full frame. Also: can swap classifiers independently.", score:85},
+      {q:"Why multi-threading not sequential?", a:"Lane detection: every frame (safety critical). Sign detection: every 3rd frame (less time-sensitive). Separate threads = lane never waits for sign. On 8-core: lane thread + sign thread + main thread = true parallelism.", score:83}
+    ],
+    difficulties: [
+      {d:"8 FPS on CPU with 2 models", how:"Multi-threading (parallel lane + sign). Frame skipping (signs every 3rd frame). TFLite quantization (4x smaller, 2x faster). ROI before CNN (only classify detected bbox). Result: 25+ FPS GPU, 15+ FPS CPU.", score:88}
+    ],
+    lps: ["Insist on Highest Standards"],
+    tags: ["YOLO","CNN","OpenCV","Multi-threading","TFLite","Published","Python"]
+  },
+  {
+    name: "ProjectC (HackUniversity 2025)",
+    company: "Hackathon", role: "ML",
+    metrics: 14, depth: 14, star: 14, unique: 17, deliver: 15,
+    metricsList: ["5-agent orchestration","20+ data sources","Bayesian probability forecasting"],
+    hld: "Multi-agent AI: 5 specialized agents (data collection, analysis, synthesis, validation, presentation). RAG for knowledge retrieval. Bayesian probability for forecast calibration.",
+    lld: "Agent orchestration via LangChain. Vector store for document retrieval. Bayesian updating: prior probability + evidence strength = posterior. Each agent has specific tools and constraints.",
+    starStories: 1, interviewQAs: 1,
+    keyDecisions: [
+      {q:"Why multi-agent over single LLM?", a:"Single LLM: one prompt does everything, context window limit, no specialization. Multi-agent: each agent is expert in one domain (data, analysis, synthesis). Agents can validate each other's output. Scales better.", score:78},
+      {q:"Why Bayesian over simple averaging?", a:"Bayesian: incorporates evidence strength. Strong evidence (peer-reviewed paper) updates probability more than weak evidence (tweet). Simple averaging treats all sources equal.", score:75}
+    ],
+    difficulties: [
+      {d:"Agent coordination and hallucination", how:"Validation agent checks other agents' outputs. RAG grounds responses in actual documents. Bayesian probability provides quantified confidence instead of vague claims.", score:72}
+    ],
+    lps: ["Think Big"],
+    tags: ["Multi-agent AI","RAG","Bayesian","LangChain","Python","LLMs"]
+  },
+  {
+    name: "Artenal Fruit Harvester",
+    company: "Artenal (Internship)", role: "ML",
+    metrics: 17, depth: 17, star: 18, unique: 16, deliver: 17,
+    metricsList: ["91% disease accuracy","F-1 improved by 0.35","Detection accuracy +0.2","20% inference time reduction","5,000+ labeled images"],
+    hld: "Faster R-CNN + MobileNet backbone for fruit detection. Separate CNN for disease classification (10 tomato diseases). Transfer learning. TFLite for Raspberry Pi 4 deployment.",
+    lld: "Class imbalance: 3x weight for rare classes + augmentation (flip, rotate, brightness, zoom) + dropout 0.5. Learning rate scheduling (reduce on plateau). Early stopping (patience=5). Quantization: float32→int8 (4x smaller, <1% accuracy loss). Input: 224→160px.",
+    starStories: 1, interviewQAs: 3,
+    keyDecisions: [
+      {q:"Why F1 over accuracy?", a:"Accuracy misleading with class imbalance. 95% of images healthy → classifier that always says 'healthy' gets 95% accuracy. F1 penalizes false negatives — critical for disease detection (missing a disease = crop loss).", score:90},
+      {q:"Why transfer learning over training from scratch?", a:"Pre-trained MobileNet learned low-level features (edges, textures) from ImageNet. Only fine-tune last layers for fruit/disease specifics. Needs MUCH less labeled data. 5,000 images enough with transfer, would need 50K+ from scratch.", score:88},
+      {q:"Why class weighting over oversampling?", a:"Oversampling rare classes: risk of overfitting to specific rare examples. Class weighting: loss function penalizes misclassifying rare class 3x more. Model learns the CONCEPT, not just memorizes examples.", score:85}
+    ],
+    difficulties: [
+      {d:"Train/deploy distribution gap (89%→74%)", how:"Trained on clean benchmark images. Field: uneven lighting, close-up angles, compression artifacts. Collected 2,000 field images, retrained → back to 91%. Lesson: ALWAYS validate on deployment-like data.", score:92},
+      {d:"Edge deployment on Raspberry Pi 4", how:"Full model too slow. Quantization float32→int8 (4x smaller). Input 224→160px. TFLite conversion. <1% accuracy loss, 20% faster inference.", score:85}
+    ],
+    lps: ["Learn and Be Curious","Earn Trust"],
+    tags: ["Faster R-CNN","MobileNet","TFLite","OpenCV","Python","Raspberry Pi"]
+  },
+  {
+    name: "CloudHack Microservices",
+    company: "Course Project", role: "Backend",
+    metrics: 12, depth: 15, star: 14, unique: 13, deliver: 15,
+    metricsList: ["3 services + RabbitMQ","Durable queues","prefetch_count=1"],
+    hld: "3 Flask services: Ride Request → RabbitMQ → Driver Matching → RabbitMQ → Data Storage (PostgreSQL). Docker Compose with custom bridge network.",
+    lld: "Durable queues (survive restart). Persistent messages (delivery_mode=2). Manual ack (basic_ack after processing). prefetch_count=1 (fair distribution). Idempotent consumer (UNIQUE on requestId).",
+    starStories: 1, interviewQAs: 2,
+    keyDecisions: [
+      {q:"Why RabbitMQ over Kafka?", a:"RabbitMQ: message broker, push-based, delete after ack. Kafka: event log, pull-based, retained for replay. Ride requests are transient — no replay needed. RabbitMQ simpler for this use case.", score:82},
+      {q:"Why prefetch_count=1?", a:"Without it: RabbitMQ sends ALL messages to first available consumer. If one consumer slow, it queues 100 messages while others idle. prefetch_count=1: fair distribution — each consumer gets 1 at a time.", score:80},
+      {q:"Why manual ack over auto-ack?", a:"Auto-ack: message deleted when DELIVERED (not processed). If consumer crashes mid-processing, message lost. Manual ack: deleted only after basic_ack — crash = message returns to queue.", score:82}
+    ],
+    difficulties: [],
+    lps: ["Deliver Results"],
+    tags: ["RabbitMQ","Flask","Docker","PostgreSQL","Microservices"]
+  },
+  {
+    name: "University Data Pipeline",
+    company: "University", role: "Developer Assistant",
+    metrics: 14, depth: 15, star: 15, unique: 15, deliver: 15,
+    metricsList: ["75% faster validation","3-stage deduplication","5% dry-run validation"],
+    hld: "Python + PostgreSQL pipeline. 3-stage dedup: exact match (O(1)) → fuzzy match (Levenshtein+soundex, >85%) → LLM semantic match. Root cause classification: TYPO, MIGRATION_ARTIFACT, NICKNAME.",
+    lld: "Ingestion: Pandas CSV/Excel normalization. LLM: unstructured → structured JSON with schema validation. PostgreSQL: clean records + duplicate mapping (old_id → canonical_id) + audit log. ACID transactions for merges.",
+    starStories: 1, interviewQAs: 2,
+    keyDecisions: [
+      {q:"Why 3-stage not just LLM for everything?", a:"LLM is expensive ($). Stage 1 (exact match) handles 30% of cases for free. Stage 2 (fuzzy) handles 50% cheaply. Only 20% ambiguous cases hit LLM. Cost optimization: filter cheap before expensive.", score:88},
+      {q:"Why PostgreSQL for dedup?", a:"ACID transactions: can't half-merge a record. Foreign keys ensure old_id → canonical_id mapping is consistent. Audit log for regulatory compliance.", score:82}
+    ],
+    difficulties: [
+      {d:"LLM output reliability for structured data", how:"Structured JSON output prompting with explicit schema. Programmatic validation of LLM response. If validation fails: retry with rephrased prompt, then fallback to human review. 5% dry-run validation before production.", score:80}
+    ],
+    lps: ["Invent and Simplify"],
+    tags: ["Python","PostgreSQL","LLM","Pandas","Deduplication"]
+  }
+];
+
+// Score Amazon LPs
+let LP_SCORES = [
+  {num:1, name:"Customer Obsession", score:92, project:"API Inventory Portal",
+    strength:"Interviewed 5 real users BEFORE building. Data-driven prioritization (metadata editing first → 60% gains). Every design decision from user feedback.",
+    gap:"Could add more quantified user satisfaction metrics",
+    followUpReady:true, altStoryAvailable:true,
+    answerQuality:"Specific users (25+ engineers), specific pain point (metadata updates), specific impact (60%). Not generic 'I cared about users'.",
+    depth:"Can discuss: tree view rationale, compliance engine user research, prioritization framework (impact x urgency)"},
+  {num:2, name:"Ownership", score:95, project:"Oracle Migration Blocker",
+    strength:"Cross-team ownership — picked up DBA team's problem 2 days before cutover. Fixed in 4 hours. Not assigned, volunteered.",
+    gap:"None — this is a very strong story",
+    followUpReady:true, altStoryAvailable:true,
+    answerQuality:"Concrete: 'DBA team's problem, not mine. 2 days from cutover. 4 hours to fix.' Crystal clear ownership signal.",
+    depth:"Can discuss: Oracle sequences vs identity columns, JPA config changes, Docker test environment setup"},
+  {num:3, name:"Invent and Simplify", score:90, project:"Compliance Rules Engine",
+    strength:"Manual quarterly process → automated real-time system. Clear before/after contrast. Simplification is obvious.",
+    gap:"Could quantify how much time was saved per audit",
+    followUpReady:true, altStoryAvailable:true,
+    answerQuality:"Great contrast: 'manager reviews Excel quarterly' → 'dashboard shows real-time compliance'. Invention clear.",
+    depth:"Can discuss: Strategy pattern, rule implementation, alternative to JWT Token Caching (300ms saved per request)"},
+  {num:4, name:"Are Right, A Lot", score:93, project:"Developer Portal Spec Simulation",
+    strength:"Made a design argument, backed it with reasoning (cost/maintenance/purpose), and was proven right. Proposal adopted.",
+    gap:"Could add more examples of being wrong and learning",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Excellent: technical reasoning (23 stub endpoints vs spec validation), business reasoning (partners need contract understanding, not execution), outcome (adopted).",
+    depth:"Can discuss full spec simulation vs live sandbox trade-offs, infrastructure cost analysis"},
+  {num:5, name:"Learn and Be Curious", score:88, project:"Oracle Migration Self-Learning",
+    strength:"Self-taught Oracle in 2 weeks. Built Docker environment. 'Broke things 50 times before touching production.' Specific and genuine.",
+    gap:"Could mention resources used or how learning was structured",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Authentic: not 'I read documentation' but 'I built a local Oracle Docker environment and broke things.' Shows real learning style.",
+    depth:"Can discuss: specific ORA errors, CASE vs IF, BLOB handling, SQL*Loader"},
+  {num:6, name:"Hire and Develop the Best", score:75, project:"Onboarding Doc for New Intern",
+    strength:"Invested in team even as junior. Doc saved 3+ hours per new joiner. Reusable contribution.",
+    gap:"Weaker story — expected for junior level. Consider adding mentoring from University role.",
+    followUpReady:false, altStoryAvailable:false,
+    answerQuality:"Adequate for intern level. Interviewers expect 'I learned from the best' framing at intern level.",
+    depth:"Limited — one anecdote. Consider adding University developer assistant mentoring experience."},
+  {num:7, name:"Insist on Highest Standards", score:91, project:"Security Hardening — DuplicateKeyCheckFilter",
+    strength:"Disagreed with 'low risk' assessment from SENIOR engineer. Built solution in 1 day. Pattern reused 3x. Banking context = high stakes.",
+    gap:"None significant",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Strong: junior engineer pushes back on senior's 'low risk' assessment. Built clean solution. Pattern adopted. Perfect for this LP.",
+    depth:"Can discuss: CachedBodyHttpServletRequest implementation, unit test strategy, JSON injection attack vectors"},
+  {num:8, name:"Think Big", score:80, project:"WorkShift",
+    strength:"Vision: 'data-driven career transition feasibility, not just salary comparison.' Fundamentally different problem framing.",
+    gap:"WorkShift is a smaller project — may seem less impressive. Consider framing around career hub automation system instead.",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Good vision statement. Could be stronger with more scale/ambition framing.",
+    depth:"Can discuss: O*NET/BLS/JSearch APIs, guardrail validation, deterministic vs LLM scoring"},
+  {num:9, name:"Bias for Action", score:89, project:"Compliance Engine",
+    strength:"Shipped with 5 rules instead of waiting for complete requirements. Iterated over 2 months. '6+ weeks saved.'",
+    gap:"None significant",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Clear action bias: 'couldn't get complete list → identified 5 high-confidence rules → shipped → iterated.' Quantified delay avoided.",
+    depth:"Can discuss: how 5 rules were selected, iteration process, stakeholder feedback loop"},
+  {num:10, name:"Frugality", score:85, project:"ProjectB + Artenal",
+    strength:"MongoDB Atlas vector search (no extra ML infra). TFLite quantization (4x smaller, 2x faster). Constraints drove engineering.",
+    gap:"Two smaller examples — could be stronger with one deep frugality story",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Good concrete examples. Shows engineering resourcefulness.",
+    depth:"Can discuss: MongoDB Atlas vs dedicated vector DB cost comparison, quantization accuracy trade-offs"},
+  {num:11, name:"Earn Trust", score:86, project:"API Inventory Compliance User Research",
+    strength:"Changed design based on user input. 'Asked: what would help you fix non-compliance faster?' Users became advocates.",
+    gap:"Could add cross-team trust-building examples",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Shows listening and adapting. Specific change: flag → reason + actionable recommendation.",
+    depth:"Can discuss: user research methodology, before/after UX, adoption metrics"},
+  {num:12, name:"Dive Deep", score:94, project:"ORA-00904 Debugging",
+    strength:"Surface error → JPA entity → DB schema → ALL_TAB_COLUMNS → discovered case-sensitive double-quoted columns → @Column fix. PERFECT deep dive.",
+    gap:"None — this is a textbook Dive Deep story",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Exceptional: 5 levels deep from error message to root cause. Oracle internals. Perfect for this LP.",
+    depth:"Can discuss: Oracle case sensitivity rules, JPA column mapping, ALL_TAB_COLUMNS query, legacy DBA practices"},
+  {num:13, name:"Have Backbone; Disagree and Commit", score:87, project:"BLOB vs S3 Debate",
+    strength:"Clearly stated disagreement with reasoning (S3 better architecturally). Manager gave constraints. Committed fully. Made BLOB work well.",
+    gap:"Could add an example where candidate's disagreement was accepted",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Shows both parts: disagreed (with reasoning) AND committed (fully). Not just 'I was right' — shows maturity.",
+    depth:"Can discuss: S3 vs BLOB trade-offs, on-premise constraints, how BLOB was optimized"},
+  {num:14, name:"Deliver Results", score:93, project:"Previous Company 2 Years Summary",
+    strength:"4 concrete results with metrics: 60% productivity, 100 TPS, 83% efficiency improvement, zero data loss. All in 2 years.",
+    gap:"None — summary story with strong metrics",
+    followUpReady:true, altStoryAvailable:false,
+    answerQuality:"Perfect summary: multiple results, each with metrics, maintained quality (tests, security, compliance).",
+    depth:"Can deep dive into any of the 4 results individually"}
+];
+
+// Technical Q&A Scores
+let TECH_SCORES = [
+  {category:"System Design", q:"Design a URL shortener", score:82, hasCode:false, hasFollow:true,
+    strength:"Covers core components, hash function choices, Redis caching, sharding", gap:"Could add more on analytics, rate limiting, custom aliases"},
+  {category:"System Design", q:"Design a rate limiter", score:85, hasCode:false, hasFollow:true,
+    strength:"Token bucket + Redis implementation. Mentions sliding window alternative.", gap:"Could add distributed rate limiting across multiple servers"},
+  {category:"System Design", q:"Design a notification system", score:80, hasCode:false, hasFollow:true,
+    strength:"Write/consume path clear. Kafka. Fan-out strategies. Deduplication.", gap:"Could add more on delivery guarantees, retry logic, user preferences"},
+  {category:"System Design", q:"Message queue vs direct API call", score:88, hasCode:false, hasFollow:true,
+    strength:"Clear criteria for each. Real example (CloudHack ride-sharing).", gap:"None significant"},
+  {category:"System Design", q:"Data structure to solve a problem", score:90, hasCode:false, hasFollow:true,
+    strength:"Real example (API tree view, 2,000 APIs, O(n) build, O(1) operations).", gap:"None — uses actual production experience"},
+  {category:"System Design", q:"Caching effectively", score:95, hasCode:false, hasFollow:true,
+    strength:"3 REAL caching examples (JWT TTL, Centerprise 24hr, Developer Portal flush endpoint). Key principle articulated.", gap:"None — strongest technical answer"},
+  {category:"Coding", q:"Reverse a linked list", score:78, hasCode:true, hasFollow:false,
+    strength:"Clean iterative solution, correct", gap:"Should prepare recursive version and follow-ups (reverse k-group, detect cycle)"},
+  {category:"Coding", q:"Balanced parentheses", score:80, hasCode:true, hasFollow:false,
+    strength:"Stack-based, handles 3 bracket types", gap:"Should prepare follow-up: longest valid parentheses, min removals"},
+  {category:"Coding", q:"LRU Cache", score:88, hasCode:true, hasFollow:false,
+    strength:"LinkedHashMap with removeEldestEntry — elegant. O(1) both ops.", gap:"Should prepare from-scratch version with HashMap + doubly linked list"},
+  {category:"Coding", q:"Detect duplicate JSON keys", score:85, hasCode:true, hasFollow:false,
+    strength:"Production-relevant (built DuplicateKeyCheckFilter at Previous Company). Real experience.", gap:"Could add streaming approach for large JSON"},
+  {category:"Coding", q:"Build tree from flat list", score:82, hasCode:true, hasFollow:false,
+    strength:"O(n) time/space. Clean implementation.", gap:"Should prepare BFS/DFS traversals as follow-up"},
+  {category:"Common", q:"Tell me about yourself", score:90, hasCode:false, hasFollow:true,
+    strength:"Structured: education → work experience → ML internship → passion. Specific metrics (100 TPS). Ends with 'why this company'.", gap:"Could tailor per company"},
+  {category:"Common", q:"Technical challenge you're proud of", score:92, hasCode:false, hasFollow:true,
+    strength:"Oracle migration. Specific: '50+ queries, BLOB storage, case-sensitive columns, zero data loss, weekend cutover.' Proud of approach, not just outcome.", gap:"None"},
+  {category:"Common", q:"Approach to unknown problem", score:85, hasCode:false, hasFollow:true,
+    strength:"3-step framework: fundamentals → experiment → documentation. Oracle example.", gap:"Could add second example from different domain"},
+  {category:"Common", q:"How you prioritize", score:88, hasCode:false, hasFollow:true,
+    strength:"Impact x urgency framework with real example (10 feature requests, math-based decision). Communicates deprioritization.", gap:"None"},
+  {category:"Common", q:"Time you failed", score:93, hasCode:false, hasFollow:true,
+    strength:"Authentic failure (89%→74% accuracy). Takes responsibility. Shows recovery (91%). Clear lesson. Not a humble-brag.", gap:"None — excellent failure story"},
+  {category:"Common", q:"Where in 5 years", score:78, hasCode:false, hasFollow:false,
+    strength:"Clear direction: senior SWE, distributed systems, developer tools.", gap:"Could be more specific about what 'scale' means. Generic without company-specific tailoring."}
+];
+
+// Common follow-ups scored
+let FOLLOWUP_SCORES = [
+  {parent:"100+ TPS high-throughput APIs", q:"How did you load test?", answerable:true, score:88, evidence:"Locust mentioned in ProjectB. Spring WebClient pool: 200 max, 80 in-flight. Can discuss connection pooling, backpressure."},
+  {parent:"100+ TPS high-throughput APIs", q:"What happens at 200 TPS?", answerable:true, score:82, evidence:"Kong health checks auto-reroute. Can discuss horizontal scaling, adding nodes to 30/70 upstream."},
+  {parent:"100+ TPS high-throughput APIs", q:"How do you handle PII in logs?", answerable:true, score:95, evidence:"Custom Log4j2 filter, regex masking, AES-256 before logging, Splunk audit. Zero incidents."},
+  {parent:"83% efficiency improvement", q:"How did you measure 83%?", answerable:true, score:85, evidence:"12 days before → 2 days after. Measured from partner request to first successful API call in sandbox."},
+  {parent:"83% efficiency improvement", q:"What if a partner's use case doesn't match your sandbox?", answerable:true, score:78, evidence:"Spec-level simulation validates against OpenAPI spec. Edge cases: partner submits custom payload → spec validates structure, returns example response."},
+  {parent:"Oracle Migration", q:"How did you handle rollback?", answerable:true, score:85, evidence:"Automated validation scripts pre/post. If validation fails, revert to MySQL connection string. Dual-write during migration window."},
+  {parent:"Oracle Migration", q:"What was the hardest ORA error?", answerable:true, score:95, evidence:"ORA-00904 — case-sensitive column names from legacy DBA. 5-level debugging: error → JPA → schema → ALL_TAB_COLUMNS → @Column fix."},
+  {parent:"Oracle Migration", q:"How did you test?", answerable:true, score:88, evidence:"Local Oracle Docker container. Built compatibility test suite. Staged testing before production cutover."},
+  {parent:"60% productivity", q:"How did you measure?", answerable:true, score:80, evidence:"Before: metadata updates took 1 hour (manual Anypoint Exchange navigation). After: tree view + inline edit = minutes. Surveyed 5 team members."},
+  {parent:"Redis Caching", q:"What about cache stampede?", answerable:true, score:75, evidence:"JWT: TTL = expiry - 300s prevents simultaneous expiry. Centerprise: not critical for read-only lookups. Could add locking/probabilistic early expiry for improvement."},
+  {parent:"Redis Caching", q:"Cache invalidation strategy?", answerable:true, score:90, evidence:"3 strategies used: TTL-based (Centerprise 24hr), explicit flush endpoint (Developer Portal), expiry-buffer (JWT). Principle: freshness vs performance per use case."},
+  {parent:"Microservices", q:"How do you handle distributed transactions?", answerable:true, score:75, evidence:"ProjectA: denormalization + webhooks (eventual consistency). CloudHack: message queue decoupling. Can discuss Saga pattern conceptually."},
+  {parent:"LLM Integration", q:"How do you handle hallucination?", answerable:true, score:82, evidence:"ProjectB: schema validation of generated queries. Email: 3-layer privacy filter. University: structured JSON output with programmatic validation + dry-run."},
+  {parent:"LLM Integration", q:"Why not just use ChatGPT API?", answerable:true, score:90, evidence:"Previous Company: RBI data localization + DPDP Act 2023. PII cannot leave India. Internal LLM on Previous Company network. Non-negotiable for banking."},
+  {parent:"Published Paper", q:"Walk me through the paper's contribution", answerable:true, score:88, evidence:"Novel row-based lane detection (vs slope-based). Multi-threaded parallel processing. Temporal consistency checks. >90% on GTSRB 43 classes."},
+  {parent:"Published Paper", q:"Limitations of your approach?", answerable:true, score:82, evidence:"Night driving (limited training data). Heavy rain/snow (edge detection fails). Single-lane roads. Acknowledged in paper."},
+  {parent:"CodeChef Rank 22", q:"What problem did you solve?", answerable:false, score:40, evidence:"No specific problem details in vault. Can discuss general competitive programming approach (complexity analysis, greedy, DP)."},
+  {parent:"ML at Artenal", q:"Why did accuracy drop 89%→74%?", answerable:true, score:95, evidence:"Train/deploy distribution gap. Benchmark: clean, well-lit. Field: uneven lighting, close-up angles, compression artifacts. Textbook ML lesson."},
+  {parent:"ML at Artenal", q:"Why Faster R-CNN not YOLO for detection?", answerable:true, score:80, evidence:"Accuracy vs speed trade-off. Faster R-CNN better accuracy for our use case (fruit detection needs precision). MobileNet backbone keeps speed acceptable."},
+  {parent:"University Pipeline", q:"How do you handle false positives in dedup?", answerable:true, score:82, evidence:"5% dry-run validation. Ambiguous cases → human review queue. Audit log for every merge decision. Can undo merges via old_id → canonical_id mapping."}
+];
+
+// Key Gaps
+let GAPS = [
+  {severity:"medium", area:"Coding Practice", detail:"Only 5 prepared coding solutions. Need more DP, graph, and tree problems. CodeChef rank proves ability but need specific FAANG-style problems.", recommendation:"Practice 2-3 LeetCode mediums daily focusing on: sliding window, two pointers, BFS/DFS, DP tabulation"},
+  {severity:"low", area:"LP #6 (Hire & Develop)", detail:"Weakest LP story — onboarding doc for intern. Expected for junior level but could be stronger.", recommendation:"Add University developer assistant mentoring experience. Frame as 'helping team members grow'."},
+  {severity:"low", area:"LP #8 (Think Big)", detail:"WorkShift is a smaller project. Vision is good but scale is limited compared to Previous Company stories.", recommendation:"Consider framing the entire career hub automation system as Think Big — end-to-end job hunting pipeline is genuinely ambitious."},
+  {severity:"medium", area:"System Design Breadth", detail:"6 system design answers prepared. Need more: design Twitter feed, design chat system, design file storage.", recommendation:"Prepare 3-4 more classic designs using YOUR experience (e.g., 'Design an API management platform' = literally what you built)."},
+  {severity:"low", area:"'Where in 5 years'", detail:"Generic answer about distributed systems. Should tailor per company.", recommendation:"Company-specific versions: Amazon = 'Principal engineer designing S3-scale systems', Google = 'tech lead on developer tools', etc."},
+  {severity:"medium", area:"Distributed Systems Theory", detail:"Strong practical experience but limited theory vocabulary (CAP theorem, consensus, vector clocks).", recommendation:"Study: CAP theorem, eventual consistency, Raft consensus, vector clocks, two-phase commit. Map each to YOUR projects."},
+  {severity:"low", area:"CodeChef Rank 22 Follow-ups", detail:"No specific problem details in vault. Interviewer might ask 'what problem did you solve?'", recommendation:"Recall the specific problem from April Long Challenge 2022 or prepare: 'It was a combinatorics problem requiring segment tree optimization.'"},
+  {severity:"low", area:"Concurrency Deep Dive", detail:"Used parallelStream() and multi-threading but limited depth on locks, semaphores, CAS.", recommendation:"Prepare: Java synchronized vs ReentrantLock, ConcurrentHashMap internals, volatile keyword, compare-and-swap."}
+];
+
+// Company Readiness
+let COMPANY_READINESS = [
+  {type:"Amazon", score:91, notes:"14 LP stories mapped, strong behavioral. ORA-00904 = perfect Dive Deep. Ownership story is your strongest.", focusAreas:"LP depth, behavioral specificity, Dive Deep examples"},
+  {type:"Google", score:82, notes:"Strong technical depth. System design answers solid. Need more coding practice and 'Googleyness' framing.", focusAreas:"Coding practice, system design breadth, culture fit framing"},
+  {type:"Meta", score:80, notes:"Move Fast aligns with Bias for Action story. Strong full-stack (React + Spring Boot). Need Meta-specific system design (design Instagram feed).", focusAreas:"Meta system design (feed, messaging), full-stack depth"},
+  {type:"Startup (Stripe/Figma)", score:85, notes:"Ownership, full-stack, ship fast stories all strong. ProjectA shows startup-like end-to-end ownership. Need to frame 'why startup over big tech'.", focusAreas:"Why startup narrative, end-to-end ownership stories"},
+  {type:"Fintech (Plaid/Affirm)", score:92, notes:"2 years banking experience. PII handling, compliance, high-throughput APIs. Strongest domain fit. Security-first stories.", focusAreas:"enterprise/compliance depth, PII handling, regulatory knowledge"},
+  {type:"ML/AI (NVIDIA/Scale AI)", score:78, notes:"Published paper + ProjectC + Artenal. But primary strength is backend, not ML. Position as ML-aware backend engineer.", focusAreas:"ML-aware backend framing, paper contribution, Published publication"}
+];
+
+// ==================== COMPUTE OVERALL ====================
+function computeOverall() {
+  const projectAvg = PROJECTS.reduce((s,p) => s + (p.metrics+p.depth+p.star+p.unique+p.deliver)/5, 0) / PROJECTS.length;
+  const lpAvg = LP_SCORES.reduce((s,l) => s + l.score, 0) / LP_SCORES.length;
+  const techAvg = TECH_SCORES.reduce((s,t) => s + t.score, 0) / TECH_SCORES.length;
+  const followAvg = FOLLOWUP_SCORES.reduce((s,f) => s + f.score, 0) / FOLLOWUP_SCORES.length;
+  const gapPenalty = GAPS.filter(g=>g.severity==='medium').length * 2 + GAPS.filter(g=>g.severity==='high').length * 5;
+  const overall = Math.round((projectAvg * 0.30 + lpAvg * 0.25 + techAvg * 0.25 + followAvg * 0.20) - gapPenalty);
+  return {overall, projectAvg:Math.round(projectAvg), lpAvg:Math.round(lpAvg), techAvg:Math.round(techAvg), followAvg:Math.round(followAvg), gapPenalty};
+}
+
+// ==================== RENDERING ====================
+const sections = ['overview','projects','lps','technical','followups','decisions','difficulties','gaps'];
+const sectionNames = ['Overview','Projects (12)','Amazon LPs (14)','Technical Q&A','Follow-Up Readiness','Key Decisions','Difficulties Handled','Gap Analysis'];
+let currentSection = 'overview';
+
+function init() {
+  document.getElementById('nav').innerHTML = sections.map((s,i) =>
+    `<button class="nav-btn ${s===currentSection?'active':''}" onclick="showSection('${s}')">${sectionNames[i]}</button>`
+  ).join('');
+  renderSection();
+}
+
+function showSection(s) {
+  currentSection = s;
+  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', sections[i]===s));
+  renderSection();
+}
+
+function renderSection() {
+  const c = document.getElementById('content');
+  switch(currentSection) {
+    case 'overview': renderOverview(c); break;
+    case 'projects': renderProjects(c); break;
+    case 'lps': renderLPs(c); break;
+    case 'technical': renderTechnical(c); break;
+    case 'followups': renderFollowups(c); break;
+    case 'decisions': renderDecisions(c); break;
+    case 'difficulties': renderDifficulties(c); break;
+    case 'gaps': renderGaps(c); break;
+  }
+}
+
+function renderOverview(c) {
+  const o = computeOverall();
+  const sc = scoreColor(o.overall);
+  c.innerHTML = `
+    <div class="overall">
+      <div>
+        <div class="big-score" style="border:4px solid var(--${sc});color:var(--${sc})">
+          ${o.overall}
+          <span class="label">Overall</span>
+        </div>
+        <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--text2)">out of 100</div>
+      </div>
+      <div class="overall-breakdown">
+        <div class="ob-row"><span class="ob-label">Projects (12)</span><div class="ob-bar"><div class="ob-fill" style="width:${o.projectAvg}%;background:var(--${scoreColor(o.projectAvg)})"></div></div><span class="ob-val" style="color:var(--${scoreColor(o.projectAvg)})">${o.projectAvg}</span></div>
+        <div class="ob-row"><span class="ob-label">Amazon LPs (14)</span><div class="ob-bar"><div class="ob-fill" style="width:${o.lpAvg}%;background:var(--${scoreColor(o.lpAvg)})"></div></div><span class="ob-val" style="color:var(--${scoreColor(o.lpAvg)})">${o.lpAvg}</span></div>
+        <div class="ob-row"><span class="ob-label">Technical Q&A</span><div class="ob-bar"><div class="ob-fill" style="width:${o.techAvg}%;background:var(--${scoreColor(o.techAvg)})"></div></div><span class="ob-val" style="color:var(--${scoreColor(o.techAvg)})">${o.techAvg}</span></div>
+        <div class="ob-row"><span class="ob-label">Follow-Up Ready</span><div class="ob-bar"><div class="ob-fill" style="width:${o.followAvg}%;background:var(--${scoreColor(o.followAvg)})"></div></div><span class="ob-val" style="color:var(--${scoreColor(o.followAvg)})">${o.followAvg}</span></div>
+        <div class="ob-row"><span class="ob-label">Gap Penalty</span><div class="ob-bar"><div class="ob-fill" style="width:${o.gapPenalty*5}%;background:var(--red)"></div></div><span class="ob-val" style="color:var(--red)">-${o.gapPenalty}</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Score Summary</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Total Questions Scored</div>
+          <div style="font-size:32px;font-weight:800;color:var(--accent2);margin:4px 0">${TECH_SCORES.length + FOLLOWUP_SCORES.length + PROJECTS.reduce((s,p)=>s+p.keyDecisions.length+p.difficulties.length,0)}</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">STAR Stories</div>
+          <div style="font-size:32px;font-weight:800;color:var(--green);margin:4px 0">${PROJECTS.reduce((s,p)=>s+p.starStories,0)}</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Interview Q&As</div>
+          <div style="font-size:32px;font-weight:800;color:var(--cyan);margin:4px 0">${PROJECTS.reduce((s,p)=>s+p.interviewQAs,0)}</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Key Decisions</div>
+          <div style="font-size:32px;font-weight:800;color:var(--yellow);margin:4px 0">${PROJECTS.reduce((s,p)=>s+p.keyDecisions.length,0)}</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Gaps Found</div>
+          <div style="font-size:32px;font-weight:800;color:var(--red);margin:4px 0">${GAPS.length}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Top 5 Strongest Answers</h2></div>
+      ${getAllScored().sort((a,b)=>b.score-a.score).slice(0,5).map(s => `
+        <div style="display:flex;align-items:center;gap:12px;padding:8px;background:var(--bg2);border-radius:8px;margin-bottom:6px">
+          <span class="score-badge s-green">${s.score}</span>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">${s.q}</div><div style="font-size:11px;color:var(--text3)">${s.source}</div></div>
+          <button onclick="showSection('${s.sectionTarget}')" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent2);cursor:pointer;white-space:nowrap">Go &rarr;</button>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>5 Weakest Answers (Focus Here)</h2></div>
+      ${getAllScored().sort((a,b)=>a.score-b.score).slice(0,5).map(s => `
+        <div style="display:flex;align-items:center;gap:12px;padding:8px;background:var(--bg2);border-radius:8px;margin-bottom:6px">
+          <span class="score-badge ${scoreBg(s.score)}">${s.score}</span>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">${s.q}</div><div style="font-size:11px;color:var(--text3)">${s.source}</div></div>
+          <button onclick="showSection('${s.sectionTarget}')" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--accent2);cursor:pointer;white-space:nowrap">Go &rarr;</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function getAllScored() {
+  const all = [];
+  TECH_SCORES.forEach(t => all.push({q:t.q, score:t.score, source:`Technical: ${t.category}`, sectionTarget:'technical'}));
+  FOLLOWUP_SCORES.forEach(f => all.push({q:f.q, score:f.score, source:`Follow-up on: ${f.parent}`, sectionTarget:'followups'}));
+  PROJECTS.forEach(p => {
+    p.keyDecisions.forEach(d => all.push({q:d.q, score:d.score, source:`Decision: ${p.name}`, sectionTarget:'decisions'}));
+    p.difficulties.forEach(d => all.push({q:d.d, score:d.score, source:`Difficulty: ${p.name}`, sectionTarget:'difficulties'}));
+  });
+  LP_SCORES.forEach(l => all.push({q:`LP: ${l.name}`, score:l.score, source:l.project, sectionTarget:'lps'}));
+  return all;
+}
+
+function renderProjects(c) {
+  c.innerHTML = `
+    <div class="section"><div class="section-header"><h2>All Projects Scored</h2><span class="badge s-green">12 Projects</span></div>
+    <div class="cards">
+      ${PROJECTS.map((p,pi) => {
+        const avg = Math.round((p.metrics+p.depth+p.star+p.unique+p.deliver)/5);
+        return `
+        <div class="card expandable" onclick="this.querySelector('.expand-content').classList.toggle('show');this.querySelector('.expand-arrow').classList.toggle('open')">
+          <button class="edit-icon" onclick="editProject(${pi})" title="Edit">&#9998;</button>
+          <div class="card-top">
+            <div><div class="card-title">${p.name}</div><div class="card-sub">${p.company} | ${p.role}</div></div>
+            <span class="score-badge ${scoreBg(avg)}">${avg}</span>
+          </div>
+          <div class="dims">
+            <div class="dim"><span class="dim-label">Metrics</span><div class="dim-bar"><div class="dim-fill" style="width:${p.metrics*5}%;background:var(--${scoreColor(p.metrics*5)})"></div></div><span class="dim-val">${p.metrics}</span></div>
+            <div class="dim"><span class="dim-label">Depth</span><div class="dim-bar"><div class="dim-fill" style="width:${p.depth*5}%;background:var(--${scoreColor(p.depth*5)})"></div></div><span class="dim-val">${p.depth}</span></div>
+            <div class="dim"><span class="dim-label">STAR</span><div class="dim-bar"><div class="dim-fill" style="width:${p.star*5}%;background:var(--${scoreColor(p.star*5)})"></div></div><span class="dim-val">${p.star}</span></div>
+            <div class="dim"><span class="dim-label">Unique</span><div class="dim-bar"><div class="dim-fill" style="width:${p.unique*5}%;background:var(--${scoreColor(p.unique*5)})"></div></div><span class="dim-val">${p.unique}</span></div>
+            <div class="dim"><span class="dim-label">Deliverable</span><div class="dim-bar"><div class="dim-fill" style="width:${p.deliver*5}%;background:var(--${scoreColor(p.deliver*5)})"></div></div><span class="dim-val">${p.deliver}</span></div>
+          </div>
+          <div style="margin-top:8px">${p.tags.map(t=>`<span class="tag t-a">${t}</span>`).join('')}</div>
+          <div style="margin-top:4px;font-size:11px;color:var(--text3)">
+            ${p.starStories} STAR stories | ${p.interviewQAs} interview Q&As | ${p.keyDecisions.length} decisions | ${p.difficulties.length} difficulties
+            <span class="expand-arrow" style="float:right">&#9660;</span>
+          </div>
+          <div class="expand-content">
+            <strong style="color:var(--cyan)">Metrics:</strong> ${p.metricsList.join(' | ')}<br><br>
+            <strong style="color:var(--accent2)">HLD:</strong> ${p.hld}<br><br>
+            <strong style="color:var(--pink)">LLD:</strong> ${p.lld}<br><br>
+            <strong style="color:var(--green)">Best LPs:</strong> ${p.lps.map(l=>`<span class="tag t-g">${l}</span>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div></div>
+  `;
+}
+
+function renderLPs(c) {
+  c.innerHTML = `
+    <div class="section"><div class="section-header"><h2>Amazon Leadership Principles</h2><span class="badge s-green">14 LPs</span></div>
+    ${LP_SCORES.map((lp,li) => `
+      <div class="card expandable" onclick="this.querySelector('.expand-content').classList.toggle('show');this.querySelector('.expand-arrow').classList.toggle('open')" style="margin-bottom:8px">
+        <button class="edit-icon" onclick="editLP(${li})" title="Edit">&#9998;</button>
+        <div class="card-top">
+          <div>
+            <div class="card-title">LP #${lp.num}: ${lp.name}</div>
+            <div class="card-sub">${lp.project}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${lp.followUpReady?'<span class="tag t-g">Follow-up Ready</span>':'<span class="tag t-y">Needs Practice</span>'}
+            ${lp.altStoryAvailable?'<span class="tag t-c">Alt Story</span>':''}
+            <span class="score-badge ${scoreBg(lp.score)}">${lp.score}</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5">${lp.answerQuality}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px"><span class="expand-arrow">&#9660;</span> Expand for details</div>
+        <div class="expand-content">
+          <strong style="color:var(--green)">Strength:</strong> ${lp.strength}<br><br>
+          <strong style="color:var(--red)">Gap:</strong> ${lp.gap}<br><br>
+          <strong style="color:var(--cyan)">Depth Available:</strong> ${lp.depth}
+        </div>
+      </div>
+    `).join('')}</div>
+  `;
+}
+
+function renderTechnical(c) {
+  const categories = ['System Design','Coding','Common'];
+  c.innerHTML = categories.map(cat => {
+    const items = TECH_SCORES.filter(t => t.category === cat);
+    const avg = Math.round(items.reduce((s,t)=>s+t.score,0)/items.length);
+    return `
+      <div class="section">
+        <div class="section-header"><h2>${cat}</h2><span class="badge ${scoreBg(avg)}">${avg} avg</span></div>
+        ${items.map(t => {const ti=TECH_SCORES.indexOf(t); return `
+          <div class="card" style="margin-bottom:6px">
+            <button class="edit-icon" onclick="editTech(${ti})" title="Edit">&#9998;</button>
+            <div class="card-top">
+              <div class="card-title">${t.q}</div>
+              <div style="display:flex;gap:4px;align-items:center">
+                ${t.hasCode?'<span class="tag t-c">Code</span>':''}
+                ${t.hasFollow?'<span class="tag t-g">Follow-up Ready</span>':''}
+                <span class="score-badge ${scoreBg(t.score)}">${t.score}</span>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--green)">+ ${t.strength}</div>
+            ${t.gap?`<div style="font-size:12px;color:var(--yellow)">- ${t.gap}</div>`:''}
+          </div>
+        `;}).join('')}
+      </div>`;
+  }).join('');
+}
+
+function renderFollowups(c) {
+  const answerable = FOLLOWUP_SCORES.filter(f=>f.answerable).length;
+  const total = FOLLOWUP_SCORES.length;
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-header"><h2>Follow-Up Question Readiness</h2><span class="badge s-green">${answerable}/${total} answerable</span></div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">These are the likely follow-up questions interviewers will ask after hearing your stories. Each scored on how well your vault data can answer.</p>
+      ${FOLLOWUP_SCORES.sort((a,b)=>b.score-a.score).map(f => {const fi=FOLLOWUP_SCORES.indexOf(f); return `
+        <div class="card" style="margin-bottom:6px">
+          <button class="edit-icon" onclick="editFollowup(${fi})" title="Edit">&#9998;</button>
+          <div class="card-top">
+            <div>
+              <div style="font-size:11px;color:var(--text3)">After mentioning: ${f.parent}</div>
+              <div class="card-title">"${f.q}"</div>
+            </div>
+            <div style="display:flex;gap:4px;align-items:center">
+              ${f.answerable?'<span class="tag t-g">Answerable</span>':'<span class="tag t-r">Weak</span>'}
+              <span class="score-badge ${scoreBg(f.score)}">${f.score}</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text2)">${f.evidence}</div>
+        </div>
+      `;}).join('')}
+    </div>
+  `;
+}
+
+function renderDecisions(c) {
+  const allDecisions = [];
+  PROJECTS.forEach((p,pi) => p.keyDecisions.forEach((d,di) => allDecisions.push({...d, project:p.name, _pi:pi, _di:di})));
+  allDecisions.sort((a,b) => b.score - a.score);
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-header"><h2>Key Technical Decisions</h2><span class="badge s-green">${allDecisions.length} decisions</span></div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Every major design decision across your projects, scored on how defensible and articulate your reasoning is.</p>
+      ${allDecisions.map(d => `
+        <div class="decision">
+          <button class="edit-icon" onclick="editDecision(${d._pi},${d._di})" title="Edit">&#9998;</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-size:11px;color:var(--text3)">${d.project}</span>
+            <span class="score-badge ${scoreBg(d.score)}" style="font-size:11px;padding:2px 8px">${d.score}</span>
+          </div>
+          <div class="decision-q">${d.q}</div>
+          <div class="decision-a">${d.a}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDifficulties(c) {
+  const allDiffs = [];
+  PROJECTS.forEach((p,pi) => p.difficulties.forEach((d,di) => allDiffs.push({...d, project:p.name, _pi:pi, _di:di})));
+  allDiffs.sort((a,b) => b.score - a.score);
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-header"><h2>Difficulties Handled</h2><span class="badge s-green">${allDiffs.length} challenges</span></div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Real technical challenges you faced and how you solved them. These become powerful follow-up answers.</p>
+      ${allDiffs.map(d => `
+        <div class="decision">
+          <button class="edit-icon" onclick="editDifficulty(${d._pi},${d._di})" title="Edit">&#9998;</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-size:11px;color:var(--text3)">${d.project}</span>
+            <span class="score-badge ${scoreBg(d.score)}" style="font-size:11px;padding:2px 8px">${d.score}</span>
+          </div>
+          <div class="decision-q">${d.d}</div>
+          <div class="decision-a">${d.how}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderGaps(c) {
+  c.innerHTML = `
+    <div class="section">
+      <div class="section-header"><h2>Gap Analysis</h2><span class="badge s-red">${GAPS.length} gaps</span></div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Areas where your interview readiness has gaps. Focus on medium severity first.</p>
+      ${GAPS.sort((a,b) => (a.severity==='high'?0:a.severity==='medium'?1:2) - (b.severity==='high'?0:b.severity==='medium'?1:2)).map(g => {const gi=GAPS.indexOf(g); return `
+        <div class="gap-item">
+          <button class="edit-icon" onclick="editGap(${gi})" title="Edit">&#9998;</button>
+          <div class="gap-icon">${g.severity==='high'?'&#128308;':g.severity==='medium'?'&#128992;':'&#128994;'}</div>
+          <div class="gap-text">
+            <strong>${g.area}</strong> <span class="tag ${g.severity==='high'?'t-r':g.severity==='medium'?'t-o':'t-y'}">${g.severity}</span><br>
+            ${g.detail}<br>
+            <span style="color:var(--green)">Fix:</span> ${g.recommendation}
+          </div>
+        </div>
+      `;}).join('')}
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Readiness by Company Type</h2></div>
+      <div class="cards">
+        ${COMPANY_READINESS.map((ct,ci) => `
+          <div class="card company-card" style="position:relative">
+            <button class="edit-icon" onclick="editCompanyReadiness(${ci})" title="Edit">&#9998;</button>
+            <div class="card-top">
+              <div class="card-title">${ct.type}</div>
+              <span class="score-badge ${scoreBg(ct.score)}">${ct.score}</span>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5">${ct.notes}</div>
+            ${ct.focusAreas ? `<div style="font-size:11px;color:var(--text3);margin-top:6px">Focus: ${ct.focusAreas}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ==================== EDIT INFRASTRUCTURE ====================
+const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
+const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
+const PAGE_NAME = 'scorecard';
+
+function idataToast(msg, ok) {
+  const t = document.createElement('div');
+  t.className = 'edit-toast';
+  t.style.background = ok ? '#22c55e30' : '#ef444430';
+  t.style.color = ok ? '#22c55e' : '#ef4444';
+  t.style.border = '1px solid ' + (ok ? '#22c55e' : '#ef4444');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+async function idataLoad() {
+  try {
+    const r = await fetch(IDATA_READ + '?page=' + PAGE_NAME);
+    const j = await r.json();
+    return j.data || null;
+  } catch(e) { console.warn('idataLoad failed:', e); return null; }
+}
+
+async function idataSave(key, data, index) {
+  try {
+    const body = {page: PAGE_NAME, key, data};
+    if (typeof index === 'number') body.index = index;
+    const r = await fetch(IDATA_WRITE, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const j = await r.json();
+    if (j.success) idataToast('Saved!', true);
+    else idataToast('Save failed: ' + (j.error||'unknown'), false);
+    return j.success;
+  } catch(e) { idataToast('Save error: ' + e.message, false); return false; }
+}
+
+async function idataSeedIfEmpty(key, defaults) {
+  try {
+    const r = await fetch(IDATA_READ + '?page=' + PAGE_NAME);
+    const j = await r.json();
+    if (!j.data || !j.data[key]) {
+      await fetch(IDATA_WRITE, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({page:PAGE_NAME, key, data:defaults})});
+    }
+  } catch(e) {}
+}
+
+// Generic edit modal
+let _editResolve = null;
+function openEditModal(title, fields, values) {
+  return new Promise(resolve => {
+    _editResolve = resolve;
+    const ov = document.getElementById('sc-edit-overlay');
+    let html = `<h3>${title}</h3>`;
+    fields.forEach(f => {
+      const val = values[f.key] !== undefined ? values[f.key] : '';
+      if (f.type === 'number') {
+        html += `<div class="edit-field"><label>${f.label}</label><input type="number" id="ef_${f.key}" value="${val}" min="0" max="${f.max||100}"></div>`;
+      } else if (f.type === 'textarea') {
+        const escaped = String(val).replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        html += `<div class="edit-field"><label>${f.label}</label><textarea id="ef_${f.key}" rows="${f.rows||3}">${escaped}</textarea></div>`;
+      } else if (f.type === 'array') {
+        const arrVal = Array.isArray(val) ? val.join('\n') : val;
+        html += `<div class="edit-field"><label>${f.label} (one per line)</label><textarea id="ef_${f.key}" rows="${f.rows||3}">${arrVal}</textarea></div>`;
+      } else if (f.type === 'select') {
+        html += `<div class="edit-field"><label>${f.label}</label><select id="ef_${f.key}">${f.options.map(o=>`<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+      } else if (f.type === 'boolean') {
+        html += `<div class="edit-field"><label>${f.label}</label><select id="ef_${f.key}"><option value="true" ${val?'selected':''}>Yes</option><option value="false" ${!val?'selected':''}>No</option></select></div>`;
+      } else {
+        html += `<div class="edit-field"><label>${f.label}</label><input type="text" id="ef_${f.key}" value="${String(val).replace(/"/g, '&quot;')}"></div>`;
+      }
+    });
+    html += `<div class="edit-actions"><button class="edit-cancel" onclick="closeEditModal(null)">Cancel</button><button class="edit-save" onclick="saveEditModal()">Save</button></div>`;
+    ov.querySelector('.edit-box').innerHTML = html;
+    ov.classList.add('open');
+  });
+}
+
+function closeEditModal(result) {
+  document.getElementById('sc-edit-overlay').classList.remove('open');
+  if (_editResolve) { _editResolve(result); _editResolve = null; }
+}
+
+function saveEditModal() {
+  const inputs = document.querySelectorAll('#sc-edit-overlay [id^="ef_"]');
+  const result = {};
+  inputs.forEach(el => {
+    const key = el.id.replace('ef_', '');
+    if (el.type === 'number') result[key] = Number(el.value);
+    else if (el.tagName === 'SELECT' && (el.options[0]?.value === 'true' || el.options[0]?.value === 'false'))
+      result[key] = el.value === 'true';
+    else if (el.dataset.isArray === '1' || el.closest('.edit-field')?.querySelector('label')?.textContent?.includes('one per line'))
+      result[key] = el.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    else result[key] = el.value;
+  });
+  closeEditModal(result);
+}
+
+// ── Edit handlers per data type ──
+
+async function editProject(idx) {
+  event.stopPropagation();
+  const p = PROJECTS[idx];
+  const fields = [
+    {key:'name', label:'Project Name', type:'text'},
+    {key:'company', label:'Company', type:'text'},
+    {key:'role', label:'Role', type:'text'},
+    {key:'metrics', label:'Metrics Score (0-20)', type:'number', max:20},
+    {key:'depth', label:'Depth Score (0-20)', type:'number', max:20},
+    {key:'star', label:'STAR Score (0-20)', type:'number', max:20},
+    {key:'unique', label:'Unique Score (0-20)', type:'number', max:20},
+    {key:'deliver', label:'Deliver Score (0-20)', type:'number', max:20},
+    {key:'metricsList', label:'Metrics List', type:'array', rows:4},
+    {key:'hld', label:'HLD', type:'textarea', rows:3},
+    {key:'lld', label:'LLD', type:'textarea', rows:3},
+    {key:'starStories', label:'# STAR Stories', type:'number'},
+    {key:'interviewQAs', label:'# Interview Q&As', type:'number'},
+    {key:'tags', label:'Tags', type:'array', rows:2},
+    {key:'lps', label:'Leadership Principles', type:'array', rows:2},
+  ];
+  const result = await openEditModal('Edit Project: ' + p.name, fields, p);
+  if (result) {
+    Object.assign(PROJECTS[idx], result);
+    await idataSave('PROJECTS', PROJECTS[idx], idx);
+    renderSection();
+  }
+}
+
+async function editLP(idx) {
+  event.stopPropagation();
+  const lp = LP_SCORES[idx];
+  const fields = [
+    {key:'name', label:'LP Name', type:'text'},
+    {key:'score', label:'Score (0-100)', type:'number', max:100},
+    {key:'project', label:'Project', type:'text'},
+    {key:'strength', label:'Strength', type:'textarea', rows:3},
+    {key:'gap', label:'Gap', type:'textarea', rows:2},
+    {key:'answerQuality', label:'Answer Quality', type:'textarea', rows:3},
+    {key:'depth', label:'Depth Available', type:'textarea', rows:3},
+    {key:'followUpReady', label:'Follow-Up Ready', type:'boolean'},
+    {key:'altStoryAvailable', label:'Alt Story Available', type:'boolean'},
+  ];
+  const result = await openEditModal('Edit LP: ' + lp.name, fields, lp);
+  if (result) {
+    Object.assign(LP_SCORES[idx], result);
+    await idataSave('LP_SCORES', LP_SCORES[idx], idx);
+    renderSection();
+  }
+}
+
+async function editTech(idx) {
+  event.stopPropagation();
+  const t = TECH_SCORES[idx];
+  const fields = [
+    {key:'category', label:'Category', type:'select', options:['System Design','Coding','Common']},
+    {key:'q', label:'Question', type:'text'},
+    {key:'score', label:'Score (0-100)', type:'number', max:100},
+    {key:'strength', label:'Strength', type:'textarea', rows:3},
+    {key:'gap', label:'Gap', type:'textarea', rows:2},
+    {key:'hasCode', label:'Has Code', type:'boolean'},
+    {key:'hasFollow', label:'Follow-Up Ready', type:'boolean'},
+  ];
+  const result = await openEditModal('Edit Tech Q: ' + t.q, fields, t);
+  if (result) {
+    Object.assign(TECH_SCORES[idx], result);
+    await idataSave('TECH_SCORES', TECH_SCORES[idx], idx);
+    renderSection();
+  }
+}
+
+async function editFollowup(idx) {
+  event.stopPropagation();
+  const f = FOLLOWUP_SCORES[idx];
+  const fields = [
+    {key:'parent', label:'Parent Topic', type:'text'},
+    {key:'q', label:'Follow-Up Question', type:'text'},
+    {key:'score', label:'Score (0-100)', type:'number', max:100},
+    {key:'answerable', label:'Answerable', type:'boolean'},
+    {key:'evidence', label:'Evidence/Answer', type:'textarea', rows:4},
+  ];
+  const result = await openEditModal('Edit Follow-Up: ' + f.q, fields, f);
+  if (result) {
+    Object.assign(FOLLOWUP_SCORES[idx], result);
+    await idataSave('FOLLOWUP_SCORES', FOLLOWUP_SCORES[idx], idx);
+    renderSection();
+  }
+}
+
+async function editGap(idx) {
+  event.stopPropagation();
+  const g = GAPS[idx];
+  const fields = [
+    {key:'area', label:'Area', type:'text'},
+    {key:'severity', label:'Severity', type:'select', options:['low','medium','high']},
+    {key:'detail', label:'Detail', type:'textarea', rows:3},
+    {key:'recommendation', label:'Recommendation', type:'textarea', rows:3},
+  ];
+  const result = await openEditModal('Edit Gap: ' + g.area, fields, g);
+  if (result) {
+    Object.assign(GAPS[idx], result);
+    await idataSave('GAPS', GAPS[idx], idx);
+    renderSection();
+  }
+}
+
+async function editDecision(projectIdx, decisionIdx) {
+  event.stopPropagation();
+  const d = PROJECTS[projectIdx].keyDecisions[decisionIdx];
+  const fields = [
+    {key:'q', label:'Question', type:'textarea', rows:2},
+    {key:'a', label:'Answer', type:'textarea', rows:5},
+    {key:'score', label:'Score (0-100)', type:'number', max:100},
+  ];
+  const result = await openEditModal('Edit Decision', fields, d);
+  if (result) {
+    Object.assign(d, result);
+    await idataSave('PROJECTS', PROJECTS[projectIdx], projectIdx);
+    renderSection();
+  }
+}
+
+async function editDifficulty(projectIdx, diffIdx) {
+  event.stopPropagation();
+  const d = PROJECTS[projectIdx].difficulties[diffIdx];
+  const fields = [
+    {key:'d', label:'Difficulty', type:'textarea', rows:2},
+    {key:'how', label:'How Handled', type:'textarea', rows:5},
+    {key:'score', label:'Score (0-100)', type:'number', max:100},
+  ];
+  const result = await openEditModal('Edit Difficulty', fields, d);
+  if (result) {
+    Object.assign(d, result);
+    await idataSave('PROJECTS', PROJECTS[projectIdx], projectIdx);
+    renderSection();
+  }
+}
+
+async function editCompanyReadiness(idx) {
+  event.stopPropagation();
+  const ct = COMPANY_READINESS[idx];
+  const fields = [
+    {key:'type', label:'Company / Type', type:'text'},
+    {key:'score', label:'Readiness Score (0-100)', type:'number', max:100},
+    {key:'notes', label:'Notes', type:'textarea', rows:4},
+    {key:'focusAreas', label:'Focus Areas', type:'textarea', rows:2},
+  ];
+  const result = await openEditModal('Edit Company Readiness: ' + ct.type, fields, ct);
+  if (result) {
+    Object.assign(COMPANY_READINESS[idx], result);
+    await idataSave('COMPANY_READINESS', COMPANY_READINESS[idx], idx);
+    renderSection();
+  }
+}
+
+// ── Init with data loading ──
+async function initEditable() {
+  const data = await idataLoad();
+  if (data) {
+    if (data.PROJECTS) PROJECTS = data.PROJECTS;
+    if (data.LP_SCORES) LP_SCORES = data.LP_SCORES;
+    if (data.TECH_SCORES) TECH_SCORES = data.TECH_SCORES;
+    if (data.FOLLOWUP_SCORES) FOLLOWUP_SCORES = data.FOLLOWUP_SCORES;
+    if (data.GAPS) GAPS = data.GAPS;
+    if (data.COMPANY_READINESS) COMPANY_READINESS = data.COMPANY_READINESS;
+  } else {
+    // Seed DB with defaults on first load
+    idataSeedIfEmpty('PROJECTS', PROJECTS);
+    idataSeedIfEmpty('LP_SCORES', LP_SCORES);
+    idataSeedIfEmpty('TECH_SCORES', TECH_SCORES);
+    idataSeedIfEmpty('FOLLOWUP_SCORES', FOLLOWUP_SCORES);
+    idataSeedIfEmpty('GAPS', GAPS);
+    idataSeedIfEmpty('COMPANY_READINESS', COMPANY_READINESS);
+  }
+  init();
+}
+
+initEditable();
+</script>
+
+<!-- Edit Modal Overlay -->
+<div class="edit-overlay" id="sc-edit-overlay"><div class="edit-box"></div></div>
+
+</body>
+</html>
