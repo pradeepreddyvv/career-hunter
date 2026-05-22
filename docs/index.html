@@ -661,7 +661,6 @@ function renderApp() {
     <a href="./interview_command_center.html">Interview Prep</a>
     <a href="./interview_recorder.html">Recording Studio</a>
     <a href="./interview_scorecard.html">Scorecard</a>
-    <a href="./amazon_sde_prep.html">Company Prep</a>
     <a href="./career_dashboard.html">Analytics</a>
     <a href="./task_hub.html">Tasks</a>
   </div>
@@ -772,7 +771,15 @@ function renderDashboard() {
     </div>` : `
     <div class="empty-state">
       <h3>No jobs yet</h3>
-      <p>Click "Fetch Jobs" to discover opportunities from 69 company boards</p>
+      <p>Click "Fetch Jobs" above to discover SDE internship opportunities from 69+ company boards</p>
+      <div style="text-align:left;max-width:500px;margin:20px auto 0;font-size:13px;color:var(--text2);line-height:1.8">
+        <p style="margin-bottom:12px;color:var(--text);font-weight:600">Getting Started:</p>
+        <p>1. Go to Settings (top-right) and add your Gemini API key</p>
+        <p>2. Upload your resume in the onboarding wizard to build your profile</p>
+        <p>3. Click <strong>Fetch Jobs</strong> to pull listings from Greenhouse, Lever, Ashby, and more</p>
+        <p>4. Click <strong>Score Jobs</strong> to rank them against your profile with AI</p>
+        <p>5. Click <strong>Run Full Pipeline</strong> to generate tailored resumes, cover letters, and outreach</p>
+      </div>
     </div>`}
     ${state.tasks.length > 0 ? `
     <div class="card">
@@ -1121,5 +1128,6 @@ if (state.token) {
   loadProfile();
 }
 </script>
+<script src="config.js"></script>
 </body>
 </html>

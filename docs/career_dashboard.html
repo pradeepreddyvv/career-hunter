@@ -126,7 +126,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <a href="./task_hub.html"><span class="nav-icon">&#9745;</span><span class="nav-label">Task Hub</span></a>
   <div class="nav-divider"></div>
   <a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
-  <a href="./amazon_sde_prep.html"><span class="nav-icon">&#127919;</span><span class="nav-label">Amazon Prep</span></a>
   <a href="./interview_command_center.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Command Center</span></a>
   <a href="./interview_scorecard.html"><span class="nav-icon">&#128202;</span><span class="nav-label">Scorecard</span></a>
   <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
@@ -167,12 +166,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="icon">&#128202;</div>
       <h3>Interview Scorecard</h3>
       <p>Pre-computed readiness scores: 12 projects, 14 LPs, 17 technical Q&As, 30+ decisions, 8 gaps. Company-type readiness breakdown.</p>
-      <span class="status status-live">LIVE</span>
-    </a>
-    <a href="./amazon_sde_prep.html" target="_blank" class="app-card" style="border-left:4px solid var(--orange)">
-      <div class="icon">&#9749;</div>
-      <h3>Amazon SDE Prep</h3>
-      <p>Amazon-specific: every LP scored with STAR + follow-ups, OA coding readiness, common questions, 7-day prep schedule, day-of checklist.</p>
       <span class="status status-live">LIVE</span>
     </a>
     <a href="./interview_prep_standalone.html" target="_blank" class="app-card" style="border-left:4px solid var(--cyan)">
@@ -1694,11 +1687,11 @@ function switchTab(id) {
 
 // ===== DEFAULT PROFILE =====
 const DEFAULT_PROFILE = {
-  name: 'Your Name', email: 'your.email@example.com', phone: '+1 (555) 000-0000',
-  linkedin: 'linkedin.com/in/yourusername', github: 'github.com/yourusername', portfolio: '',
+  name: 'Pradeep Reddy', email: 'pradeepreddyvv@gmail.com', phone: '+1 (623) 273-0305',
+  linkedin: 'linkedin.com/in/pradeep-reddy-vv', github: 'github.com/pradeepreddyvv', portfolio: '',
   visa: 'F-1 (CPT/OPT authorized, no sponsorship required)', location: 'Tempe, AZ',
-  availability: '[Availability Dates]', school: 'Your University',
-  degree: 'MS Computer Science', gpa: 'X.X/4.0', coursework: '', gradDate: 'Dec 2026',
+  availability: 'May 27 – Aug 7, 2026', school: 'Arizona State University',
+  degree: 'MS Computer Science', gpa: '4.11/4.0', coursework: '', gradDate: 'Dec 2026',
   targetRoles: 'SDE Intern, ML Engineer, Fullstack', blacklist: 'TikTok, ByteDance',
   skills: {languages:'Java, Python, JavaScript/TypeScript, SQL, C++', frameworks:'Spring Boot, React.js, Next.js, FastAPI, Flask, TensorFlow/Keras',
     cloud:'AWS (EC2, S3, CloudHub), Docker, Kubernetes, Nginx', databases:'Oracle DB, MySQL, PostgreSQL, MongoDB, Redis',
@@ -1761,5 +1754,6 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+<script src="config.js"></script>
 </body>
 </html>

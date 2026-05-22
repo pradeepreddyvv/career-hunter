@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Task Hub — Your Name</title>
+<title>Task Hub — Pradeep Reddy</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -238,28 +238,17 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   <a href="./task_hub.html"><span class="nav-icon">&#9745;</span><span class="nav-label">Task Hub</span></a>
   <div class="nav-divider"></div>
   <a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
-  <a href="./amazon_sde_prep.html"><span class="nav-icon">&#127919;</span><span class="nav-label">Amazon Prep</span></a>
   <a href="./interview_command_center.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Command Center</span></a>
   <a href="./interview_scorecard.html"><span class="nav-icon">&#128202;</span><span class="nav-label">Scorecard</span></a>
   <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
   <div class="nav-divider"></div>
   <a href="./career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
 </nav>
-<!-- Auth Gate -->
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-box">
-    <h2>Task Hub</h2>
-    <p>Enter password to continue</p>
-    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="auth-err" id="authErr"></div>
-    <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
-  </div>
-</div>
-
-<div class="app" id="appMain" style="display:none">
+<div class="auth-overlay" id="authOverlay" style="display:none"></div>
+<div class="app" id="appMain">
 <header class="header">
   <div class="header-logo"><span>&#9776;</span> <span>Task Hub</span></div>
-  <div class="header-name">Your Name</div>
+  <div class="header-name">Pradeep Reddy</div>
   <div class="header-spacer"></div>
   <div class="header-actions">
     <a href="./index.html" class="btn btn-ghost btn-sm" style="text-decoration:none;color:inherit">Career Hub</a>
@@ -662,29 +651,7 @@ async function doLogin() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('timelineDate').value = todayStr();
   document.getElementById('journalDate').value = todayStr();
-  const saved = getSavedAuth();
-  if (saved) {
-    _authPw = saved;
-    fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'auth', password: saved })
-    }).then(r => r.json()).then(d => {
-      if (d.ok) {
-        document.getElementById('authOverlay').style.display = 'none';
-        document.getElementById('appMain').style.display = 'flex';
-        loadAll();
-      } else {
-        localStorage.removeItem('th_pw');
-        _authPw = '';
-        document.getElementById('authPassword').focus();
-      }
-    }).catch(() => {
-      document.getElementById('authPassword').focus();
-    });
-  } else {
-    document.getElementById('authPassword').focus();
-  }
+  loadAll();
 });
 
 function todayStr() {
@@ -1152,7 +1119,7 @@ async function aiPrioritize() {
 
   const journalStr = buildJournalContext(5);
 
-  const prompt = `You are a productivity coach for Your Name, an MSCS student at University (GPA X.X) searching for SDE internships in the USA. Amazon SDE Intern interview scheduled [Interview Date].
+  const prompt = `You are a productivity coach for Pradeep Reddy, an MSCS student at Arizona State University (GPA 4.11) searching for SDE internships in the USA. Amazon SDE Intern interview scheduled [Interview Date].
 
 TODAY: ${todayStr()} | Time already logged today: ${todayLogged} minutes
 
@@ -1230,14 +1197,14 @@ async function aiSuggestTasks() {
   const journalStr = buildJournalContext(10);
   const taskStr = buildFullTaskContext();
 
-  const prompt = `You are a career prep advisor for Your Name:
-- MSCS at Your University, targeting SDE internships
+  const prompt = `You are a career prep advisor for Pradeep Reddy:
+- MSCS at Arizona State University, targeting SDE internships
 - F-1 visa, CPT/OPT authorized, no sponsorship required
 - Availability: May 27 – Aug 7, 2026
-- 2 years SWE at Previous Company (Java, Spring Boot, AWS, React, Oracle, Kafka, Redis, Kong)
+- 2 years SWE at IDFC First Bank (Java, Spring Boot, AWS, React, Oracle, Kafka, Redis, Kong)
 - Key metrics: 100+ TPS high-throughput APIs, 83% efficiency improvement (12→2 days), $120K AWS savings, 60% productivity gain
-- Key projects: ProjectA (Next.js + Spring Boot, live on Vercel), ProjectB (MongoDB sharding + LLM), ProjectC (5-agent pipeline, HackUniversity 2025)
-- Published paper at Published Conference 2023 (Published Research, YOLO + lane detection, >90% accuracy)
+- Key projects: FreshBite (Next.js + Spring Boot, live on Vercel), CityTraffic NLQ (MongoDB sharding + LLM), OmniSense (5-agent pipeline, HackASU 2025)
+- Published paper at Springer ICCSST 2023 (Smart Driving, YOLO + lane detection, >90% accuracy)
 - CodeChef Global Rank 22
 - Has Amazon SDE Intern interview scheduled ([Interview Date])
 - Currently taking: Perception in Robotics, other MSCS courses
@@ -1400,7 +1367,7 @@ async function sendChat() {
   const todayLogged = timeLogs.filter(l => l.date === todayStr()).reduce((s, l) => s + l.minutes, 0);
   const recentChat = chatHistory.slice(-8).map(m => `${m.role}: ${m.text}`).join('\n');
 
-  const prompt = `You are a concise, actionable productivity advisor for Your Name (MSCS at University, SDE internship search).
+  const prompt = `You are a concise, actionable productivity advisor for Pradeep Reddy (MSCS at Arizona State University, SDE internship search).
 
 TODAY: ${todayStr()} | Time logged today: ${todayLogged}m
 
@@ -1548,7 +1515,7 @@ async function aiReflectJournal() {
   const pastJournals = buildJournalContext(7);
   const taskStr = buildFullTaskContext();
 
-  const prompt = `You are a supportive productivity coach for Your Name (MSCS at University, hunting SDE internships, Amazon interview [Interview Date]).
+  const prompt = `You are a supportive productivity coach for Pradeep Reddy (MSCS at Arizona State University, hunting SDE internships, Amazon interview [Interview Date]).
 
 TODAY: ${todayStr()} | Mood: ${mood}
 
@@ -1663,7 +1630,7 @@ async function aiEnhanceTask() {
   const existingTasks = tasks.filter(t => t.status !== 'completed').map(t => t.title).join(', ');
   const journalStr = buildJournalContext(5);
 
-  const prompt = `You are helping Your Name (MSCS at University, SDE internship search, Amazon interview [Interview Date]) improve a task he's adding to his todo list.
+  const prompt = `You are helping Pradeep Reddy (MSCS at Arizona State University, SDE internship search, Amazon interview [Interview Date]) improve a task he's adding to his todo list.
 
 RECENT JOURNAL:
 ${journalStr}
@@ -1911,7 +1878,7 @@ let TH_CONFIG = {
     {value:'constraint', label:'Constraint'},
     {value:'summary', label:'AI Summary'}
   ],
-  ai_profile_snippet: 'Name: Your Name\nEducation: MSCS at Your University\nVisa: Work authorized\nTarget: SDE internships\nExperience: 2yr SWE experience (Java, Spring Boot, AWS, React, microservices)\nKey Projects: Project1, Project2, Project3\nPublication: Published research paper\nInterview: Target Company Interview'
+  ai_profile_snippet: 'Name: Pradeep Reddy\nEducation: MSCS at Arizona State University\nVisa: Work authorized\nTarget: SDE internships\nExperience: 2yr SWE experience (Java, Spring Boot, AWS, React, microservices)\nKey Projects: FreshBite, CityTraffic NLQ, OmniSense RAG\nPublication: Springer ICCSST 2023 publication\nInterview: Target Company Interview'
 };
 
 const DEFAULT_TH_CONFIG = JSON.parse(JSON.stringify(TH_CONFIG));
@@ -2108,5 +2075,6 @@ loadAll = async function() {
 
 <!-- Edit overlay -->
 <div class="edit-overlay" id="th-edit-overlay" onclick="if(event.target===this)closeEditModal(null)"><div class="edit-box"></div></div>
+<script src="config.js"></script>
 </body>
 </html>

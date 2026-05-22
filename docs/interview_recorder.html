@@ -285,7 +285,6 @@ a{color:var(--accent);text-decoration:none}
 <a href="./task_hub.html"><span class="nav-icon">&#9745;</span><span class="nav-label">Task Hub</span></a>
 <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
 <a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
-<a href="./amazon_sde_prep.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Amazon Prep</span></a>
 <a href="./interview_scorecard.html"><span class="nav-icon">&#128202;</span><span class="nav-label">Scorecard</span></a>
 <a href="./interview_command_center.html"><span class="nav-icon">&#127919;</span><span class="nav-label">Command Center</span></a>
 </nav>
@@ -1646,9 +1645,9 @@ const TECHNICAL_QUESTIONS = [
   {id:'tq8', text:'How do you ensure data consistency in distributed systems?', category:'technical', hint:'Two-phase commit, saga pattern, eventual consistency, idempotency.'},
   {id:'tq9', text:'Walk me through how you would optimize a slow API endpoint.', category:'technical', hint:'Profile, identify bottleneck, caching, query optimization, async processing.'},
   {id:'tq10', text:'Explain the concept of eventual consistency. Give an example.', category:'technical', hint:'DNS, social media feeds, shopping carts. Trade-offs with strong consistency.'},
-  {id:'tq11', text:'How would you design an API management platform?', category:'technical', hint:'Use YOUR Previous Company experience: catalog, RBAC, validation, monitoring.'},
+  {id:'tq11', text:'How would you design an API management platform?', category:'technical', hint:'Use YOUR IDFC First Bank experience: catalog, RBAC, validation, monitoring.'},
   {id:'tq12', text:'Explain containerization vs virtualization.', category:'technical', hint:'Docker vs VMs, shared kernel, resource efficiency, orchestration.'},
-  {id:'tq13', text:'How do you handle secrets and PII in a banking application?', category:'technical', hint:'Use YOUR Previous Company experience: AES-256, Log4j2 filters, Aadhaar masking.'},
+  {id:'tq13', text:'How do you handle secrets and PII in a banking application?', category:'technical', hint:'Use YOUR IDFC First Bank experience: AES-256, Log4j2 filters, Aadhaar masking.'},
   {id:'tq14', text:'Describe your CI/CD pipeline. How do you ensure safe deployments?', category:'technical', hint:'Feature flags, canary/blue-green, automated tests, rollback strategy.'},
   {id:'tq15', text:'How would you design a real-time notification system?', category:'technical', hint:'WebSockets vs SSE vs polling, message queues, fan-out, delivery guarantees.'}
 ];
@@ -2071,7 +2070,7 @@ CATEGORY: ${category}${lpInfo}
 CANDIDATE'S ANSWER (transcript): "${transcript}"
 ANSWER DURATION: ${durationSec} seconds
 
-CANDIDATE CONTEXT: Your Name, MSCS at University (X.X GPA), 2yr SWE at Previous Company.
+CANDIDATE CONTEXT: Pradeep Reddy, MSCS at Arizona State University (4.11 GPA), 2yr SWE at IDFC First Bank.
 KEY EXPERIENCES FOR STAR:
 - high-throughput APIs: Built 100+ TPS RESTful high-throughput APIs serving 7,000+ endpoints, sub-second latency, 99.9% uptime
 - Developer Portal: React RBAC dashboard + Spring Boot onboarding engine, reduced onboarding 12→2 days (83%)
@@ -2124,7 +2123,7 @@ async function getMockSummary(recordings) {
     `Q${i+1} [${r.category}]: "${r.questionText}"\nTranscript (${r.duration}s): "${(r.transcript || '').slice(0, 300)}..."\nAI Score: ${r.aiReview?.overall_score || '?'}`
   ).join('\n\n');
 
-  const prompt = `You are completing a mock interview debrief for Your Name (MSCS at University X.X GPA, 2yr SWE at Previous Company, Amazon SDE Intern candidate). He has strong STAR stories around high-throughput APIs (100+ TPS), Developer Portal (83% efficiency improvement), AWS Migration ($120K savings), and a Published publication.
+  const prompt = `You are completing a mock interview debrief for Pradeep Reddy (MSCS at Arizona State University 4.11 GPA, 2yr SWE at IDFC First Bank, Amazon SDE Intern candidate). He has strong STAR stories around high-throughput APIs (100+ TPS), Developer Portal (83% efficiency improvement), AWS Migration ($120K savings), and a Springer ICCSST 2023 publication.
 
 SESSION (${recordings.length} questions):
 ${qSummary}
@@ -3384,7 +3383,7 @@ SESSION DURATION: ${durationSec} seconds
 FULL AI INTERVIEWER ↔ CANDIDATE CONVERSATION:
 ${chatSummary || 'No chat interaction'}
 
-CANDIDATE CONTEXT: Your Name, MSCS at University (X.X GPA), 2yr SWE at Previous Company. Amazon SDE Intern interview [Interview Date].
+CANDIDATE CONTEXT: Pradeep Reddy, MSCS at Arizona State University (4.11 GPA), 2yr SWE at IDFC First Bank. Amazon SDE Intern interview [Interview Date].
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -4654,7 +4653,7 @@ function liveStopMic() {
 
 function liveGetPersona() {
   if (liveStyleType === 'bar_raiser') {
-    return "You are an Amazon Bar Raiser conducting a live interview with Your Name (MSCS at University X.X GPA, 2yr SWE at Previous Company, targeting SDE intern). You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
+    return "You are an Amazon Bar Raiser conducting a live interview with Pradeep Reddy (MSCS at Arizona State University 4.11 GPA, 2yr SWE at IDFC First Bank, targeting SDE intern). You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
   } else if (liveStyleType === 'grilling') {
     return "You are a tough senior engineer doing a grilling interview. You push back hard on vague answers, demand specifics, and call out fluff. You probe for metrics and depth. You interrupt more often than a typical interviewer, but only when the candidate is drifting, being vague, or technically wrong.";
   }
@@ -4791,7 +4790,7 @@ async function liveFinalSummary() {
   ).join('\n\n');
 
   const prompt = "You are a senior Amazon interview coach grading a full live interview session.\n\n" +
-    "CANDIDATE: Your Name (MSCS at University X.X, 2yr SWE at Previous Company, SDE intern target)\n\n" +
+    "CANDIDATE: Pradeep Reddy (MSCS at Arizona State University 4.11, 2yr SWE at IDFC First Bank, SDE intern target)\n\n" +
     "SESSION:\n" + transcriptBlock + "\n\n" +
     "Return ONLY valid JSON (no markdown fences):\n" +
     "{\n" +
@@ -4859,5 +4858,6 @@ function liveBackToSetup() {
 }
 
 </script>
+<script src="config.js"></script>
 </body>
 </html>

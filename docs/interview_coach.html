@@ -67,54 +67,14 @@ body { background: #0a0a0f; color: #e5e5e5; font-family: 'Inter', -apple-system,
   <a href="./task_hub.html"><span class="nav-icon">&#9745;</span><span class="nav-label">Task Hub</span></a>
   <div class="nav-divider"></div>
   <a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
-  <a href="./amazon_sde_prep.html"><span class="nav-icon">&#127919;</span><span class="nav-label">Amazon Prep</span></a>
   <a href="./interview_command_center.html"><span class="nav-icon">&#128640;</span><span class="nav-label">Command Center</span></a>
   <a href="./interview_scorecard.html"><span class="nav-icon">&#128202;</span><span class="nav-label">Scorecard</span></a>
   <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
   <div class="nav-divider"></div>
   <a href="./career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
 </nav>
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-box">
-    <h2>Interview Coach</h2>
-    <p>Enter password to continue</p>
-    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter')window._doLogin()">
-    <div class="auth-err" id="authErr"></div>
-    <button onclick="window._doLogin()">Sign In</button>
-  </div>
-</div>
-<script>
-(function(){
-  const API = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-    ? 'https://drinks-started-recovery-street.trycloudflare.com'
-    : window.location.origin) + '/webhook/task-hub-api';
-  const EXPIRY_DAYS = 100;
-  function saveAuth(pw) { localStorage.setItem('th_pw', JSON.stringify({ pw, expires: Date.now() + EXPIRY_DAYS * 86400000 })); }
-  function getSavedAuth() {
-    try { const d = JSON.parse(localStorage.getItem('th_pw')); if (!d || Date.now() > d.expires) { localStorage.removeItem('th_pw'); return null; } return d.pw; }
-    catch { localStorage.removeItem('th_pw'); return null; }
-  }
-  window._doLogin = function() {
-    const pw = document.getElementById('authPassword').value;
-    const errEl = document.getElementById('authErr');
-    errEl.textContent = '';
-    fetch(API, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({action:'auth',password:pw}) })
-      .then(r => r.json()).then(d => {
-        if (d.ok) { saveAuth(pw); document.getElementById('authOverlay').style.display='none'; document.getElementById('app').style.display=''; }
-        else { errEl.textContent = 'Wrong password'; document.getElementById('authPassword').select(); }
-      }).catch(() => { errEl.textContent = 'Connection error'; });
-  };
-  const saved = getSavedAuth();
-  if (saved) {
-    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'auth',password:saved}) })
-      .then(r=>r.json()).then(d=> {
-        if(d.ok){ document.getElementById('authOverlay').style.display='none'; document.getElementById('app').style.display=''; }
-        else { localStorage.removeItem('th_pw'); }
-      }).catch(()=>{});
-  }
-})();
-</script>
-<div id="app" style="display:none;margin-left:42px"></div>
+<div class="auth-overlay" id="authOverlay" style="display:none"></div>
+<div id="app" style="margin-left:42px"></div>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script>
@@ -1344,5 +1304,6 @@ const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(React.createElement(App));
 </script>
 <div class="edit-overlay" id="coach-edit-overlay"><div class="edit-box"></div></div>
+<script src="config.js"></script>
 </body>
 </html>
