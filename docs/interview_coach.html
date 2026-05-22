@@ -85,7 +85,9 @@ body { background: #0a0a0f; color: #e5e5e5; font-family: 'Inter', -apple-system,
 </div>
 <script>
 (function(){
-  const API = window.location.origin + '/webhook/task-hub-api';
+  const API = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+    ? 'https://drinks-started-recovery-street.trycloudflare.com'
+    : window.location.origin) + '/webhook/task-hub-api';
   const EXPIRY_DAYS = 100;
   function saveAuth(pw) { localStorage.setItem('th_pw', JSON.stringify({ pw, expires: Date.now() + EXPIRY_DAYS * 86400000 })); }
   function getSavedAuth() {
@@ -127,9 +129,12 @@ body { background: #0a0a0f; color: #e5e5e5; font-family: 'Inter', -apple-system,
   });
 })();
 
-const GEMINI_KEY = '';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent';
-const N8N_API_BASE = window.location.origin + '/webhook/interview-coach-api';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const _N8N = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
+const N8N_API_BASE = _N8N + '/webhook/interview-coach-api';
 
 // ═══════════════════════════════════════════════════
 // QUESTIONS DATABASE
@@ -177,7 +182,9 @@ let DEFAULT_QTA = [
 // ═══════════════════════════════════════════════════
 // EDIT INFRASTRUCTURE
 // ═══════════════════════════════════════════════════
-const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : (location.origin.includes('localhost') ? location.origin : 'https://drinks-started-recovery-street.trycloudflare.com');
 const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
 const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
 const PAGE_NAME = 'coach';

@@ -543,7 +543,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     if (path.includes(a.getAttribute('href'))) a.classList.add('active');
   });
 })();
-const API_BASE = window.location.origin;
+const API_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
 const STORE_READ = `${API_BASE}/webhook/profile-store`;
 const STORE_WRITE = `${API_BASE}/webhook/profile-store-save`;
 const PROMPT_STORAGE_KEY = 'ch_prompts_v2';

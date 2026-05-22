@@ -598,9 +598,12 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
 })();
 
 // =================== CONFIG ===================
-const GEMINI_KEY = '';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_KEY}`;
-const API_BASE = window.location.origin + '/webhook/task-hub-api';
+const _N8N = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
+const API_BASE = _N8N + '/webhook/task-hub-api';
 
 // =================== STATE ===================
 let tasks = [];
@@ -1835,7 +1838,9 @@ function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
 // ==================== INTERVIEW DATA STORE (EDIT INFRASTRUCTURE) ====================
-const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : (location.origin.includes('localhost') ? location.origin : 'https://drinks-started-recovery-street.trycloudflare.com');
 const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
 const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
 const PAGE_NAME = 'task_hub';

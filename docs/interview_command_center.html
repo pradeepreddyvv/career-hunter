@@ -6252,12 +6252,12 @@ Output as table: Manager/Company | Role | Direct Post Link</div>
 // ═══════════════════════════════════════════════════════════
 // SERVER INTEGRATION + AI PRACTICE
 // ═══════════════════════════════════════════════════════════
-const COMMAND_CENTER_BASE = (window.location.origin && window.location.origin.startsWith('http'))
-  ? window.location.origin
-  : 'http://localhost:5678';
+const COMMAND_CENTER_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
 const PROFILE_STORE_READ = `${COMMAND_CENTER_BASE}/webhook/profile-store`;
 const IP_API = `${COMMAND_CENTER_BASE}/webhook/interview-api`;
-const GEMINI_KEY = '';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
 const GEMINI_MODEL = 'gemini-2.5-pro';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`;
 
@@ -7435,7 +7435,9 @@ ipApi({op:'get_questions'}).then(res => {
 }).catch(() => {});
 
 // ==================== EDIT INFRASTRUCTURE ====================
-const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : (location.origin.includes('localhost') ? location.origin : 'https://drinks-started-recovery-street.trycloudflare.com');
 const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
 const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
 const PAGE_NAME = 'command_center';

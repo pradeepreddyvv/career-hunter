@@ -987,7 +987,7 @@ syncChannel.onmessage = (ev) => {
         }
     }
 };
-const GEMINI_KEY = '';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_KEY}`;
 const GEMINI_FLASH_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
 
@@ -2990,7 +2990,7 @@ function doLogin() {
   const pw = document.getElementById('authPassword').value;
   crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw)).then(buf => {
     const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    if (hash === AUTH_HASH || pw === 'pradeep2026') {
+    if (hash === AUTH_HASH) {
       document.getElementById('authOverlay').classList.add('hidden');
       localStorage.setItem('recorder_auth', '1');
     } else {
@@ -3000,7 +3000,9 @@ function doLogin() {
 }
 
 // ==================== N8N PERSISTENCE ====================
-const N8N_DATA_URL = 'http://localhost:5678/webhook/interview-data';
+const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
   try {
@@ -3047,7 +3049,9 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
-const LC_WEBHOOK = 'http://localhost:5678/webhook/leetcode-live';
+const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/leetcode-live';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';

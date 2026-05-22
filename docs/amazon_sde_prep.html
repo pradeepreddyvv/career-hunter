@@ -1210,7 +1210,9 @@ function switchTab(id) {
 }
 
 // ==================== EDIT INFRASTRUCTURE ====================
-const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : (location.origin.includes('localhost') ? location.origin : 'https://drinks-started-recovery-street.trycloudflare.com');
 const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
 const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
 const PAGE_NAME = 'amazon_prep';

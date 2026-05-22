@@ -4549,9 +4549,12 @@ Output as table: Manager/Company | Role | Direct Post Link</div>
 // ═══════════════════════════════════════════════════════════
 // SERVER INTEGRATION + AI PRACTICE
 // ═══════════════════════════════════════════════════════════
-const IP_API = 'http://localhost:5678/webhook/interview-api';
-const GEMINI_KEY = '';
-const GEMINI_MODEL = 'gemini-3.1-pro-preview';
+const _N8N_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
+const IP_API = _N8N_BASE + '/webhook/interview-api';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
+const GEMINI_MODEL = 'gemini-2.5-pro';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`;
 
 // State
