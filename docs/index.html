@@ -146,7 +146,24 @@ tr:hover td{background:var(--surface2)}
 .parsed-skills .skill-tag{padding:4px 10px;border-radius:20px;font-size:12px;background:rgba(99,102,241,.15);color:var(--accent2);border:1px solid rgba(99,102,241,.2)}
 .onboarding-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}
 @media(max-width:500px){.parsed-grid{grid-template-columns:1fr}}
+.parse-options{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.parse-option{background:var(--surface2);border:2px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:border-color .2s,background .2s;text-align:center}
+.parse-option:hover{border-color:var(--accent);background:rgba(99,102,241,.05)}
+.parse-option .po-icon{font-size:28px;margin-bottom:8px}
+.parse-option h3{font-size:15px;margin-bottom:6px}
+.parse-option p{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.parse-option .badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px}
+.parse-option .badge.free{background:rgba(34,197,94,.15);color:var(--green)}
+.parse-option .badge.rec{background:rgba(99,102,241,.15);color:var(--accent2)}
+.ai-key-section{margin-top:16px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
+.upload-zone.has-file{border-color:var(--green);background:rgba(34,197,94,.05)}
+.upload-zone.has-file .icon{color:var(--green)}
+.upload-zone .file-name{font-size:13px;color:var(--green);margin-top:4px}
+.upload-zone.loading{pointer-events:none;opacity:.7}
+@media(max-width:500px){.parse-options{grid-template-columns:1fr}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
 <div id="app" class="app"></div>
@@ -456,26 +473,36 @@ function renderOnboarding() {
   }
 
   if (step === 2) {
+    const hasKey = localStorage.getItem('ch_gemini_key') || '';
     return `<div class="onboarding-page"><div class="onboarding-box">
       <div class="onboarding-steps">${steps.map(s => `<div class="onboarding-step ${s < step ? 'done' : s === step ? 'active' : ''}"></div>`).join('')}</div>
-      <h2>Add your Gemini API Key</h2>
-      <p class="subtitle">We use Google's Gemini AI to parse your resume and score jobs. Your key is encrypted and stored securely. <strong>It's free!</strong></p>
-      <div class="card" style="padding:16px;margin-bottom:16px;border-color:var(--accent);background:rgba(99,102,241,.05)">
-        <p style="font-size:13px;margin:0"><strong>How to get a free key:</strong></p>
-        <ol style="font-size:13px;color:var(--text2);margin:8px 0 0 16px;line-height:1.8">
-          <li>Go to <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a></li>
-          <li>Sign in with your Google account</li>
-          <li>Click "Create API Key" and copy it</li>
-        </ol>
+      <h2>How would you like to parse your resume?</h2>
+      <p class="subtitle">Choose a parsing method. AI parsing extracts more details but needs a free Gemini API key.</p>
+      <div class="parse-options">
+        <div class="parse-option" id="opt-basic">
+          <div class="po-icon">&#9889;</div>
+          <h3>Quick Parse</h3>
+          <p>Extracts name, email, phone, links, skills, and education using pattern matching</p>
+          <span class="badge free">No API key needed</span>
+        </div>
+        <div class="parse-option" id="opt-ai">
+          <div class="po-icon">&#129302;</div>
+          <h3>AI Parse</h3>
+          <p>Gemini AI extracts detailed skills, experience summary, target roles, and locations</p>
+          <span class="badge rec">Recommended</span>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Gemini API Key</label>
-        <input id="onboard-api-key" type="password" placeholder="AIzaSy..." autofocus>
+      <div class="ai-key-section hidden" id="ai-key-section">
+        <div class="form-group" style="margin-bottom:8px">
+          <label>Gemini API Key</label>
+          <input id="onboard-api-key" type="password" placeholder="AIzaSy..." value="${esc(hasKey)}" autofocus>
+        </div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> — sign in, click "Create API Key", copy it here.</p>
+        <button class="btn btn-primary" id="ai-parse-btn" style="width:100%">Parse with Gemini AI</button>
       </div>
       <div id="onboard-error" class="error-msg"></div>
       <div class="onboarding-actions">
         <button class="btn btn-outline" onclick="state.onboardingStep=1;render()">Back</button>
-        <button class="btn btn-primary" id="parse-resume-btn">Parse My Resume</button>
       </div>
     </div></div>`;
   }
@@ -539,64 +566,232 @@ function setupOnboardingListeners() {
   }
 
   if (step === 2) {
-    const parseBtn = document.getElementById('parse-resume-btn');
+    const optBasic = document.getElementById('opt-basic');
+    const optAi = document.getElementById('opt-ai');
+    const aiSection = document.getElementById('ai-key-section');
+    const aiParseBtn = document.getElementById('ai-parse-btn');
     const keyInput = document.getElementById('onboard-api-key');
 
-    parseBtn?.addEventListener('click', async () => {
+    optBasic?.addEventListener('click', () => {
+      state.parsedProfile = basicParseResume(state.resumeText);
+      state.profileText = state.resumeText;
+      state.onboardingStep = 3;
+      render();
+    });
+
+    optAi?.addEventListener('click', () => {
+      aiSection?.classList.remove('hidden');
+      optAi.style.borderColor = 'var(--accent)';
+      optAi.style.background = 'rgba(99,102,241,.08)';
+      optBasic.style.opacity = '0.5';
+      keyInput?.focus();
+    });
+
+    aiParseBtn?.addEventListener('click', async () => {
       const key = keyInput?.value?.trim();
       const errEl = document.getElementById('onboard-error');
       if (!key) { errEl.textContent = 'Please enter your Gemini API key'; return; }
       errEl.textContent = '';
-      parseBtn.disabled = true;
-      parseBtn.innerHTML = '<span class="spinner"></span> Parsing resume...';
+      aiParseBtn.disabled = true;
+      aiParseBtn.innerHTML = '<span class="spinner"></span> Parsing with Gemini AI...';
       try {
-        const result = await api('POST', '/api/v1/profile/parse-resume', {
-          resume_text: state.resumeText,
-          gemini_api_key: key
-        });
-        state.parsedProfile = result.parsed;
+        const parsed = await aiParseResume(state.resumeText, key);
+        localStorage.setItem('ch_gemini_key', key);
+        state.parsedProfile = parsed;
         state.user.has_api_key = true;
         state.profileText = state.resumeText;
         state.onboardingStep = 3;
         render();
-      } catch(e) {
-        errEl.textContent = e.detail || e.error || 'Failed to parse resume. Check your API key.';
-        parseBtn.disabled = false;
-        parseBtn.textContent = 'Parse My Resume';
+      } catch (e) {
+        errEl.textContent = e.message || 'Failed to parse resume. Check your API key and try again.';
+        aiParseBtn.disabled = false;
+        aiParseBtn.textContent = 'Parse with Gemini AI';
       }
     });
 
     keyInput?.addEventListener('keypress', e => {
-      if (e.key === 'Enter') parseBtn?.click();
+      if (e.key === 'Enter') aiParseBtn?.click();
     });
   }
 }
 
 async function handleResumeFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
+  const zone = document.getElementById('upload-zone');
+  state.resumeFileName = file.name;
+
   if (ext === 'txt') {
     state.resumeText = await file.text();
-    const el = document.getElementById('resume-paste');
-    if (el) el.value = state.resumeText;
-    toast('Resume text loaded');
+    updateResumeUI(zone);
     return;
   }
-  if (ext === 'pdf' || ext === 'docx' || ext === 'doc') {
-    // Read as text — browsers can read basic text from these
+
+  if (ext === 'pdf') {
+    if (typeof pdfjsLib === 'undefined') {
+      toast('PDF parser loading... try again in a moment', 'error');
+      return;
+    }
     try {
-      const text = await file.text();
-      if (text.length > 100 && !text.includes('%PDF')) {
-        state.resumeText = text;
-        const el = document.getElementById('resume-paste');
-        if (el) el.value = state.resumeText;
-        toast('Resume loaded');
-        return;
+      if (zone) { zone.classList.add('loading'); zone.innerHTML = '<div class="icon">&#9203;</div><strong>Extracting text from PDF...</strong>'; }
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let text = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str).join(' ') + '\n';
       }
-    } catch {}
-    toast('For PDF/DOCX: please copy-paste the text content instead', 'error');
+      state.resumeText = text.trim();
+      if (state.resumeText.length < 30) throw new Error('Could not extract text');
+      updateResumeUI(zone);
+    } catch (e) {
+      toast('Could not extract PDF text. Try pasting the content instead.', 'error');
+      if (zone) { zone.classList.remove('loading'); zone.innerHTML = '<div class="icon">&#128196;</div><strong>Drop your resume here or click to upload</strong><p>Supports PDF, DOCX, or TXT files</p>'; }
+    }
+    return;
+  }
+
+  if (ext === 'docx' || ext === 'doc') {
+    if (typeof mammoth === 'undefined') {
+      toast('DOCX parser loading... try again in a moment', 'error');
+      return;
+    }
+    try {
+      if (zone) { zone.classList.add('loading'); zone.innerHTML = '<div class="icon">&#9203;</div><strong>Extracting text from document...</strong>'; }
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      state.resumeText = result.value.trim();
+      if (state.resumeText.length < 30) throw new Error('Could not extract text');
+      updateResumeUI(zone);
+    } catch (e) {
+      toast('Could not extract DOCX text. Try pasting the content instead.', 'error');
+      if (zone) { zone.classList.remove('loading'); zone.innerHTML = '<div class="icon">&#128196;</div><strong>Drop your resume here or click to upload</strong><p>Supports PDF, DOCX, or TXT files</p>'; }
+    }
     return;
   }
   toast('Unsupported file type. Please use TXT, PDF, or DOCX.', 'error');
+}
+
+function updateResumeUI(zone) {
+  if (zone) {
+    zone.classList.remove('loading');
+    zone.classList.add('has-file');
+    zone.innerHTML = `<div class="icon">&#9989;</div><strong>${esc(state.resumeFileName)}</strong><div class="file-name">${state.resumeText.length.toLocaleString()} characters extracted</div>`;
+  }
+  const el = document.getElementById('resume-paste');
+  if (el) el.value = state.resumeText;
+  toast('Resume loaded successfully');
+}
+
+function basicParseResume(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/);
+  const phoneMatch = text.match(/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+  const linkedinMatch = text.match(/linkedin\.com\/in\/[\w-]+/i);
+  const githubMatch = text.match(/github\.com\/[\w-]+/i);
+
+  let name = '';
+  for (const line of lines.slice(0, 5)) {
+    const clean = line.replace(/[|·•\-]/g, '').trim();
+    if (clean.length > 2 && clean.length < 50 && !clean.includes('@') && !clean.match(/\d{3}/) && !clean.match(/linkedin|github|http/i)) {
+      name = clean;
+      break;
+    }
+  }
+
+  const skillKeywords = ['python','java','javascript','typescript','react','node','sql','aws','docker','kubernetes','git','c\\+\\+','c#','go','rust','ruby','php','swift','kotlin','scala','html','css','mongodb','postgresql','mysql','redis','kafka','graphql','rest','spring','django','flask','fastapi','next\\.js','vue','angular','tensorflow','pytorch','linux','terraform','jenkins','ci/cd','agile','figma','tableau','pandas','numpy','spark'];
+  const foundSkills = [];
+  const textLower = text.toLowerCase();
+  for (const kw of skillKeywords) {
+    if (new RegExp('\\b' + kw + '\\b', 'i').test(text)) {
+      const match = text.match(new RegExp('\\b' + kw + '\\b', 'i'));
+      if (match) foundSkills.push(match[0]);
+    }
+  }
+
+  let education = '';
+  const eduPatterns = [/(?:B\.?S\.?|M\.?S\.?|Bachelor|Master|Ph\.?D|MBA)[\w\s,.]+(University|Institute|College)[\w\s,.]*/gi,
+    /(?:University|Institute|College)[\w\s,.]*(?:B\.?S\.?|M\.?S\.?|Bachelor|Master|Ph\.?D|MBA)[\w\s,.]*/gi];
+  for (const pat of eduPatterns) {
+    const m = text.match(pat);
+    if (m) { education = m[0].substring(0, 120); break; }
+  }
+
+  const rolePatterns = ['software engineer', 'sde', 'developer', 'frontend', 'backend', 'full.?stack', 'data scientist', 'data engineer', 'ml engineer', 'devops', 'sre', 'product manager', 'ux designer', 'qa engineer', 'mobile developer', 'ios developer', 'android developer'];
+  const target_roles = [];
+  for (const rp of rolePatterns) {
+    if (new RegExp(rp, 'i').test(textLower)) {
+      const match = textLower.match(new RegExp(rp, 'i'));
+      if (match) target_roles.push(match[0].replace(/\b\w/g, c => c.toUpperCase()));
+    }
+  }
+  if (!target_roles.length) target_roles.push('Software Engineer');
+
+  let experience_summary = '';
+  const expSection = text.match(/(?:experience|work history|employment)[\s\S]{0,800}/i);
+  if (expSection) {
+    const expLines = expSection[0].split('\n').slice(1, 4).map(l => l.trim()).filter(Boolean);
+    experience_summary = expLines.join(' | ').substring(0, 200);
+  }
+
+  return {
+    name: name || 'Unknown',
+    email: emailMatch ? emailMatch[0] : '',
+    phone: phoneMatch ? phoneMatch[0] : '',
+    linkedin: linkedinMatch ? 'https://' + linkedinMatch[0] : '',
+    github: githubMatch ? 'https://' + githubMatch[0] : '',
+    education,
+    skills: [...new Set(foundSkills)],
+    target_roles: [...new Set(target_roles)].slice(0, 5),
+    preferred_locations: [],
+    experience_summary
+  };
+}
+
+async function aiParseResume(text, apiKey) {
+  const prompt = `Parse this resume and extract structured data. Return ONLY valid JSON with these fields:
+{
+  "name": "full name",
+  "email": "email address",
+  "phone": "phone number",
+  "linkedin": "linkedin URL",
+  "github": "github URL",
+  "education": "degree, school, GPA if mentioned",
+  "skills": ["skill1", "skill2", ...],
+  "target_roles": ["role1", "role2", ...],
+  "preferred_locations": ["location1", ...],
+  "experience_summary": "2-3 sentence summary of work experience"
+}
+
+Resume text:
+${text.substring(0, 8000)}`;
+
+  const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.1, maxOutputTokens: 2000 }
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    if (resp.status === 400 || resp.status === 403) throw new Error('Invalid API key. Please check and try again.');
+    throw new Error(err.error?.message || 'Gemini API error (' + resp.status + ')');
+  }
+
+  const data = await resp.json();
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('Could not parse AI response. Try Quick Parse instead.');
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  if (!parsed.skills) parsed.skills = [];
+  if (!parsed.target_roles) parsed.target_roles = [];
+  if (!parsed.preferred_locations) parsed.preferred_locations = [];
+  return parsed;
 }
 
 function skipOnboarding() {
