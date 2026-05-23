@@ -1,7 +1,7 @@
 window.CH_CONFIG = {
   PIPELINE_API: localStorage.getItem('cp_api_url') || (
     (location.hostname.includes('github.io') || location.protocol === 'file:')
-      ? 'https://lows-whenever-medical-misc.trycloudflare.com'
+      ? 'https://tax-frog-sherman-lobby.trycloudflare.com'
       : location.origin
   ),
   N8N_API: localStorage.getItem('ch_n8n_url') || (
