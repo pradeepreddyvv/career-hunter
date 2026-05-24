@@ -195,7 +195,9 @@ const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:'
 
 const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
-  tab: 'browse', q: '', role: '', company: '', offset: 0, limit: 200,
+  tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 200,
+  empTypes: JSON.parse(localStorage.getItem('ch_emp_types') || '[]'),
+  days: parseInt(localStorage.getItem('ch_days') || '365'),
   busy: {}, resume: localStorage.getItem('ch_resume_text') || '',
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
@@ -224,6 +226,9 @@ async function loadJobs() {
     if (S.role) p.set('role_category', S.role);
     if (S.company) p.set('company', S.company);
     if (S.q) p.set('search', S.q);
+    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
+    if (et) p.set('employment_type', et);
+    if (S.days && S.days < 730) p.set('days', S.days);
     const d = await api(`/api/v1/jobs/browse?${p}`);
     S.jobs = d.jobs || []; S.total = d.total || 0; S.offset = 0;
     scoreKeyword();
@@ -238,6 +243,9 @@ async function loadMore() {
     const p = new URLSearchParams({ limit: S.limit, offset: o });
     if (S.role) p.set('role_category', S.role);
     if (S.q) p.set('search', S.q);
+    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
+    if (et) p.set('employment_type', et);
+    if (S.days && S.days < 730) p.set('days', S.days);
     const d = await api(`/api/v1/jobs/browse?${p}`);
     S.jobs = S.jobs.concat(d.jobs || []); S.total = d.total; S.offset = o;
     scoreKeyword();
@@ -386,7 +394,7 @@ async function aiParse(text, apiKey) {
 // === Onboarding ===
 function renderOB() {
   const s = S.step;
-  const bar = `<div class="steps">${[1,2,3].map(i => `<div class="${i<s?'done':i===s?'cur':''}"></div>`).join('')}</div>`;
+  const bar = `<div class="steps">${[1,2,3,4].map(i => `<div class="${i<s?'done':i===s?'cur':''}"></div>`).join('')}</div>`;
 
   if (s === 1) return `<div class="ob-page"><div class="ob-box">${bar}
     <h2>Career Hunter</h2>
@@ -425,7 +433,30 @@ function renderOB() {
       ${(p.skills||[]).length ? `<div style="margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Skills (${p.skills.length})</div><div class="skills-list">${p.skills.map(s => `<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}
       ${p.experience_summary ? `<div class="card" style="padding:12px;margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Experience</div><div style="font-size:13px;line-height:1.5">${esc(p.experience_summary)}</div></div>` : ''}
       ${S.key ? `<div class="card" style="padding:10px 14px;margin-bottom:14px;border-left:3px solid var(--accent)"><span style="font-size:13px">&#10024; Jobs will be auto-scored with Gemini AI using your key for best match accuracy.</span></div>` : ''}
-      <div class="ob-actions"><button class="btn btn-primary" onclick="finishOB()" style="padding:10px 28px;font-size:14px">Start Finding Jobs</button></div>
+      <div class="ob-actions"><button class="btn btn-ghost" onclick="S.step=2;render()">Back</button><button class="btn btn-primary" onclick="S.step=4;render()" style="padding:10px 28px;font-size:14px">Continue</button></div>
+    </div></div>`;
+  }
+
+  if (s === 4) {
+    const types = ['Internship','New Grad','Full-Time','Contract','Co-op','Part-Time'];
+    return `<div class="ob-page"><div class="ob-box">${bar}
+      <h2>What are you looking for?</h2>
+      <p class="sub">Select the types of positions you're interested in. We'll only show and score matching jobs.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px">
+        ${types.map(t => `<div class="chip ${S.empTypes.includes(t)?'on':''}" onclick="toggleEmpType('${t}')" style="padding:8px 16px;font-size:13px;cursor:pointer">${t}</div>`).join('')}
+      </div>
+      ${S.empTypes.length === 0 ? '<p style="color:var(--text2);font-size:12px;margin-bottom:14px">No preference selected — all job types will be shown.</p>' : `<p style="color:var(--accent);font-size:12px;margin-bottom:14px">${S.empTypes.length} type${S.empTypes.length>1?'s':''} selected</p>`}
+      <div style="margin:18px 0 14px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Posted within: <strong id="daysLabel">${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days'}</strong></div>
+        <input type="range" min="7" max="730" value="${S.days}" style="width:100%;accent-color:var(--accent)" oninput="setDays(this.value)">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2)"><span>1 week</span><span>6 months</span><span>1 year</span><span>2 years</span></div>
+      </div>
+      <div class="ob-actions">
+        <button class="btn btn-ghost" onclick="S.step=3;render()">Back</button>
+        <button class="btn btn-primary" onclick="finishOB()" style="padding:10px 28px;font-size:14px">
+          ${S.empTypes.length ? 'Find ' + S.empTypes.join(' & ') + ' Jobs' : 'Show All Jobs'}
+        </button>
+      </div>
     </div></div>`;
   }
 }
@@ -468,6 +499,26 @@ function setupOB() {
   }
 }
 
+function toggleEmpType(t) {
+  const i = S.empTypes.indexOf(t);
+  if (i >= 0) S.empTypes.splice(i, 1); else S.empTypes.push(t);
+  localStorage.setItem('ch_emp_types', JSON.stringify(S.empTypes));
+  render();
+}
+
+function setDays(v) {
+  S.days = parseInt(v);
+  localStorage.setItem('ch_days', S.days);
+  const lbl = document.getElementById('daysLabel');
+  if (lbl) lbl.textContent = S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days';
+}
+
+function setDaysAndReload(v) {
+  S.days = parseInt(v);
+  localStorage.setItem('ch_days', S.days);
+  loadJobs();
+}
+
 async function finishOB() {
   S.view = 'app'; render();
   await loadJobs(); loadStats();
@@ -508,12 +559,20 @@ function renderSidebar(j) {
     <div class="sidebar-search"><input placeholder="Search jobs..." value="${esc(S.q)}" oninput="onSearch(this.value)"></div>
     <div class="sidebar-info"><span>${j.length} of ${S.total.toLocaleString()}</span><button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 8px;font-size:10px">Refresh</button></div>
     <div class="filters">
-      <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All</div>
+      <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All Roles</div>
       ${roles.map(r => `<div class="chip ${S.role===r?'on':''}" onclick="S.role='${esc(r)}';loadJobs()">${esc(r)}</div>`).join('')}
+    </div>
+    <div class="filters" style="margin-top:4px">
+      <div class="chip ${!S.empFilter?'on':''}" onclick="S.empFilter='';loadJobs()">All Types</div>
+      ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empFilter===t?'on':''}" onclick="S.empFilter='${t}';loadJobs()">${t}</div>`).join('')}
+    </div>
+    <div style="padding:4px 12px 8px;font-size:11px;color:var(--text2)">
+      Posted: <strong>${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + 'mo' : S.days + 'd'}</strong>
+      <input type="range" min="7" max="730" value="${S.days}" style="width:100%;accent-color:var(--accent);height:4px" onchange="setDaysAndReload(this.value)">
     </div>
     <div class="job-list">
       ${j.length===0 ? '<div class="empty" style="padding:30px"><p>No jobs found</p></div>' :
-        j.map(x => { const sc = S.scores[x.id]?.score||0; return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${esc(x.source||'')} ${esc((x.location||'').slice(0,20))}</div></div>`; }).join('')}
+        j.map(x => { const sc = S.scores[x.id]?.score||0; const et = x.employment_type; return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}${et && et!=='Full-Time'?` <span class="label" style="font-size:9px;padding:1px 5px;background:var(--surface-hover);border-radius:3px">${esc(et)}</span>`:''}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${esc(x.source||'')} ${esc((x.location||'').slice(0,20))}</div></div>`; }).join('')}
       ${j.length < S.total ? `<div style="text-align:center;padding:10px"><button class="btn btn-ghost btn-sm" onclick="loadMore()" ${S.busy.more?'disabled':''}>${S.busy.more?'Loading...':'Load More'}</button></div>` : ''}
     </div>
   </div>`;
