@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Career Hunter — LeetCode Companion
-// @namespace    https://github.com/pradeepreddyvv/career-hunter
+// @namespace    https://github.com/yourusername/career-hunter
 // @version      2.1
 // @description  Captures live code from LeetCode/NeetCode, sends to Career Hunter, and provides an AI interviewer with voice interaction
 // @author       Career Hunter Contributors

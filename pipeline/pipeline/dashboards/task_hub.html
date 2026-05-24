@@ -489,7 +489,7 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   <h3>Add Context</h3>
   <div class="form-group">
     <label>Context / Note</label>
-    <textarea id="contextText" rows="4" placeholder="e.g., Amazon interview is on April 10. Focus on LP stories and system design."></textarea>
+    <textarea id="contextText" rows="4" placeholder="e.g., [Target] interview is on April 10. Focus on LP stories and system design."></textarea>
   </div>
   <div class="form-group">
     <label>Type</label>
@@ -1149,7 +1149,7 @@ async function aiPrioritize() {
 
   const journalStr = buildJournalContext(5);
 
-  const prompt = `You are a productivity coach for Your Name, an MSCS student at University (GPA X.X) searching for SDE internships in the USA. Amazon SDE Intern interview scheduled [Interview Date].
+  const prompt = `You are a productivity coach for Your Name, an MSCS student at University (GPA X.X) searching for SDE internships in the USA. [Target Company] [Role] interview scheduled [Interview Date].
 
 TODAY: ${todayStr()} | Time already logged today: ${todayLogged} minutes
 
@@ -1229,14 +1229,14 @@ async function aiSuggestTasks() {
 
   const prompt = `You are a career prep advisor for Your Name:
 - MSCS at Your University, targeting SDE internships
-- F-1 visa, CPT/OPT authorized, no sponsorship required
+- [Visa Status], [Work Authorization], no sponsorship required
 - Availability: May 27 – Aug 7, 2026
 - 2 years SWE at Previous Company (Java, Spring Boot, AWS, React, Oracle, Kafka, Redis, Kong)
 - Key metrics: 100+ TPS high-throughput APIs, 83% efficiency improvement (12→2 days), $120K AWS savings, 60% productivity gain
 - Key projects: ProjectA (Next.js + Spring Boot, live on Vercel), ProjectB (MongoDB sharding + LLM), ProjectC (5-agent pipeline, HackUniversity 2025)
 - Published paper at Published Conference 2023 (Published Research, YOLO + lane detection, >90% accuracy)
 - CodeChef Global Rank 22
-- Has Amazon SDE Intern interview scheduled ([Interview Date])
+- Has [Target Company] [Role] interview scheduled ([Interview Date])
 - Currently taking: Perception in Robotics, other MSCS courses
 
 TODAY: ${todayStr()}
@@ -1252,7 +1252,7 @@ ${taskStr}
 
 Based on the journal entries (what he accomplished, what he's struggling with, what he planned), his current task list, and his interview timeline, suggest 3-5 NEW high-impact tasks. Prioritize based on:
 1. What the journal says he struggled with or didn't finish
-2. Interview preparation gaps (behavioral + technical) given Amazon interview is imminent
+2. Interview preparation gaps (behavioral + technical) given [Target] interview is imminent
 3. Active job applications momentum (he should apply daily)
 4. Skill gaps revealed by journal challenges
 5. Follow-through on plans he wrote in previous journal entries
@@ -1545,7 +1545,7 @@ async function aiReflectJournal() {
   const pastJournals = buildJournalContext(7);
   const taskStr = buildFullTaskContext();
 
-  const prompt = `You are a supportive productivity coach for Your Name (MSCS at University, hunting SDE internships, Amazon interview [Interview Date]).
+  const prompt = `You are a supportive productivity coach for Your Name (MSCS at University, hunting SDE internships, [Target] interview [Interview Date]).
 
 TODAY: ${todayStr()} | Mood: ${mood}
 
@@ -1660,7 +1660,7 @@ async function aiEnhanceTask() {
   const existingTasks = tasks.filter(t => t.status !== 'completed').map(t => t.title).join(', ');
   const journalStr = buildJournalContext(5);
 
-  const prompt = `You are helping Your Name (MSCS at University, SDE internship search, Amazon interview [Interview Date]) improve a task he's adding to his todo list.
+  const prompt = `You are helping Your Name (MSCS at University, SDE internship search, [Target] interview [Interview Date]) improve a task he's adding to his todo list.
 
 RECENT JOURNAL:
 ${journalStr}

@@ -333,7 +333,7 @@ function extractJson(text) {
 // FEEDBACK PROMPTS (same as server-side)
 // ═══════════════════════════════════════════════════
 function buildFeedbackPrompt(question, answer, lp, durationSec) {
-  return `You are an Amazon interviewer with 15+ years of experience. Evaluate this behavioral interview answer.
+  return `You are an [Target] interviewer with 15+ years of experience. Evaluate this behavioral interview answer.
 
 QUESTION: "${question}"
 LEADERSHIP PRINCIPLE: ${lp}
@@ -385,7 +385,7 @@ function buildSessionPrompt(answers) {
   const summary = answers.map((a, i) =>
     `Q${i+1} [${a.questionLp}]: "${a.questionText}"\nAnswer (score: ${a.feedback?.overall_score || '?'}): "${a.answerText.substring(0, 200)}..."\nWeak areas: ${a.feedback?.weak_areas?.join(', ') || 'none'}`
   ).join('\n\n');
-  return `You are an Amazon interviewer completing a mock interview debrief. Analyze this full session.
+  return `You are an [Target] interviewer completing a mock interview debrief. Analyze this full session.
 
 SESSION (${answers.length} questions):
 ${summary}
@@ -408,7 +408,7 @@ Return ONLY valid JSON:
 }
 
 function buildFollowUpPrompt(question, answer, lp, feedback) {
-  return `You are an Amazon interviewer. Generate ONE natural follow-up question.
+  return `You are an [Target] interviewer. Generate ONE natural follow-up question.
 Original question [${lp}]: "${question}"
 Candidate's answer: "${answer}"
 Weak areas: ${feedback?.weak_areas?.join(', ') || 'none'}

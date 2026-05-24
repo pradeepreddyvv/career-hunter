@@ -1,6 +1,6 @@
 # Career Hunter
 
-[![CI](https://github.com/pradeepreddyvv/career-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/pradeepreddyvv/career-hunter/actions/workflows/ci.yml)
+[![CI](https://github.com/yourusername/career-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/career-hunter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 
@@ -32,7 +32,7 @@
 **1. Clone and install**
 
 ```bash
-git clone https://github.com/pradeepreddyvv/career-hunter.git
+git clone https://github.com/yourusername/career-hunter.git
 cd career-hunter
 npm install
 ```
@@ -76,7 +76,7 @@ After that, you land on the dashboard with access to all features. No accounts, 
 ## Docker
 
 ```bash
-git clone https://github.com/pradeepreddyvv/career-hunter.git
+git clone https://github.com/yourusername/career-hunter.git
 cd career-hunter
 cp .env.example .env
 # Add your GEMINI_API_KEY to .env

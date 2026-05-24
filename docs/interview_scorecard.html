@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pradeep's Interview Readiness Scorecard</title>
+<title>[Your] Interview Readiness Scorecard</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0c10;--bg2:#12151c;--bg3:#1a1e2a;--bg4:#252a3a;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--orange:#f97316;--cyan:#06b6d4;--pink:#ec4899;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#1e293b;--radius:10px}
@@ -136,7 +136,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px 10px;
 <div class="app">
 <div class="header">
   <h1>Interview Readiness Scorecard</h1>
-  <p>Comprehensive scoring of every answerable question, project, decision, and difficulty from Pradeep's vault</p>
+  <p>Comprehensive scoring of every answerable question, project, decision, and difficulty from [Your] vault</p>
 </div>
 
 <div class="nav" id="nav"></div>
@@ -169,7 +169,7 @@ function scoreTag(s){return s>=80?'t-g':s>=65?'t-c':s>=50?'t-y':s>=35?'t-o':'t-r
 let PROJECTS = [
   {
     name: "API Inventory & Compliance Portal",
-    company: "IDFC First Bank", role: "SWE",
+    company: "[Previous Company]", role: "SWE",
     metrics: 19, depth: 20, star: 19, unique: 17, deliver: 18,
     metricsList: ["60% productivity improvement","40% RBI compliance lag reduction","2,000+ APIs unified","6,000+ endpoints","100s of APIs tracked"],
     hld: "React.js UI <-> Spring Boot Backend <-> Oracle DB. Scheduled sync every 4hrs from AnyPoint, GoCD, Kong Admin APIs. RBI compliance rules engine (7 rules R1-R7). Strategy pattern for compliance rules.",
@@ -190,7 +190,7 @@ let PROJECTS = [
   },
   {
     name: "Partner Developer Portal",
-    company: "IDFC First Bank", role: "SWE",
+    company: "[Previous Company]", role: "SWE",
     metrics: 20, depth: 20, star: 20, unique: 18, deliver: 19,
     metricsList: ["83% efficiency improvement (12→2 days)","6x faster partner onboarding","50+ fintech partners","23 production APIs","1.08 MB API catalog cached"],
     hld: "Flutter Web frontend → Spring Boot WAR on Tomcat 9.0.99 → Oracle DB. Kong API Gateway for rate limiting. JourneyId anonymous session + OAuth2 Client Credentials. AES-256 encryption.",
@@ -210,7 +210,7 @@ let PROJECTS = [
   },
   {
     name: "High-Throughput high-throughput APIs",
-    company: "IDFC First Bank", role: "SWE",
+    company: "[Previous Company]", role: "SWE",
     metrics: 20, depth: 20, star: 19, unique: 19, deliver: 19,
     metricsList: ["100+ TPS sustained","<1s latency","30/70 weighted routing","40% Centerprise cache hit rate","800ms→<50ms cache hit","99.98% Kafka write success"],
     hld: "Kong 30/70 weighted upstream routing (primary 3 nodes weight=30, secondary 5 nodes weight=70). Least-connections balancing. Redis caching with SHA-256(PAN) keys. Kafka async writes with DLQ.",
@@ -232,7 +232,7 @@ let PROJECTS = [
   },
   {
     name: "Collections App APIs (Internship)",
-    company: "IDFC First Bank", role: "Intern",
+    company: "[Previous Company]", role: "Intern",
     metrics: 16, depth: 17, star: 17, unique: 14, deliver: 16,
     metricsList: ["500+ field agents served","30% data fetch reduction","~95% cache hit rate","700ms→180ms with cache","50 customers/page pagination"],
     hld: "Salesforce OAuth2 Client Credentials → RestTemplate → SFDC → {access_token, expires_in}. Redis cache AES-256 encrypted. Cursor-based pagination using SFDC nextRecordsUrl.",
@@ -252,7 +252,7 @@ let PROJECTS = [
   },
   {
     name: "Backend Scheduler + LLM Email Assistant",
-    company: "IDFC First Bank", role: "SWE",
+    company: "[Previous Company]", role: "SWE",
     metrics: 18, depth: 18, star: 17, unique: 18, deliver: 17,
     metricsList: ["100s→13s (8x speedup)","200+ API services monitored","30% email drafting time reduction","15-min polling interval","Temperature=0.3"],
     hld: "Scheduler: Kong Admin API → GET /services → parallelStream() → /actuator/health + /actuator/info → bulk save Oracle. Email: MS Graph API (Application permissions) → LLM → privacy filter → draft response.",
@@ -260,7 +260,7 @@ let PROJECTS = [
     starStories: 2, interviewQAs: 7,
     keyDecisions: [
       {q:"Why fixedDelay not fixedRate?", a:"fixedRate: starts 15 min after previous STARTED. If run takes 14 min due to timeouts, only 1 min gap — overlap risk. fixedDelay: starts 15 min after previous COMPLETED. Guarantees safe gap. With shared Oracle DB, concurrent runs = deadlocks.", score:90},
-      {q:"Why internal LLM not OpenAI?", a:"RBI data localization policy + DPDP Act 2023: PII cannot leave India. Internal LLM runs on IDFC First Bank's network. All data stays within Indian data centers. Non-negotiable for banking.", score:95},
+      {q:"Why internal LLM not OpenAI?", a:"RBI data localization policy + DPDP Act 2023: PII cannot leave India. Internal LLM runs on [Previous Company]'s network. All data stays within Indian data centers. Non-negotiable for banking.", score:95},
       {q:"Why Temperature=0.3?", a:"0.0 = deterministic but robotic repetition. 0.7+ = creative but hallucination risk for emails. 0.3 = natural variation + factual grounding. Tested on 50 sample emails — best balance.", score:82},
       {q:"Why parallelStream() not CompletableFuture?", a:"Homogeneous HTTP health checks, same operation per service. parallelStream() is simpler for embarrassingly parallel. CompletableFuture better for heterogeneous async chains with dependencies.", score:85}
     ],
@@ -483,7 +483,7 @@ let LP_SCORES = [
     followUpReady:true, altStoryAvailable:false,
     answerQuality:"Shows both parts: disagreed (with reasoning) AND committed (fully). Not just 'I was right' — shows maturity.",
     depth:"Can discuss: S3 vs BLOB trade-offs, on-premise constraints, how BLOB was optimized"},
-  {num:14, name:"Deliver Results", score:93, project:"IDFC First Bank 2 Years Summary",
+  {num:14, name:"Deliver Results", score:93, project:"[Previous Company] 2 Years Summary",
     strength:"4 concrete results with metrics: 60% productivity, 100 TPS, 83% efficiency improvement, zero data loss. All in 2 years.",
     gap:"None — summary story with strong metrics",
     followUpReady:true, altStoryAvailable:false,
@@ -512,7 +512,7 @@ let TECH_SCORES = [
   {category:"Coding", q:"LRU Cache", score:88, hasCode:true, hasFollow:false,
     strength:"LinkedHashMap with removeEldestEntry — elegant. O(1) both ops.", gap:"Should prepare from-scratch version with HashMap + doubly linked list"},
   {category:"Coding", q:"Detect duplicate JSON keys", score:85, hasCode:true, hasFollow:false,
-    strength:"Production-relevant (built DuplicateKeyCheckFilter at IDFC First Bank). Real experience.", gap:"Could add streaming approach for large JSON"},
+    strength:"Production-relevant (built DuplicateKeyCheckFilter at [Previous Company]). Real experience.", gap:"Could add streaming approach for large JSON"},
   {category:"Coding", q:"Build tree from flat list", score:82, hasCode:true, hasFollow:false,
     strength:"O(n) time/space. Clean implementation.", gap:"Should prepare BFS/DFS traversals as follow-up"},
   {category:"Common", q:"Tell me about yourself", score:90, hasCode:false, hasFollow:true,
@@ -544,7 +544,7 @@ let FOLLOWUP_SCORES = [
   {parent:"Redis Caching", q:"Cache invalidation strategy?", answerable:true, score:90, evidence:"3 strategies used: TTL-based (Centerprise 24hr), explicit flush endpoint (Developer Portal), expiry-buffer (JWT). Principle: freshness vs performance per use case."},
   {parent:"Microservices", q:"How do you handle distributed transactions?", answerable:true, score:75, evidence:"ProjectA: denormalization + webhooks (eventual consistency). CloudHack: message queue decoupling. Can discuss Saga pattern conceptually."},
   {parent:"LLM Integration", q:"How do you handle hallucination?", answerable:true, score:82, evidence:"ProjectB: schema validation of generated queries. Email: 3-layer privacy filter. University: structured JSON output with programmatic validation + dry-run."},
-  {parent:"LLM Integration", q:"Why not just use ChatGPT API?", answerable:true, score:90, evidence:"IDFC First Bank: RBI data localization + DPDP Act 2023. PII cannot leave India. Internal LLM on IDFC First Bank network. Non-negotiable for banking."},
+  {parent:"LLM Integration", q:"Why not just use ChatGPT API?", answerable:true, score:90, evidence:"[Previous Company]: RBI data localization + DPDP Act 2023. PII cannot leave India. Internal LLM on [Previous Company] network. Non-negotiable for banking."},
   {parent:"Published Paper", q:"Walk me through the paper's contribution", answerable:true, score:88, evidence:"Novel row-based lane detection (vs slope-based). Multi-threaded parallel processing. Temporal consistency checks. >90% on GTSRB 43 classes."},
   {parent:"Published Paper", q:"Limitations of your approach?", answerable:true, score:82, evidence:"Night driving (limited training data). Heavy rain/snow (edge detection fails). Single-lane roads. Acknowledged in paper."},
   {parent:"CodeChef Rank 22", q:"What problem did you solve?", answerable:false, score:40, evidence:"No specific problem details in vault. Can discuss general competitive programming approach (complexity analysis, greedy, DP)."},
@@ -557,7 +557,7 @@ let FOLLOWUP_SCORES = [
 let GAPS = [
   {severity:"medium", area:"Coding Practice", detail:"Only 5 prepared coding solutions. Need more DP, graph, and tree problems. CodeChef rank proves ability but need specific FAANG-style problems.", recommendation:"Practice 2-3 LeetCode mediums daily focusing on: sliding window, two pointers, BFS/DFS, DP tabulation"},
   {severity:"low", area:"LP #6 (Hire & Develop)", detail:"Weakest LP story — onboarding doc for intern. Expected for junior level but could be stronger.", recommendation:"Add University developer assistant mentoring experience. Frame as 'helping team members grow'."},
-  {severity:"low", area:"LP #8 (Think Big)", detail:"WorkShift is a smaller project. Vision is good but scale is limited compared to IDFC First Bank stories.", recommendation:"Consider framing the entire career hub automation system as Think Big — end-to-end job hunting pipeline is genuinely ambitious."},
+  {severity:"low", area:"LP #8 (Think Big)", detail:"WorkShift is a smaller project. Vision is good but scale is limited compared to [Previous Company] stories.", recommendation:"Consider framing the entire career hub automation system as Think Big — end-to-end job hunting pipeline is genuinely ambitious."},
   {severity:"medium", area:"System Design Breadth", detail:"6 system design answers prepared. Need more: design Twitter feed, design chat system, design file storage.", recommendation:"Prepare 3-4 more classic designs using YOUR experience (e.g., 'Design an API management platform' = literally what you built)."},
   {severity:"low", area:"'Where in 5 years'", detail:"Generic answer about distributed systems. Should tailor per company.", recommendation:"Company-specific versions: Amazon = 'Principal engineer designing S3-scale systems', Google = 'tech lead on developer tools', etc."},
   {severity:"medium", area:"Distributed Systems Theory", detail:"Strong practical experience but limited theory vocabulary (CAP theorem, consensus, vector clocks).", recommendation:"Study: CAP theorem, eventual consistency, Raft consensus, vector clocks, two-phase commit. Map each to YOUR projects."},

@@ -300,7 +300,7 @@ function extractJson(text) {
 // FEEDBACK PROMPTS (same as server-side)
 // ═══════════════════════════════════════════════════
 function buildFeedbackPrompt(question, answer, lp, durationSec) {
-  return `You are an Amazon interviewer with 15+ years of experience. Evaluate this behavioral interview answer.
+  return `You are an [Target] interviewer with 15+ years of experience. Evaluate this behavioral interview answer.
 
 QUESTION: "${question}"
 LEADERSHIP PRINCIPLE: ${lp}
@@ -352,7 +352,7 @@ function buildSessionPrompt(answers) {
   const summary = answers.map((a, i) =>
     `Q${i+1} [${a.questionLp}]: "${a.questionText}"\nAnswer (score: ${a.feedback?.overall_score || '?'}): "${a.answerText.substring(0, 200)}..."\nWeak areas: ${a.feedback?.weak_areas?.join(', ') || 'none'}`
   ).join('\n\n');
-  return `You are an Amazon interviewer completing a mock interview debrief. Analyze this full session.
+  return `You are an [Target] interviewer completing a mock interview debrief. Analyze this full session.
 
 SESSION (${answers.length} questions):
 ${summary}
@@ -375,7 +375,7 @@ Return ONLY valid JSON:
 }
 
 function buildFollowUpPrompt(question, answer, lp, feedback) {
-  return `You are an Amazon interviewer. Generate ONE natural follow-up question.
+  return `You are an [Target] interviewer. Generate ONE natural follow-up question.
 Original question [${lp}]: "${question}"
 Candidate's answer: "${answer}"
 Weak areas: ${feedback?.weak_areas?.join(', ') || 'none'}
@@ -820,7 +820,7 @@ function App() {
   // ── Header ──
   const header = h('header', { className:'h-14 border-b border-white/10 flex items-center justify-between px-6 bg-gray-950/80 backdrop-blur sticky top-0 z-50' },
     h('div', { className:'flex items-center gap-3' },
-      h('span', { className:'text-lg font-bold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent' }, 'Amazon Interview Coach'),
+      h('span', { className:'text-lg font-bold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent' }, '[Target] Interview Coach'),
       h('span', { className:'text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 font-medium' }, 'SDE INTERN')
     ),
     h('nav', { className:'flex gap-1' },

@@ -589,7 +589,7 @@ GLOBAL RULES
 7. Keep resume bullets concise and high-impact; each bullet should be realistically usable in a resume.
 8. Only include skills relevant to the job description.
 9. Do not include PES GPA unless explicitly requested.
-10. For internships, safe work authorization wording is: "Authorized to work in the U.S. for internships via CPT/OPT."
+10. For internships, safe work authorization wording is: "Authorized to work in the U.S. for internships via [Work Auth]."
 11. Do not reveal chain-of-thought. Provide only the final reasoning summary needed for the task.
 12. If the job is research-heavy, you may slightly tilt toward a research-style resume, but still keep it concise unless asked for a full CV.`,
 
@@ -680,7 +680,7 @@ Paragraph 3 — Strongest project or differentiator
 Paragraph 4 — Close
 - Express fit clearly and confidently.
 - For internships, safe work authorization line is:
-  "For internships, I am authorized to work in the U.S. via CPT/OPT."
+  "For internships, I am authorized to work in the U.S. via [Work Auth]."
 - End with a direct but not pushy close.
 
 RULES
@@ -720,7 +720,7 @@ Then compute:
 overall_score = sum of the 4 dimensions
 
 VISA RULE
-- "must be authorized" or "cannot sponsor" is not a blocker for internships if CPT/OPT works
+- "must be authorized" or "cannot sponsor" is not a blocker for internships if [Work Auth] works
 - hard fail only on explicit constraints like "US citizen only" or "active security clearance required"
 
 BLACKLIST RULE
@@ -1687,11 +1687,11 @@ function switchTab(id) {
 
 // ===== DEFAULT PROFILE =====
 const DEFAULT_PROFILE = {
-  name: 'Pradeep Reddy', email: 'pradeepreddyvv@gmail.com', phone: '+1 (623) 273-0305',
-  linkedin: 'linkedin.com/in/pradeep-reddy-vv', github: 'github.com/pradeepreddyvv', portfolio: '',
-  visa: 'F-1 (CPT/OPT authorized, no sponsorship required)', location: 'Tempe, AZ',
-  availability: 'May 27 – Aug 7, 2026', school: 'Arizona State University',
-  degree: 'MS Computer Science', gpa: '4.11/4.0', coursework: '', gradDate: 'Dec 2026',
+  name: '[Your Name]', email: 'your.email@example.com', phone: '',
+  linkedin: 'linkedin.com/in/yourprofile', github: 'github.com/yourprofile', portfolio: '',
+  visa: 'F-1 ([Work Authorization], no sponsorship required)', location: 'Tempe, AZ',
+  availability: 'May 27 – Aug 7, 2026', school: '[Your University]',
+  degree: 'MS Computer Science', gpa: '[GPA]', coursework: '', gradDate: 'Dec 2026',
   targetRoles: 'SDE Intern, ML Engineer, Fullstack', blacklist: 'TikTok, ByteDance',
   skills: {languages:'Java, Python, JavaScript/TypeScript, SQL, C++', frameworks:'Spring Boot, React.js, Next.js, FastAPI, Flask, TensorFlow/Keras',
     cloud:'AWS (EC2, S3, CloudHub), Docker, Kubernetes, Nginx', databases:'Oracle DB, MySQL, PostgreSQL, MongoDB, Redis',

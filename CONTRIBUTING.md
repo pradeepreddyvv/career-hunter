@@ -5,7 +5,7 @@ Thank you for your interest in contributing! This guide will help you get starte
 ## Quick Start for Contributors
 
 ```bash
-git clone https://github.com/pradeepreddyvv/career-hunter.git
+git clone https://github.com/yourusername/career-hunter.git
 cd career-hunter
 cp .env.example .env.local
 # Add your Gemini API key to .env.local

@@ -5,7 +5,7 @@ Deploy Career Hunter on your own server in under 5 minutes.
 ## Option 1: Docker (Recommended)
 
 ```bash
-git clone https://github.com/pradeepreddyvv/career-hunter.git
+git clone https://github.com/yourusername/career-hunter.git
 cd career-hunter
 cp .env.example .env
 # Edit .env and add your GEMINI_API_KEY
@@ -38,7 +38,7 @@ cp data/career-hunter.db data/career-hunter-backup.db
 ## Option 2: Node.js
 
 ```bash
-git clone https://github.com/pradeepreddyvv/career-hunter.git
+git clone https://github.com/yourusername/career-hunter.git
 cd career-hunter
 cp .env.example .env.local
 # Edit .env.local and add your GEMINI_API_KEY

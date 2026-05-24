@@ -474,10 +474,10 @@ tr:nth-child(even){background:#1c1f2e}
     <h3>Project Map — What to Talk About</h3>
     <table>
       <tr><th>#</th><th>Project</th><th>Role</th><th>Stack</th><th>Key Talking Points</th></tr>
-      <tr><td>1</td><td><strong>API Inventory Portal</strong></td><td>Full-time (Jul 2023–~Aug 2023) under Binoy Nayak (Director)</td><td>React.js • Spring Boot • MySQL→Oracle • Multi-platform sync</td><td>RBI compliance engine, 60% efficiency, MySQL→Oracle migration, security filter</td></tr>
-      <tr><td>2</td><td><strong>Developer Portal</strong></td><td>Full-time under Srinivasu Nimishakavi (VP)</td><td>Spring Boot • Oracle • Kong (backend; team built Flutter Web frontend)</td><td>API discovery, spec simulation (ValidateService), materialized path tree O(n), AES encryption, journeyId auth, DB schema design</td></tr>
-      <tr><td>3</td><td><strong>high-throughput APIs</strong></td><td>Full-time under Srinivasu Nimishakavi (VP)</td><td>Spring Boot (migrated from MuleSoft) • Kong • Redis • Kafka • Oracle</td><td>30/70 Kong routing, Centerprise Redis cache 800ms→50ms, Aadhaar compliance, Kafka async writes</td></tr>
-      <tr><td>4</td><td><strong>Collections App APIs</strong></td><td>Internship (Feb 2023–Jun 2023) under Srinivasu Nimishakavi (VP)</td><td>Spring Boot • Salesforce SFDC • MySQL • Redis</td><td>SFDC OAuth2 JWT cache, DataWeave transformation, cursor pagination</td></tr>
+      <tr><td>1</td><td><strong>API Inventory Portal</strong></td><td>Full-time (Jul 2023–~Aug 2023) under [Manager Name] (Director)</td><td>React.js • Spring Boot • MySQL→Oracle • Multi-platform sync</td><td>RBI compliance engine, 60% efficiency, MySQL→Oracle migration, security filter</td></tr>
+      <tr><td>2</td><td><strong>Developer Portal</strong></td><td>Full-time under [Director Name] (VP)</td><td>Spring Boot • Oracle • Kong (backend; team built Flutter Web frontend)</td><td>API discovery, spec simulation (ValidateService), materialized path tree O(n), AES encryption, journeyId auth, DB schema design</td></tr>
+      <tr><td>3</td><td><strong>high-throughput APIs</strong></td><td>Full-time under [Director Name] (VP)</td><td>Spring Boot (migrated from MuleSoft) • Kong • Redis • Kafka • Oracle</td><td>30/70 Kong routing, Centerprise Redis cache 800ms→50ms, Aadhaar compliance, Kafka async writes</td></tr>
+      <tr><td>4</td><td><strong>Collections App APIs</strong></td><td>Internship (Feb 2023–Jun 2023) under [Director Name] (VP)</td><td>Spring Boot • Salesforce SFDC • MySQL • Redis</td><td>SFDC OAuth2 JWT cache, DataWeave transformation, cursor pagination</td></tr>
       <tr><td>5</td><td><strong>LLM Outlook Email Assistant</strong></td><td>Full-time</td><td>Spring Boot backend • Outlook Add-in frontend • MS Graph API • Previous Company In-house LLM (consumed API, not built)</td><td>Spring Boot polls inbox via MS Graph API; privacy pre-filter (keyword + PII masking + domain whitelist); Previous Company internal LLM generates summary + draft reply; Outlook add-in shows summary / draft / content-type input; human approves and sends; 30% drafting time saved</td></tr>
     </table>
   </div>
@@ -582,8 +582,8 @@ tr:nth-child(even){background:#1c1f2e}
   <div class="card" style="margin-top:12px">
     <div class="card-header-row"><h3>What Is This Project?</h3><button class="info-btn" onclick="showInfoModal('p1-what')" title="Context & background">ℹ</button></div>
     <p>An internal full-stack web app for the Previous Company API Integration Team. Before this, developers had to manually update 2000+ API metadata one by one. The team maintained a messy Excel spreadsheet — every quarter, business people had to chase managers for RBI audit data, eating days of senior leadership time. This portal automated everything: metadata management, compliance checking, live/non-live mode filtering, and RBI audit reporting.</p>
-    <br><p><strong>Manager:</strong> Binoy Nayak (Director, Previous Company) — full-time role ~Jul 2023 – Aug 2023 (~1.6 months)</p>
-    <p style="margin-top:6px"><strong>Later improvements:</strong> Under Srinivasu Nimishakavi (VP) — 40% efficiency boost, live/non-live mode, Authorization login, MySQL→Oracle migration, Standalone→AWS migration</p>
+    <br><p><strong>Manager:</strong> [Manager Name] (Director, Previous Company) — full-time role ~Jul 2023 – Aug 2023 (~1.6 months)</p>
+    <p style="margin-top:6px"><strong>Later improvements:</strong> Under [Director Name] (VP) — 40% efficiency boost, live/non-live mode, Authorization login, MySQL→Oracle migration, Standalone→AWS migration</p>
   </div>
 
   <div class="card">
@@ -695,7 +695,7 @@ External (all via REST APIs — no scraping):
 
   <div class="card">
     <div class="card-header-row"><h3>What Is This Project?</h3><button class="info-btn" onclick="showInfoModal('p2-what')" title="Why this was built and my role (backend only)">ℹ</button></div>
-    <p>A public-facing API discovery platform at <strong>developer.idfcfirstbank.com</strong>. Before this existed, external partners wanting to integrate with Previous Company APIs had to email the team, get sample docs, go back and forth for weeks just to understand which APIs they needed. The portal gives partners a self-service way to browse the full API catalog (organized hierarchically), explore Swagger documentation, validate request/response schemas using spec-level simulation, and register as a partner — ALL before receiving any real tokens.</p>
+    <p>A public-facing API discovery platform at <strong>developer.company-domain.com</strong>. Before this existed, external partners wanting to integrate with Previous Company APIs had to email the team, get sample docs, go back and forth for weeks just to understand which APIs they needed. The portal gives partners a self-service way to browse the full API catalog (organized hierarchically), explore Swagger documentation, validate request/response schemas using spec-level simulation, and register as a partner — ALL before receiving any real tokens.</p>
     <br>
     <div class="tip">🎯 <strong>Key framing:</strong> "We eliminated unnecessary UAT/dev environment hits. Partners now fully understand and finalize which APIs they need BEFORE we give them tokens. This reduced partner onboarding time significantly and prevented noise in our dev/UAT environments."</div>
     <div class="warn-box">⚠️ NOT a sandbox. NOT live API execution. ValidateService does spec-level simulation only — zero live calls. <strong>I built the Spring Boot backend. Team built the Flutter Web frontend.</strong></div>
@@ -716,7 +716,7 @@ External (all via REST APIs — no scraping):
 Kong API Gateway
     │
     ▼
-Spring Boot Backend  (app.partnerportal.idfcfirstbank.com/api-developer-portal-app/)
+Spring Boot Backend  (app.partnerportal.company-domain.com/api-developer-portal-app/)
     │
     ├── GET  /api/meta-data          → 1.08MB — full API hierarchy + Swagger specs
     ├── GET  /api/uc-meta-data       → 1.9KB  — use-case metadata
@@ -949,7 +949,7 @@ curl -X POST http://kong-admin:8001/upstreams/customer-enrichment-upstream/targe
   </div>
   <div class="card">
     <div class="card-header-row"><h3>What Is This Project?</h3><button class="info-btn" onclick="showInfoModal('p4-what')" title="Field agent context and SFDC challenge">ℹ</button></div>
-    <p>Internship project (Feb–Jun 2023) under Srinivasu Nimishakavi (VP). Built Spring Boot backend APIs for <strong>Smart-Collect</strong> — an Android app used by Previous Company field agents in rural India to manage loan collections. Field agents use the app to see which customers are assigned to them, view overdue amounts, manage JLG (Joint Liability Group) batch information, and record collections.</p>
+    <p>Internship project (Feb–Jun 2023) under [Director Name] (VP). Built Spring Boot backend APIs for <strong>Smart-Collect</strong> — an Android app used by Previous Company field agents in rural India to manage loan collections. Field agents use the app to see which customers are assigned to them, view overdue amounts, manage JLG (Joint Liability Group) batch information, and record collections.</p>
     <br>
     <p><strong>Key challenge:</strong> Salesforce SFDC is the source of truth for CRM data, but SFDC's API returns data in a format optimized for Salesforce, not mobile. DataWeave transformations convert SFDC's SOQL-style response into mobile-friendly JSON. Also implemented SFDC JWT token caching to avoid hitting Salesforce OAuth2 on every single API request.</p>
   </div>
@@ -1030,7 +1030,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
     ├── Privacy Pre-Filter (rule-based — runs BEFORE LLM)
     │     ├── Keyword: "CONFIDENTIAL"/"RESTRICTED" → skip LLM → human queue
     │     ├── Regex: Aadhaar (12 digits) → [AADHAAR-MASKED]; PAN → [PAN-MASKED]
-    │     └── Sender domain whitelist: only @idfcfirstbank.com → others → human queue
+    │     └── Sender domain whitelist: only @company-domain.com → others → human queue
     │
     ├── Previous Company Internal LLM REST API  POST /generate/email
     │     ├── Built by Previous Company's internal AI team — we consumed their API
@@ -1055,7 +1055,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
     </div>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)"><span>Privacy pre-filter — three layers before LLM<button class="info-btn" onclick="event.stopPropagation();showInfoModal('p5-privacy')" title="Why this order: keyword → PII masking → domain whitelist">ℹ</button></span><span class="arrow">▼</span></div>
-      <div class="accordion-body"><p>Layer 1: Keyword routing — CONFIDENTIAL/RESTRICTED in subject/body → skip LLM, route to human queue immediately. Layer 2: PII regex masking — Aadhaar (12-digit) → [AADHAAR-MASKED], PAN (ABCDE1234F) → [PAN-MASKED], account numbers → [ACCOUNT-MASKED]. LLM sees masked text — still understands context, drafts sensible reply. Layer 3: Sender domain whitelist — only @idfcfirstbank.com processed; external senders → human queue regardless. Defense in depth: LLM never sees raw PII.</p></div>
+      <div class="accordion-body"><p>Layer 1: Keyword routing — CONFIDENTIAL/RESTRICTED in subject/body → skip LLM, route to human queue immediately. Layer 2: PII regex masking — Aadhaar (12-digit) → [AADHAAR-MASKED], PAN (ABCDE1234F) → [PAN-MASKED], account numbers → [ACCOUNT-MASKED]. LLM sees masked text — still understands context, drafts sensible reply. Layer 3: Sender domain whitelist — only @company-domain.com processed; external senders → human queue regardless. Defense in depth: LLM never sees raw PII.</p></div>
     </div>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)"><span>Why temperature=0.3?<button class="info-btn" onclick="event.stopPropagation();showInfoModal('p5-temperature')" title="0.0 vs 0.3 vs 0.7+ tradeoffs">ℹ</button></span><span class="arrow">▼</span></div>
@@ -1097,7 +1097,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
 <!-- ============================================================ AMAZON COACH ============================================================ -->
 <div id="tab-amazon-coach" class="tab-content">
   <div class="section-header">
-    <h2>🔥 Amazon SDE Intern — Interview Coach</h2>
+    <h2>🔥 [Target Company] [Role] — Interview Coach</h2>
     <span class="badge badge-orange">Virtual · 45-50 min · Behavioral + Coding</span>
   </div>
 
@@ -1105,7 +1105,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
   <div style="background:linear-gradient(135deg,#1a1400,#2a1f00);border:1px solid #ff9900;border-radius:12px;padding:18px;margin-bottom:16px">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
       <span style="font-size:22px">📋</span>
-      <strong style="color:#ff9900;font-size:16px">Amazon SDE Intern Virtual Interview — What to Expect</strong>
+      <strong style="color:#ff9900;font-size:16px">[Target Company] [Role] Virtual Interview — What to Expect</strong>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
       <div style="background:rgba(255,153,0,0.1);border-radius:8px;padding:14px;border-left:3px solid #ff9900">
@@ -1367,7 +1367,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
   <!-- DSA PREP PLAN -->
   <div class="card" style="margin-top:16px;border-left:4px solid #ff9900">
     <h3 style="color:#ff9900">DSA Fast-Track Prep Plan</h3>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Based on Amazon SDE intern OA patterns. Focus: Arrays/Strings (40% of problems), Trees, Graphs, DP.</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Based on [Target Company] [Role] OA patterns. Focus: Arrays/Strings (40% of problems), Trees, Graphs, DP.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div style="background:var(--surface);border-radius:8px;padding:12px">
         <div style="color:#ff9900;font-weight:600;font-size:13px;margin-bottom:8px">Week 1: Foundation</div>
@@ -1896,7 +1896,7 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
     </ol>
     <h4>⚠️ Red Flag Questions — Answer Carefully</h4>
     <div class="plan-danger">"Why not use Azure OpenAI which keeps data in Azure?" → RBI Circular specifically states data must be on Previous Company's own infrastructure or a regulated Indian cloud provider. Azure is not a regulated Indian cloud provider under RBI's current framework. Previous Company's on-premise LLM is the safest compliant option.</div>
-    <div class="plan-danger">"How do you know PII isn't leaking to the LLM?" → Three layers: (1) Confidential-flagged emails never reach LLM. (2) All detectable PII (Aadhaar, PAN, account numbers) are regex-masked before the API call. (3) Only @idfcfirstbank.com sender emails processed. LLM receives masked text only.</div>
+    <div class="plan-danger">"How do you know PII isn't leaking to the LLM?" → Three layers: (1) Confidential-flagged emails never reach LLM. (2) All detectable PII (Aadhaar, PAN, account numbers) are regex-masked before the API call. (3) Only @company-domain.com sender emails processed. LLM receives masked text only.</div>
     <h4>🚫 What NOT to Say</h4>
     <div class="plan-danger">Don't say "it sends emails automatically." It NEVER auto-sends. The approve button copies to Outlook compose — human clicks Send. Never say "we built the LLM" — Previous Company's internal AI team built it, we consumed their API.</div>
     <h4>🎓 Connection to Master's</h4>
@@ -1913,9 +1913,9 @@ Spring Boot Backend — polls inbox every N min (no interactive login needed)
   </div>
   <div class="tip">Each LP section shows Amazon's example questions and your STAR answer using real Previous Company stories. The ℹ button gives interview tips for each LP.</div>
 
-  <!-- AMAZON SDE INTERN VIRTUAL FORMAT -->
+  <!-- TARGET COMPANY VIRTUAL FORMAT -->
   <div class="card" style="border-left:4px solid #ff9900;margin-bottom:16px">
-    <h3 style="color:#ff9900">Amazon SDE Intern — Virtual Interview Format</h3>
+    <h3 style="color:#ff9900">[Target Company] [Role] — Virtual Interview Format</h3>
     <div class="grid-2" style="margin-top:12px">
       <div class="stat-card"><div class="num" style="color:#ff9900">45-50</div><div class="label">Minutes Total</div></div>
       <div class="stat-card"><div class="num" style="color:#ff9900">2</div><div class="label">Main Sections</div></div>
@@ -2629,7 +2629,7 @@ let infoData = {
   'p1-star3': {
     title: 'STAR 3: DuplicateKeyCheckFilter — The Attack & The Fix',
     blocks: [
-      { label: 'The Attack Vector', text: 'Jackson\'s ObjectMapper, by default, silently accepts duplicate JSON keys and uses the LAST value. An attacker sends: {"userId":"pradeep@idfc.com","role":"user","userId":"admin@idfc.com"}. The first userId passes Spring\'s @Valid validation (legitimate user). But Jackson deserializes using the last value — so the controller receives userId="admin@idfc.com". A malicious user could escalate privileges this way.' },
+      { label: 'The Attack Vector', text: 'Jackson\'s ObjectMapper, by default, silently accepts duplicate JSON keys and uses the LAST value. An attacker sends: {"userId":"user@company.com","role":"user","userId":"admin@company.com"}. The first userId passes Spring\'s @Valid validation (legitimate user). But Jackson deserializes using the last value — so the controller receives userId="admin@company.com". A malicious user could escalate privileges this way.' },
       { label: 'When It Was Discovered', text: 'Found during a routine code review by a senior engineer. Not yet exploited — but it was a known vulnerability class in Jackson-based REST APIs. Had to be fixed globally, not just for one endpoint.' },
       { label: 'The Challenge: Single-Read Problem', text: 'HttpServletRequest.getInputStream() can only be read ONCE. If the filter reads the body to check for duplicate keys, the controller gets an empty body — the request fails. Had to solve this first.' },
       { label: 'The Fix', text: 'Built CachedBodyHttpServletRequest: reads and buffers the raw bytes from the original request stream on first read. Overrides getInputStream() to return a fresh ByteArrayInputStream from the buffer on every subsequent call. The filter reads the body once (checks for duplicate keys), then the controller reads it again from the buffer — both see the full body.' },
@@ -2744,7 +2744,7 @@ let infoData = {
     blocks: [
       { label: 'What This Is', text: 'Internship project (Feb–Jun 2023). Spring Boot backend APIs for Smart-Collect — an Android app used by Previous Company field agents in rural India to manage loan collections. Agents visit customers who have overdue loans and use the app to see their assigned customer list, view overdue amounts, and record collections.' },
       { label: 'The SFDC Challenge', text: 'Salesforce (SFDC) is the CRM source of truth. But SFDC\'s API returns data in SOQL-optimized format with nested attributes and Salesforce-specific field naming conventions. Field agent mobile app needs clean, flat, mobile-friendly JSON.' },
-      { label: 'My Role', text: 'Built the Spring Boot backend (collection of REST APIs), implemented SFDC OAuth2 JWT token caching (AES-256 encrypted in Redis), DataWeave transformations for SFDC→mobile JSON, and cursor-based pagination using SFDC\'s nextRecordsUrl. Internship under Srinivasu Nimishakavi (VP).' }
+      { label: 'My Role', text: 'Built the Spring Boot backend (collection of REST APIs), implemented SFDC OAuth2 JWT token caching (AES-256 encrypted in Redis), DataWeave transformations for SFDC→mobile JSON, and cursor-based pagination using SFDC\'s nextRecordsUrl. Internship under [Director Name] (VP).' }
     ]
   },
   'p4-cursor': {
@@ -2778,7 +2778,7 @@ let infoData = {
     blocks: [
       { label: 'Layer 1 — Keyword Routing', text: 'Email subject or body contains CONFIDENTIAL, RESTRICTED, or INTERNAL-ONLY → entire email is routed to human queue immediately. LLM never sees it. This is a hard rule — no exceptions.' },
       { label: 'Layer 2 — PII Regex Masking', text: 'Before the email body reaches the LLM, regexes replace: 12-digit Aadhaar numbers → [AADHAAR-MASKED]; PAN format (ABCDE1234F) → [PAN-MASKED]; account number patterns → [ACCOUNT-MASKED]. The LLM receives the masked text — it can still understand context and draft a sensible reply without ever seeing actual PII.' },
-      { label: 'Layer 3 — Sender Domain Whitelist', text: 'Only emails from @idfcfirstbank.com are processed by the LLM. External senders (partner complaints via personal email, vendor emails) go to human review immediately regardless of content. Prevents processing of potentially malicious or irrelevant external email.' },
+      { label: 'Layer 3 — Sender Domain Whitelist', text: 'Only emails from @company-domain.com are processed by the LLM. External senders (partner complaints via personal email, vendor emails) go to human review immediately regardless of content. Prevents processing of potentially malicious or irrelevant external email.' },
       { label: 'Why This Order', text: 'Keyword check is cheapest (string match) → filter the most dangerous emails first with zero compute cost. PII masking is next (regex on body). Domain check could be first too — ordering is a performance optimization, all three layers run regardless.' }
     ]
   },
@@ -3275,12 +3275,12 @@ let qaData = {
     {
       q: "Q: How does your privacy filter decide what to mask before sending to the LLM?",
       type:"technical",
-      a: "Three-tier filtering: (1) Keyword routing — email subject/body containing CONFIDENTIAL, RESTRICTED, INTERNAL-ONLY → skip LLM entirely, route directly to human queue. (2) PII regex masking — before email reaches LLM: 12-digit Aadhaar → [AADHAAR-MASKED], PAN format ABCDE1234F → [PAN-MASKED], account number patterns → [ACCOUNT-MASKED]. LLM sees '[PAN-MASKED]' not the actual PAN — still understands context, drafts a sensible reply. (3) Sender domain whitelist — only @idfcfirstbank.com emails processed; any external sender goes to human queue immediately regardless of content. LLM never sees raw PII at any point.",
+      a: "Three-tier filtering: (1) Keyword routing — email subject/body containing CONFIDENTIAL, RESTRICTED, INTERNAL-ONLY → skip LLM entirely, route directly to human queue. (2) PII regex masking — before email reaches LLM: 12-digit Aadhaar → [AADHAAR-MASKED], PAN format ABCDE1234F → [PAN-MASKED], account number patterns → [ACCOUNT-MASKED]. LLM sees '[PAN-MASKED]' not the actual PAN — still understands context, drafts a sensible reply. (3) Sender domain whitelist — only @company-domain.com emails processed; any external sender goes to human queue immediately regardless of content. LLM never sees raw PII at any point.",
       hint: "Three layers: keyword skip (cheapest), PII regex masking, sender domain whitelist",
       context: [
         {label:"Layer 1: Keyword Routing", text:"Subject or body contains CONFIDENTIAL, RESTRICTED, INTERNAL-ONLY → email tagged with humanQueueReason='confidential_keyword' → routed to human queue. LLM never invoked. This is cheapest check first — most confidential emails are identified by classification keywords already in them."},
         {label:"Layer 2: PII Regex Masking", text:"Aadhaar: \\b\\d{12}\\b → [AADHAAR-MASKED]. PAN: [A-Z]{5}\\d{4}[A-Z] → [PAN-MASKED]. Account numbers: \\b\\d{9,18}\\b (9-18 digit strings) → [ACCOUNT-MASKED]. Runs on subject + body. LLM receives masked text — can still understand email context and draft sensible reply."},
-        {label:"Layer 3: Sender Domain Whitelist", text:"Only @idfcfirstbank.com emails are processed. External sender emails (partner companies, vendors) go to human queue regardless. This limits the blast radius: internal email content is generally less sensitive than partner/customer emails which may contain contract terms, PAN/Aadhaar in attachments."}
+        {label:"Layer 3: Sender Domain Whitelist", text:"Only @company-domain.com emails are processed. External sender emails (partner companies, vendors) go to human queue regardless. This limits the blast radius: internal email content is generally less sensitive than partner/customer emails which may contain contract terms, PAN/Aadhaar in attachments."}
       ],
       optimized: [
         {label:"Microsoft Presidio for NLP-Based PII Detection", text:"Presidio (open-source by Microsoft) uses NLP + regex + context to detect PII: names, phone numbers, credit card numbers, custom entities. More accurate than pure regex — fewer false positives (e.g., 12-digit order numbers flagged as Aadhaar). Train a custom recognizer on Previous Company-specific PII patterns."},
@@ -3347,7 +3347,7 @@ let qaData = {
         {label:"LLM Health Monitoring", text:"Spring Boot Actuator custom health indicator checks /health endpoint of the Previous Company LLM service every 30s. If down > 30 minutes, PagerDuty alert fired to the AI team. Fallback mode is transparent to the team lead — the UI shows a small 'Template Mode' badge instead of 'AI Draft'."}
       ],
       optimized: [
-        {label:"Resilience4J CircuitBreaker on LLM Client", text:"@CircuitBreaker(name='idfc-llm', fallbackMethod='templateFallback') wraps the LLM API call. After 3 consecutive failures, circuit opens — all subsequent calls go immediately to templateFallback() without waiting for LLM timeout. Circuit half-opens after 60s to test recovery. Zero wasted time on timeouts when LLM is known-down."},
+        {label:"Resilience4J CircuitBreaker on LLM Client", text:"@CircuitBreaker(name='company-llm', fallbackMethod='templateFallback') wraps the LLM API call. After 3 consecutive failures, circuit opens — all subsequent calls go immediately to templateFallback() without waiting for LLM timeout. Circuit half-opens after 60s to test recovery. Zero wasted time on timeouts when LLM is known-down."},
         {label:"Canary Deployment for LLM Updates", text:"When the AI team ships a new LLM version, route 5% of emails to the new version and 95% to old via a feature flag. Compare: approval rate, edit rate, rejection rate between versions. Promotes with confidence if new version is better; rolls back automatically if worse."},
         {label:"Offline Draft Queue", text:"When LLM is down: queue emails in a Redis list (lPush 'email-draft-queue', emailId). When LLM recovers, worker processes the queue in order, generates drafts, notifies team leads via Outlook notification. Team leads don't need to check manually — drafts arrive when ready."}
       ]
@@ -4008,7 +4008,7 @@ let lpData = [
     star: {
       situation: "The Developer Portal was originally scoped as an internal API documentation page — essentially a browsable version of our API specs so consuming teams could look up field names and response structures instead of emailing us.",
       task: "Once I understood the actual pain points consuming teams had, I could see that static documentation would solve only 20% of the problem — the real friction was in validating integration, understanding errors, and getting credentials.",
-      action: "I proposed expanding the scope to include: spec simulation (ValidateService — simulate request/response against real validation logic), Kong gateway integration so API health status was visible in the portal, and a journeyId-based auth flow so teams could trace their API calls across services. I documented these as phased additions with rough effort estimates and presented it to my manager (VP Srinivasu) as a roadmap rather than a feature dump.",
+      action: "I proposed expanding the scope to include: spec simulation (ValidateService — simulate request/response against real validation logic), Kong gateway integration so API health status was visible in the portal, and a journeyId-based auth flow so teams could trace their API calls across services. I documented these as phased additions with rough effort estimates and presented it to my manager (VP [Director]) as a roadmap rather than a feature dump.",
       result: "The expanded scope was approved and built incrementally over my time on the project. The portal became the single point of truth for API contracts, health status, and integration guidance for the team — which was significantly more valuable than a documentation page."
     },
     tip: "Show the delta between the 'small version' and your 'big version'. The scope of your thinking is the differentiator, even if the numbers aren't huge."
@@ -4144,7 +4144,7 @@ let lpData = [
     star: {
       situation: "During the LLM Email Automation project, there was an early proposal to pipe all incoming partner emails directly to Previous Company's internal LLM for summarization. The emails contained partner PII (names, company details), financial data (API credential requests, transaction references), and in some cases, customer-related information. Sending everything to the LLM without filtering would have exposed sensitive data unnecessarily.",
       task: "I was responsible for the Spring Boot backend integration layer. Even though it was an internal LLM (on Previous Company's network), I thought we should apply the principle of minimum data exposure — only send what the LLM actually needed to generate a useful summary or draft reply.",
-      action: "I built the privacy pre-filter before the LLM call: keyword-based PII masking (account numbers, Aadhaar references), sender domain whitelist (only @idfcfirstbank.com internal senders and known partner domains), and content-length trimming to avoid sending full email threads when only the latest message was relevant. I documented the filter logic and the rationale for each rule — including DPDP Act 2023 (India's data protection law) and RBI data localization requirements — so the decisions were traceable.",
+      action: "I built the privacy pre-filter before the LLM call: keyword-based PII masking (account numbers, Aadhaar references), sender domain whitelist (only @company-domain.com internal senders and known partner domains), and content-length trimming to avoid sending full email threads when only the latest message was relevant. I documented the filter logic and the rationale for each rule — including DPDP Act 2023 (India's data protection law) and RBI data localization requirements — so the decisions were traceable.",
       result: "Zero PII sent unnecessarily to the LLM. The pre-filter also reduced LLM token usage (shorter prompts). The compliance documentation I produced was reviewed by the team and included in the project handover notes. The filter became a template for a subsequent internal automation project."
     },
     tip: "This LP is about thinking beyond the immediate business goal. Show awareness of data ethics, legal constraints, or downstream impact — not just feature delivery."
@@ -4891,9 +4891,9 @@ async function amzcGetFeedback() {
     const isCodeQ = q.type === 'coding';
 
     const prompt = isCodeQ
-      ? `You are an Amazon SDE interview coach evaluating a coding discussion answer.
+      ? `You are an [Target Company] SDE interview coach evaluating a coding discussion answer.
 
-CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS), F-1 CPT/OPT authorized.
+CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS), F-1 [Work Authorization].
 QUESTION: ${q.q}
 TOPIC: ${q.topic}
 DURATION: ${amzcRecSec} seconds
@@ -4908,15 +4908,15 @@ Evaluate:
 
 Return ONLY valid JSON:
 {"score":0,"transcript":"","approach_score":0,"complexity_score":0,"communication_score":0,"strengths":[""],"improvements":[""],"tip":"","recommendation":""}`
-      : `You are an Amazon SDE intern interview coach specializing in Leadership Principles. Evaluate this behavioral answer using STAR framework.
+      : `You are an [Target Company] [Role] interview coach specializing in Leadership Principles. Evaluate this behavioral answer using STAR framework.
 
-CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS), F-1 CPT/OPT authorized.
+CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS), F-1 [Work Authorization].
 QUESTION: ${q.q}
 LP BEING TESTED: ${q.lp}
 DURATION: ${amzcRecSec} seconds
 MODEL ANSWER: ${q.model}
 
-Amazon SDE Intern interview context:
+[Target Company] [Role] interview context:
 - Virtual format, 45-50 min total
 - Behavioral section is ~25 min, 4-5 LP questions
 - STAR: Situation+Task=30s, Action=2-3min (60%), Result=30s with metrics
@@ -5438,7 +5438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="accordion-item">
       <button class="accordion-btn" onclick="toggleAccordion(this)">Story 3: DuplicateKeyCheckFilter — Dive Deep / Insist on High Standards ▼</button>
       <div class="accordion-body" style="display:none">
-        <p><strong>The Story:</strong> Code review flagged Jackson silently accepting duplicate JSON keys — {"userId":"pradeep","role":"user","userId":"admin"} would resolve to "admin". I built DuplicateKeyCheckFilter using Jackson streaming parser + CachedBodyHttpServletRequest wrapper to make body re-readable. Applied globally, zero controller changes.</p>
+        <p><strong>The Story:</strong> Code review flagged Jackson silently accepting duplicate JSON keys — {"userId":"user1","role":"user","userId":"admin"} would resolve to "admin". I built DuplicateKeyCheckFilter using Jackson streaming parser + CachedBodyHttpServletRequest wrapper to make body re-readable. Applied globally, zero controller changes.</p>
         <p><strong>Pivot for Dive Deep:</strong> "I traced exactly how Jackson resolves duplicates, found the override vector, designed a stream-level detection before deserialization."</p>
         <p><strong>Pivot for High Standards:</strong> "The code would have passed review without this. I proactively raised and fixed a class of vulnerability."</p>
         <p><strong>Pivot for Invent &amp; Simplify:</strong> "CachedBodyHttpServletRequest — invented a wrapper that solved a Spring framework constraint without any downstream changes."</p>
@@ -5686,7 +5686,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p><strong>S:</strong> Previous Company's partner onboarding took 12 days average — back-and-forth between fintech partners (Amazon Pay, CRED, Flipkart) and bank engineers just to understand which APIs to use. This was a real bottleneck: delayed partnerships meant delayed product launches for both sides.</p>
         <p><strong>T:</strong> Build a self-service API discovery platform from scratch. Zero existing codebase, zero defined spec. 0-to-1.</p>
         <p><strong>A:</strong> I contributed to building the backend: designed the materialized path schema for 5-level API hierarchy, built ValidateService for spec-level simulation (partners see realistic request/response without hitting UAT), implemented Redis caching with explicit flush endpoint, JWT auth flow, and the 3rd-party OTP email integration for partner registration. Total: Spring Boot microservice, Oracle DB, Redis, Kong API Gateway — all integrated.</p>
-        <p><strong>R:</strong> Partner onboarding: 12 days → 2 days. 50+ partners onboarded. Partners self-serve API exploration — zero bank engineer involvement needed. The portal runs live at developer.idfcfirst.bank.in.</p>
+        <p><strong>R:</strong> Partner onboarding: 12 days → 2 days. 50+ partners onboarded. Partners self-serve API exploration — zero bank engineer involvement needed. The portal runs live at developer.company-portal.example.com.</p>
         <div style="background:#10203a;border-radius:6px;padding:10px;margin-top:8px">
           <div style="color:#1877f2;font-size:12px;font-weight:bold">💡 Meta Leveling Signal</div>
           <p style="font-size:12px;color:var(--muted);margin:4px 0">12→2 days onboarding = direct business metric. "Runs live" = real-world scale. 50+ partners = broad impact beyond your team. This reads as Team-to-Org impact level for an intern.</p>
@@ -5886,7 +5886,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- ============================================================ JOB STRATEGY ============================================================ -->
 <div id="tab-job-strategy" class="tab-content">
   <div class="section-header"><h2>🎯 Job Hunting Strategy — User's Action Plan</h2></div>
-  <p style="color:var(--muted);margin-bottom:16px">Based on Harvard MBA + Google PM Abhijay's guide + LinkedIn advice from SWE coaches. Adapted specifically for User's Amazon SDE Intern Target Season search.</p>
+  <p style="color:var(--muted);margin-bottom:16px">Based on Harvard MBA + Google PM Abhijay's guide + LinkedIn advice from SWE coaches. Adapted specifically for User's [Target Company] [Role] Target Season search.</p>
 
   <div class="card" style="border-left:4px solid #00b4d8">
     <h3>Step 1: Location Strategy</h3>
@@ -6045,7 +6045,7 @@ Output as table: Manager/Company | Role | Direct Post Link</div>
       <div><label>Company</label><select id="aip-company"><option>Amazon</option><option>Google</option><option>Meta</option><option>Microsoft</option><option>OpenAI</option><option>General</option></select></div>
       <div><label>Role</label><input type="text" id="aip-role" placeholder="SWE Intern"></div>
       <div><label>Question Source</label><select id="aip-mode"><option value="mixed">Mixed Vault + AI</option><option value="ai_generated">AI Generated Only</option><option value="manual_only">Manual Only</option><option value="amazon_curated">Amazon Intern Curated</option></select></div>
-      <div><label>Interview Track</label><select id="aip-track"><option value="mixed">Mixed</option><option value="behavioral">Behavioral</option><option value="technical">Technical</option><option value="amazon_intern">Amazon SDE Intern Virtual</option></select></div>
+      <div><label>Interview Track</label><select id="aip-track"><option value="mixed">Mixed</option><option value="behavioral">Behavioral</option><option value="technical">Technical</option><option value="amazon_intern">[Target Company] [Role] Virtual</option></select></div>
       <div><label>Approx Questions</label><input type="number" id="aip-question-count" value="5" min="1" max="12"></div>
       <div><label>Follow-Ups Per Question</label><select id="aip-followups"><option value="1">1</option><option value="0">0</option><option value="2">2</option><option value="3">3</option></select></div>
       <div><label>Target Duration</label><select id="aip-target-minutes"><option value="30">30 min</option><option value="20">20 min</option><option value="45">45 min</option><option value="60">60 min</option></select></div>
@@ -6276,7 +6276,7 @@ let COMMAND_CENTER_PROFILE = {
   },
   education: 'Your University — MS Computer Science — Expected May 2027 — GPA X.X/4.0 — Coursework: Distributed Database Systems, Statistical ML, Semantic Web Mining',
   pes_education: 'PES University — B.Tech Computer Science — Aug 2019 – May 2023 — Coursework: DSA, OS, Networks, Cloud Computing, Big Data, Machine Intelligence',
-  authorization: 'F-1 student, CPT/OPT eligible for internships. May need future sponsorship for full-time roles after OPT/STEM OPT.',
+  authorization: 'F-1 student, [Work Auth] eligible for internships. May need future sponsorship for full-time roles after OPT/STEM OPT.',
   availability: 'Open to Target Season internships (May 27 – Aug 7, 2026)',
   positioning: 'Backend-leaning full-stack engineer with 2 years of production fintech experience building high-throughput APIs, compliance systems, internal platforms, cloud-backed microservices, and practical AI-powered tools.',
   role_fit: [
@@ -6337,7 +6337,7 @@ let COMMAND_CENTER_PROFILE = {
 
 let INTERVIEW_CONTEXT_SUMMARY = [
   'Candidate: Your Name, MS Computer Science at Your University (GPA X.X/4.0), expected May 2027.',
-  'F-1 visa, CPT/OPT authorized for internships. Available Target Season (May 27 – Aug 7).',
+  '[Visa Status], [Work Authorization] for internships. Available Target Season (May 27 – Aug 7).',
   'Strongest role fit: Backend SDE, Platform/Distributed Systems, Full-Stack, Data/Platform Engineering, Applied AI/LLM, ML/CV (selective).',
   'University Developer Assistant (Jan 2026–Present): LLM-driven academic ranking, 100K+ faculty profiles, 200+ universities, ~70% manual effort reduction.',
   'Previous Company SWE (Jul 2023–Jul 2025): Partner Developer Portal (12→2 day onboarding, Spring Boot, OpenAPI sandbox), high-throughput APIs (100+ TPS, Redis, provider routing), API Inventory platform (~60% productivity, 2000+ APIs, RBAC, DB-driven compliance), Outlook LLM assistant (~30% drafting time), MySQL→Oracle migration + AES-256 PII.',
@@ -6845,7 +6845,7 @@ SESSION CONFIG:
 
 Rules:
 - Use only facts consistent with the candidate profile above.
-- If company is Amazon or track is amazon_intern, bias toward Amazon SDE intern virtual interview style.
+- If company is Amazon or track is amazon_intern, bias toward [Target Company] [Role] virtual interview style.
 - Keep the question specific and interview-realistic.
 - Provide a brief hint and a concise model answer outline.
 
@@ -7044,7 +7044,7 @@ async function aipGetFeedback() {
     const modelRef = modelAns ? `\n\nMODEL ANSWER (reference):\n${modelAns.substring(0, 1500)}` : '';
     const prompt = `You are an elite interview coach with 15+ years at FAANG. Evaluate this interview answer comprehensively.
 
-CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS, React), F-1 CPT/OPT authorized. Key metrics: 100+ TPS high-throughput APIs, 83% efficiency improvement, $120K AWS cost savings, 60% audit efficiency.
+CANDIDATE: Your Name — MSCS at University GPA X.X, 2yr SWE at Previous Company (Java, Spring Boot, Redis, Kafka, AWS, React), F-1 [Work Authorization]. Key metrics: 100+ TPS high-throughput APIs, 83% efficiency improvement, $120K AWS cost savings, 60% audit efficiency.
 QUESTION: ${q.q || q.text}
 CATEGORY: ${q._cat || 'general'} | TYPE: ${q.type || 'behavioral'}
 DURATION: ${aipRecSec} seconds${modelRef}

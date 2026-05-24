@@ -50,6 +50,9 @@ next-env.d.ts
 .idea/
 .vscode/
 
+# Local user data
+local_data/
+
 # Internal project files (not for public repo)
 CLAUDE.md
 AGENTS.md
