@@ -108,11 +108,18 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .rsbs-col{background:var(--surface2);padding:10px;overflow-y:auto;max-height:420px}
 .rsbs-col pre{background:transparent;padding:0;margin:0;font-size:11.5px;font-family:var(--mono);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
 .rsbs-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.rdiff{background:var(--surface2);padding:10px;border-radius:0 0 8px 8px;max-height:420px;overflow-y:auto}
-.rdiff pre{background:transparent;padding:0;margin:0;font-size:11.5px;font-family:var(--mono);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
-.diff-add{background:rgba(74,222,128,.12);color:var(--green);display:block;padding:0 4px;border-radius:3px;margin:1px 0}
-.diff-rm{background:rgba(248,113,113,.12);color:var(--red);text-decoration:line-through;display:block;padding:0 4px;border-radius:3px;margin:1px 0;opacity:.7}
-.diff-ctx{display:block;padding:0 4px;color:var(--text2)}
+.rdiff{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;max-height:420px;overflow-y:auto}
+.diff-summary{display:flex;gap:14px;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:12px;font-size:12px;align-items:center}
+.diff-stat{display:flex;align-items:center;gap:4px;font-weight:600}
+.diff-group{margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.diff-group-header{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);padding:6px 10px;background:var(--surface);border-bottom:1px solid var(--border)}
+.diff-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
+.diff-pair:last-child{border-bottom:none}
+.diff-pair-full{padding:6px 10px;border-bottom:1px solid var(--border);font-size:11.5px;font-family:var(--mono);line-height:1.5}
+.diff-pair-full:last-child{border-bottom:none}
+.diff-old{padding:6px 10px;background:rgba(248,113,113,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--red);border-right:1px solid var(--border)}
+.diff-new{padding:6px 10px;background:rgba(74,222,128,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--green)}
+.diff-skip{text-align:center;padding:4px;font-size:10px;color:var(--text2);background:var(--surface);border-bottom:1px solid var(--border)}
 
 /* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;z-index:1000;box-shadow:var(--shadow);animation:slideUp .25s ease}
@@ -335,17 +342,79 @@ function lineDiff(oldText, newText) {
   return ops;
 }
 
+function renderDiffGroups(ops) {
+  const added = ops.filter(o => o.type === 'add').length;
+  const removed = ops.filter(o => o.type === 'rm').length;
+  const unchanged = ops.filter(o => o.type === 'ctx').length;
+
+  let html = `<div class="diff-summary">
+    <span style="font-size:13px;font-weight:600">Changes</span>
+    ${added ? `<span class="diff-stat" style="color:var(--green)">+${added} added</span>` : ''}
+    ${removed ? `<span class="diff-stat" style="color:var(--red)">&minus;${removed} removed</span>` : ''}
+    <span class="diff-stat" style="color:var(--text2)">${unchanged} unchanged</span>
+  </div>`;
+
+  if (!added && !removed) return html + '<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">No changes detected</div>';
+
+  // Group ops into change blocks with context
+  const CTX = 2;
+  const groups = [];
+  let cur = null;
+  for (let i = 0; i < ops.length; i++) {
+    const o = ops[i];
+    if (o.type !== 'ctx') {
+      if (!cur) { cur = { start: Math.max(0, i - CTX), ops: [] }; for (let c = Math.max(0, i - CTX); c < i; c++) cur.ops.push({...ops[c], role: 'ctx'}); }
+      cur.ops.push({...o, role: o.type});
+      cur.end = i;
+    } else if (cur) {
+      const gap = i - cur.end;
+      if (gap <= CTX * 2 + 1) { cur.ops.push({...o, role: 'ctx'}); cur.end = i; }
+      else { for (let c = cur.end + 1; c <= cur.end + CTX; c++) if (c < ops.length) cur.ops.push({...ops[c], role: 'ctx'}); groups.push(cur); cur = null; }
+    }
+  }
+  if (cur) { for (let c = cur.end + 1; c <= Math.min(cur.end + CTX, ops.length - 1); c++) cur.ops.push({...ops[c], role: 'ctx'}); groups.push(cur); }
+
+  let skipped = 0;
+  let prevEnd = -1;
+  for (const g of groups) {
+    const skip = g.start - prevEnd - 1;
+    if (skip > 0) { skipped += skip; html += `<div class="diff-skip">${skip} unchanged lines</div>`; }
+    html += '<div class="diff-group">';
+    // Collect consecutive rm/add pairs for side-by-side, ctx lines as full-width
+    let i = 0;
+    while (i < g.ops.length) {
+      const op = g.ops[i];
+      if (op.role === 'ctx') {
+        html += `<div class="diff-pair-full">${esc(op.text)}</div>`;
+        i++;
+      } else {
+        // Collect consecutive rm then add
+        const rms = [], adds = [];
+        while (i < g.ops.length && g.ops[i].role === 'rm') { rms.push(g.ops[i].text); i++; }
+        while (i < g.ops.length && g.ops[i].role === 'add') { adds.push(g.ops[i].text); i++; }
+        const rows = Math.max(rms.length, adds.length);
+        for (let r = 0; r < rows; r++) {
+          html += `<div class="diff-pair">
+            <div class="diff-old">${r < rms.length ? esc(rms[r]) : '&nbsp;'}</div>
+            <div class="diff-new">${r < adds.length ? esc(adds[r]) : '&nbsp;'}</div>
+          </div>`;
+        }
+      }
+    }
+    html += '</div>';
+    prevEnd = g.start + g.ops.length - 1;
+  }
+  const tailSkip = ops.length - prevEnd - 1;
+  if (tailSkip > 0) html += `<div class="diff-skip">${tailSkip} unchanged lines</div>`;
+  return html;
+}
+
 function renderResumeTabs(jobId, content) {
   const tab = S.resumeTab?.[jobId] || 'side';
   let body;
   if (tab === 'diff') {
     const ops = lineDiff(S.resume, content);
-    const lines = ops.map(o => {
-      const cls = o.type === 'add' ? 'diff-add' : o.type === 'rm' ? 'diff-rm' : 'diff-ctx';
-      const pfx = o.type === 'add' ? '+ ' : o.type === 'rm' ? '- ' : '  ';
-      return `<span class="${cls}">${esc(pfx + o.text)}</span>`;
-    }).join('');
-    body = `<div class="rdiff"><pre>${lines}</pre></div>`;
+    body = `<div class="rdiff">${renderDiffGroups(ops)}</div>`;
   } else {
     body = `<div class="rsbs">
       <div class="rsbs-col"><div class="rsbs-label">Original</div><pre>${esc(S.resume)}</pre></div>
