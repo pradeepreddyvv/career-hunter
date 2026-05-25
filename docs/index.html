@@ -282,6 +282,7 @@ async function api(path) { const r = await fetch(API + path); if (!r.ok) throw n
 function toast(msg, ok=true) { const e = document.createElement('div'); e.className = `toast ${ok?'ok':'err'}`; e.textContent = msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 function bc(s) { return s >= 70 ? 'badge-h' : s >= 50 ? 'badge-m' : 'badge-l'; }
+function fmtDate(d) { if (!d) return ''; try { const dt = new Date(d); if (isNaN(dt)) return d.slice(0,10); const now = Date.now(); const diff = now - dt.getTime(); if (diff < 86400000) return 'Today'; if (diff < 172800000) return 'Yesterday'; if (diff < 604800000) return Math.floor(diff/86400000) + 'd ago'; if (diff < 2592000000) return Math.floor(diff/604800000) + 'w ago'; return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch { return d.slice(0,10); } }
 
 // === Data ===
 async function loadJobs() {
@@ -800,7 +801,7 @@ function renderSidebar(j) {
     </div>
     <div class="job-list">
       ${j.length===0 ? '<div class="empty" style="padding:30px"><p>No jobs found</p></div>' :
-        j.map(x => { const sc = S.scores[x.id]?.score||0; const et = x.employment_type; return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}${et && et!=='Full-Time'?` <span class="label" style="font-size:9px;padding:1px 5px;background:var(--surface-hover);border-radius:3px">${esc(et)}</span>`:''}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${esc(x.source||'')} ${esc((x.location||'').slice(0,20))}</div></div>`; }).join('')}
+        j.map(x => { const sc = S.scores[x.id]?.score||0; const et = x.employment_type; const dt = fmtDate(x.posted_at); const loc = (x.location||'').length > 22 ? (x.location||'').slice(0,20)+'...' : (x.location||''); return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}${et && et!=='Full-Time'?` <span style="font-size:9px;padding:1px 5px;background:var(--surface2);border-radius:3px;color:var(--accent2)">${esc(et)}</span>`:''}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${loc?`<span>${esc(loc)}</span>`:''}${dt?`<span style="margin-left:auto;color:var(--text2)">${esc(dt)}</span>`:''}</div></div>`; }).join('')}
       ${j.length < S.total ? `<div style="text-align:center;padding:10px"><button class="btn btn-ghost btn-sm" onclick="loadMore()" ${S.busy.more?'disabled':''}>${S.busy.more?'Loading...':'Load More'}</button></div>` : ''}
     </div>
   </div>`;
@@ -823,7 +824,12 @@ function renderDetail() {
       <div>
         <h2>${esc(j.title)}</h2>
         <div style="font-size:15px;color:var(--accent2);margin-top:2px">${esc(j.company)}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px">${esc(j.location||'')}${j.posted_at ? ` &middot; ${esc(j.posted_at)}` : ''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:12px;color:var(--text2);align-items:center">
+          ${j.location ? `<span>${esc(j.location)}</span>` : ''}
+          ${j.employment_type ? `<span class="tag">${esc(j.employment_type)}</span>` : ''}
+          ${j.posted_at ? `<span>Posted ${esc(fmtDate(j.posted_at))}</span>` : ''}
+          ${j.source ? `<span class="tag">${esc(j.source)}</span>` : ''}
+        </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         ${sc ? `<span class="badge ${bc(sc.score)}" style="font-size:15px;padding:5px 14px">${sc.score}%</span>` : ''}
@@ -857,7 +863,7 @@ function renderDetail() {
 
     ${d?.description ? `<div class="card" style="margin-top:14px"><h3>Job Description</h3><pre style="background:var(--surface2);padding:14px;border-radius:8px;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;max-height:500px;overflow-y:auto">${esc(d.description)}</pre></div>` : ''}
 
-    <div style="display:flex;gap:6px;margin-top:6px"><span class="tag">${esc(j.source||'')}</span><span class="tag">${esc(j.ats||'')}</span><span class="tag">${esc(j.role_category||'')}</span></div>`;
+    ${j.role_category ? `<div style="margin-top:6px"><span class="tag">${esc(j.role_category)}</span>${j.ats && j.ats !== j.source ? ` <span class="tag">${esc(j.ats)}</span>` : ''}</div>` : ''}`;
 }
 
 function renderStatsTab() {
