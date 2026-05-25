@@ -100,15 +100,19 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .doc-block{margin-bottom:16px}
 .doc-block h4{font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
 .doc-block pre{background:var(--surface2);padding:14px;border-radius:8px;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;max-height:360px;overflow-y:auto}
-.rtabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px 8px 0 0;padding:3px 3px 0}
+.rtabs{display:flex;gap:2px;margin-bottom:0;padding:3px 3px 0;background:var(--surface2);border-radius:8px 8px 0 0}
 .rtab{padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border-radius:6px 6px 0 0;transition:.15s;border:1px solid transparent;border-bottom:none}
 .rtab:hover{color:var(--text)}
-.rtab.on{background:var(--surface2);color:var(--accent2);border-color:var(--border)}
-.rtab-body{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;border-top:1px solid var(--border)}
-.rtab-body pre{background:transparent;padding:0;border-radius:0;max-height:360px;overflow-y:auto;margin:0;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.rtab.on{color:var(--accent2);border-color:var(--border);background:var(--surface2)}
+.rsbs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:0 0 8px 8px;overflow:hidden}
+.rsbs-col{background:var(--surface2);padding:10px;overflow-y:auto;max-height:420px}
+.rsbs-col pre{background:transparent;padding:0;margin:0;font-size:11.5px;font-family:var(--mono);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.rsbs-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.rdiff{background:var(--surface2);padding:10px;border-radius:0 0 8px 8px;max-height:420px;overflow-y:auto}
+.rdiff pre{background:transparent;padding:0;margin:0;font-size:11.5px;font-family:var(--mono);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
 .diff-add{background:rgba(74,222,128,.12);color:var(--green);display:block;padding:0 4px;border-radius:3px;margin:1px 0}
-.diff-rm{background:rgba(248,113,113,.12);color:var(--red);text-decoration:line-through;display:block;padding:0 4px;border-radius:3px;margin:1px 0;opacity:.8}
-.diff-ctx{display:block;padding:0 4px}
+.diff-rm{background:rgba(248,113,113,.12);color:var(--red);text-decoration:line-through;display:block;padding:0 4px;border-radius:3px;margin:1px 0;opacity:.7}
+.diff-ctx{display:block;padding:0 4px;color:var(--text2)}
 
 /* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;z-index:1000;box-shadow:var(--shadow);animation:slideUp .25s ease}
@@ -332,26 +336,27 @@ function lineDiff(oldText, newText) {
 }
 
 function renderResumeTabs(jobId, content) {
-  const tab = S.resumeTab?.[jobId] || 'tailored';
+  const tab = S.resumeTab?.[jobId] || 'side';
   let body;
-  if (tab === 'original') {
-    body = `<pre>${esc(S.resume)}</pre>`;
-  } else if (tab === 'changes') {
+  if (tab === 'diff') {
     const ops = lineDiff(S.resume, content);
     const lines = ops.map(o => {
       const cls = o.type === 'add' ? 'diff-add' : o.type === 'rm' ? 'diff-rm' : 'diff-ctx';
       const pfx = o.type === 'add' ? '+ ' : o.type === 'rm' ? '- ' : '  ';
       return `<span class="${cls}">${esc(pfx + o.text)}</span>`;
     }).join('');
-    body = `<pre>${lines}</pre>`;
+    body = `<div class="rdiff"><pre>${lines}</pre></div>`;
   } else {
-    body = `<pre>${esc(content)}</pre>`;
+    body = `<div class="rsbs">
+      <div class="rsbs-col"><div class="rsbs-label">Original</div><pre>${esc(S.resume)}</pre></div>
+      <div class="rsbs-col"><div class="rsbs-label">Tailored</div><pre>${esc(content)}</pre></div>
+    </div>`;
   }
   const tb = (id, label) => `<div class="rtab ${tab===id?'on':''}" onclick="setResumeTab(${jobId},'${id}')">${label}</div>`;
   return `<div class="doc-block">
-    <h4><span>Resume</span><button class="btn btn-ghost btn-sm" onclick="copyResumeTab(${jobId})">Copy</button></h4>
-    <div class="rtabs">${tb('original','Original')}${tb('tailored','Tailored')}${tb('changes','Changes')}</div>
-    <div class="rtab-body">${body}</div>
+    <h4><span>Resume</span><div style="display:flex;gap:4px"><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(content).replace(/</g,'\\u003c')});toast('Copied tailored!')">Copy Tailored</button><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(S.resume).replace(/</g,'\\u003c')});toast('Copied original!')">Copy Original</button></div></h4>
+    <div class="rtabs">${tb('side','Side by Side')}${tb('diff','Changes')}</div>
+    ${body}
   </div>`;
 }
 
@@ -359,19 +364,6 @@ function setResumeTab(jobId, tab) {
   if (!S.resumeTab) S.resumeTab = {};
   S.resumeTab[jobId] = tab;
   render();
-}
-
-function copyResumeTab(jobId) {
-  const tab = S.resumeTab?.[jobId] || 'tailored';
-  const docs = S.docs[jobId] || {};
-  let text;
-  if (tab === 'original') text = S.resume;
-  else if (tab === 'changes') {
-    const ops = lineDiff(S.resume, docs.resume || '');
-    text = ops.map(o => (o.type === 'add' ? '+ ' : o.type === 'rm' ? '- ' : '  ') + o.text).join('\n');
-  } else text = docs.resume || '';
-  navigator.clipboard.writeText(text);
-  toast('Copied!');
 }
 
 // === Data ===
