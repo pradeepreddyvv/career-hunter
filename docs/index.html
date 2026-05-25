@@ -251,7 +251,7 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
-  settingsTab: 'general', userMenu: false, locOpen: false, rolesOpen: false, typesOpen: false,
+  settingsTab: 'general', userMenu: false, locOpen: false, rolesOpen: false, typesOpen: false, sortMode: 'relevance',
   userContext: localStorage.getItem('ch_user_context') || '',
 };
 
@@ -395,10 +395,20 @@ async function runML() {
 
 function sorted() {
   return [...S.jobs].sort((a, b) => {
-    const da = a.posted_at ? new Date(a.posted_at).getTime() : 0;
-    const db = b.posted_at ? new Date(b.posted_at).getTime() : 0;
-    if (da !== db) return db - da;
-    return (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0);
+    if (S.sortMode === 'score') return (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0);
+    if (S.sortMode === 'date') {
+      const da = a.posted_at ? new Date(a.posted_at).getTime() : 0;
+      const db = b.posted_at ? new Date(b.posted_at).getTime() : 0;
+      return db - da;
+    }
+    // relevance: recent + high score combined
+    const sa = S.scores[a.id]?.score||0, sb = S.scores[b.id]?.score||0;
+    const now = Date.now();
+    const da = a.posted_at ? (now - new Date(a.posted_at).getTime()) / 86400000 : 999;
+    const db = b.posted_at ? (now - new Date(b.posted_at).getTime()) / 86400000 : 999;
+    const ra = sa * 0.6 + Math.max(0, 100 - da * 2) * 0.4;
+    const rb = sb * 0.6 + Math.max(0, 100 - db * 2) * 0.4;
+    return rb - ra;
   });
 }
 
@@ -838,7 +848,13 @@ function renderSidebar(j) {
   const roles = [...new Set(S.jobs.map(j => j.role_category).filter(Boolean))].sort();
   return `<div class="sidebar">
     <div class="sidebar-search"><input placeholder="Search jobs..." value="${esc(S.q)}" oninput="onSearch(this.value)"></div>
-    <div class="sidebar-info"><span>${j.length} of ${S.total.toLocaleString()}</span><button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 8px;font-size:10px">Refresh</button></div>
+    <div class="sidebar-info">
+      <span>${j.length} of ${S.total.toLocaleString()}</span>
+      <div style="display:flex;gap:2px;align-items:center">
+        ${['relevance','score','date'].map(m => `<button class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10px;${S.sortMode===m?'background:var(--accent);color:#fff;border-radius:4px':''}" onclick="S.sortMode='${m}';render()">${m==='relevance'?'Best':m==='score'?'Score':'New'}</button>`).join('')}
+        <button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 6px;font-size:10px">&#8635;</button>
+      </div>
+    </div>
     <div style="padding:4px 12px;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.rolesOpen=!S.rolesOpen;render()">
         <span style="font-size:11px;color:var(--text2)">Role: <strong style="color:${S.role?'var(--accent2)':'var(--text2)'}">${S.role||'All'}</strong></span>
