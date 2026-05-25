@@ -206,6 +206,27 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .hidden{display:none!important}
 @media(max-width:900px){.sidebar{width:240px}}
 @media(max-width:600px){.sidebar{display:none}.main{flex-direction:column}.settings-2col{grid-template-columns:1fr}.parse-opts{grid-template-columns:1fr}.profile-grid{grid-template-columns:1fr}.gen-grid{grid-template-columns:1fr}}
+
+/* User Menu */
+.user-menu{position:relative}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9b85ff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid transparent;user-select:none}
+.user-avatar:hover{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-dim)}
+.user-drop{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px;min-width:210px;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:100;animation:fadeIn .15s ease}
+.user-drop .ud-head{padding:10px 12px;border-bottom:1px solid var(--border);margin-bottom:4px}
+.user-drop .ud-name{font-size:13px;font-weight:600}
+.user-drop .ud-email{font-size:11px;color:var(--text2);margin-top:2px}
+.user-drop a.ud-item,.user-drop .ud-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12.5px;color:var(--text);border-radius:6px;cursor:pointer;transition:all .12s;text-decoration:none}
+.user-drop .ud-item:hover{background:var(--surface2)}
+.user-drop .ud-item.danger{color:var(--red)}
+.user-drop .ud-item.danger:hover{background:var(--red-dim)}
+.ud-sep{height:1px;background:var(--border);margin:4px 0}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* OB Location prefs */
+.ob-loc-states{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
+.ob-loc-states .loc-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.ob-loc-states .loc-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:140px;overflow-y:auto}
+.ob-section-title{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:6px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -230,7 +251,7 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
-  settingsTab: 'general',
+  settingsTab: 'general', userMenu: false,
 };
 
 const DEFAULT_PROMPTS = {
@@ -500,22 +521,45 @@ function renderOB() {
 
   if (s === 4) {
     const types = ['Internship','New Grad','Full-Time','Contract','Co-op','Part-Time'];
-    return `<div class="ob-page"><div class="ob-box">${bar}
+    const obCountries = ['USA','Canada','Remote'];
+    const usStates = Object.entries(US_STATES_MAP).sort((a,b) => a[1].localeCompare(b[1]));
+    const caProvs = Object.entries(CA_PROVINCES_MAP).sort((a,b) => a[1].localeCompare(b[1]));
+    const showUS = S.locCountry.includes('USA');
+    const showCA = S.locCountry.includes('Canada');
+    const usSelected = S.locState.filter(s => s in US_STATES_MAP).length;
+    const caSelected = S.locState.filter(s => s in CA_PROVINCES_MAP).length;
+    return `<div class="ob-page"><div class="ob-box" style="max-width:620px">${bar}
       <h2>What are you looking for?</h2>
-      <p class="sub">Select the types of positions you're interested in. We'll only show and score matching jobs.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px">
+      <p class="sub">Select job types and preferred locations. We'll filter and score matching jobs.</p>
+
+      <div class="ob-section-title">Job Type</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
         ${types.map(t => `<div class="chip ${S.empTypes.includes(t)?'on':''}" onclick="toggleEmpType('${t}')" style="padding:8px 16px;font-size:13px;cursor:pointer">${t}</div>`).join('')}
       </div>
-      ${S.empTypes.length === 0 ? '<p style="color:var(--text2);font-size:12px;margin-bottom:14px">No preference selected — all job types will be shown.</p>' : `<p style="color:var(--accent);font-size:12px;margin-bottom:14px">${S.empTypes.length} type${S.empTypes.length>1?'s':''} selected</p>`}
+
+      <div class="ob-section-title">Preferred Location</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <div class="chip ${!S.locCountry.length?'on':''}" onclick="clearOBLoc()" style="padding:6px 14px;font-size:12px">All Locations</div>
+        ${obCountries.map(c => `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleOBLocCountry('${c}')" style="padding:6px 14px;font-size:12px">${c}</div>`).join('')}
+      </div>
+      ${showUS ? `<div class="ob-loc-states">
+        <div class="loc-label">US States${usSelected ? ` (${usSelected} selected)` : ' (all)'}</div>
+        <div class="loc-chips">${usStates.map(([c,n]) => `<div class="chip ${S.locState.includes(c)?'on':''}" onclick="toggleOBLocState('${c}')" style="font-size:10px;padding:3px 8px">${n}</div>`).join('')}</div>
+      </div>` : ''}
+      ${showCA ? `<div class="ob-loc-states">
+        <div class="loc-label">Provinces${caSelected ? ` (${caSelected} selected)` : ' (all)'}</div>
+        <div class="loc-chips">${caProvs.map(([c,n]) => `<div class="chip ${S.locState.includes(c)?'on':''}" onclick="toggleOBLocState('${c}')" style="font-size:10px;padding:3px 8px">${n}</div>`).join('')}</div>
+      </div>` : ''}
+
       <div style="margin:18px 0 14px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Posted within: <strong id="daysLabel">${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days'}</strong></div>
+        <div class="ob-section-title">Posted within: <strong id="daysLabel">${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days'}</strong></div>
         <input type="range" min="7" max="730" value="${S.days}" style="width:100%;accent-color:var(--accent)" oninput="setDays(this.value)">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2)"><span>1 week</span><span>6 months</span><span>1 year</span><span>2 years</span></div>
       </div>
       <div class="ob-actions">
         <button class="btn btn-ghost" onclick="S.step=3;render()">Back</button>
         <button class="btn btn-primary" onclick="finishOB()" style="padding:10px 28px;font-size:14px">
-          ${S.empTypes.length ? 'Find ' + S.empTypes.join(' & ') + ' Jobs' : 'Show All Jobs'}
+          ${S.empTypes.length ? 'Find ' + S.empTypes.join(' & ') + ' Jobs' : 'Find Jobs'}${S.locCountry.length ? ' in ' + S.locCountry.join(', ') : ''}
         </button>
       </div>
     </div></div>`;
@@ -606,6 +650,46 @@ function clearLocFilter() {
   loadJobs();
 }
 
+function getInitials() {
+  const n = S.profile?.name || '';
+  if (!n) return '?';
+  const p = n.split(' ').filter(Boolean);
+  return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : p[0][0].toUpperCase();
+}
+
+function signOut() {
+  if (!confirm('Sign out? This clears your resume, profile, and all settings.')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('ch_') || k === 'cp_api_url').forEach(k => localStorage.removeItem(k));
+  Object.assign(S, { view:'onboarding', step:1, resume:'', profile:null, skills:[], scores:{}, docs:{}, key:'', jobs:[], total:0, sel:null, detail:null, stats:null, empTypes:[], locCountry:[], locState:[], banner:true, fname:'', userMenu:false, locations:null });
+  render();
+}
+
+function toggleOBLocCountry(c) {
+  const i = S.locCountry.indexOf(c);
+  if (i >= 0) {
+    S.locCountry.splice(i, 1);
+    if (c === 'USA') S.locState = S.locState.filter(s => !(s in US_STATES_MAP));
+    else if (c === 'Canada') S.locState = S.locState.filter(s => !(s in CA_PROVINCES_MAP));
+  } else S.locCountry.push(c);
+  localStorage.setItem('ch_loc_country', JSON.stringify(S.locCountry));
+  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
+  render();
+}
+
+function toggleOBLocState(st) {
+  const i = S.locState.indexOf(st);
+  if (i >= 0) S.locState.splice(i, 1); else S.locState.push(st);
+  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
+  render();
+}
+
+function clearOBLoc() {
+  S.locCountry = []; S.locState = [];
+  localStorage.removeItem('ch_loc_country');
+  localStorage.removeItem('ch_loc_state');
+  render();
+}
+
 function renderLocFilter() {
   const loc = S.locations;
   const countries = loc ? Object.keys(loc.countries || {}).sort() : [];
@@ -626,13 +710,16 @@ function renderLocFilter() {
       const codes = Object.keys(states).sort();
       if (!codes.length) continue;
       const nameMap = c === 'USA' ? US_STATES_MAP : c === 'Canada' ? CA_PROVINCES_MAP : {};
-      html += `<div class="filters" style="margin-top:2px;padding-top:4px;padding-bottom:4px">
-        <span style="font-size:10px;color:var(--text2);padding:3px 4px">${esc(c)}:</span>
+      const selCnt = codes.filter(s => S.locState.includes(s)).length;
+      html += `<div style="padding:4px 12px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">${esc(c)}${selCnt ? ` (${selCnt}/${codes.length})` : ''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;max-height:120px;overflow-y:auto">
         ${codes.map(s => {
           const label = nameMap[s] || s;
           const cnt = states[s] || 0;
-          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
+          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 7px">${esc(label)} <sup>${cnt}</sup></div>`;
         }).join('')}
+        </div>
       </div>`;
     }
   }
@@ -657,8 +744,23 @@ function renderApp() {
     </div>
     <div class="actions">
       ${S.skills.length ? `<span style="font-size:11px;color:var(--text2)">${S.skills.length} skills</span>` : ''}
-      ${S.key ? '<span style="font-size:11px;color:var(--green)">Key set</span>' : ''}
+      ${S.key ? '<span style="font-size:11px;color:var(--green)">AI ready</span>' : ''}
       <button class="btn btn-ghost btn-sm" onclick="S.tab='settings';render()">Settings</button>
+      <div class="user-menu">
+        <div class="user-avatar" onclick="event.stopPropagation();S.userMenu=!S.userMenu;render()">${getInitials()}</div>
+        ${S.userMenu ? `<div class="user-drop" onclick="event.stopPropagation()">
+          <div class="ud-head">
+            <div class="ud-name">${esc(S.profile?.name||'User')}</div>
+            ${S.profile?.email ? `<div class="ud-email">${esc(S.profile.email)}</div>` : ''}
+          </div>
+          <div class="ud-item" onclick="S.tab='settings';S.settingsTab='profile';S.userMenu=false;render()">Profile</div>
+          <div class="ud-item" onclick="S.tab='settings';S.settingsTab='general';S.userMenu=false;render()">Settings</div>
+          <a class="ud-item" href="./interview_coach.html">Interview Coach</a>
+          <a class="ud-item" href="./career_dashboard.html">Analytics</a>
+          <div class="ud-sep"></div>
+          <div class="ud-item danger" onclick="signOut()">Sign Out</div>
+        </div>` : ''}
+      </div>
     </div>
   </header>
   ${S.banner && !S.key ? `<div class="banner"><span>Add a free <a href="https://aistudio.google.com/apikey" target="_blank">Gemini key</a> for AI scoring &amp; doc generation.</span><button class="btn btn-primary btn-sm" onclick="S.tab='settings';render()">Add Key</button><span class="x" onclick="S.banner=false;localStorage.setItem('ch_banner_off','1');render()">&times;</span></div>` : ''}
@@ -1017,6 +1119,7 @@ function render() {
 }
 
 // === Init ===
+document.addEventListener('click', () => { if (S.userMenu) { S.userMenu = false; render(); } });
 (async function() {
   if (S.resume && S.profile) { S.view = 'app'; render(); loadJobs(); loadStats(); loadLocations(); }
   else { S.view = 'onboarding'; S.step = 1; render(); }
