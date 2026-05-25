@@ -361,7 +361,7 @@ function renderDiffGroups(ops) {
   if (!added && !removed) return html + '<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">No changes detected</div>';
 
   // Group ops into change blocks with context
-  const CTX = 2;
+  const CTX = 5;
   const groups = [];
   let cur = null;
   for (let i = 0; i < ops.length; i++) {
