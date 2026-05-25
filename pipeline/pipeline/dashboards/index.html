@@ -222,6 +222,9 @@ const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
   tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 200,
   empTypes: JSON.parse(localStorage.getItem('ch_emp_types') || '[]'),
+  locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '[]'),
+  locState: JSON.parse(localStorage.getItem('ch_loc_state') || '[]'),
+  locations: null,
   days: parseInt(localStorage.getItem('ch_days') || '365'),
   busy: {}, resume: localStorage.getItem('ch_resume_text') || '',
   fname: '', profile: null, step: 1, skills: [], scores: {},
@@ -269,12 +272,18 @@ async function loadJobs() {
     if (S.q) p.set('search', S.q);
     const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
     if (et) p.set('employment_type', et);
+    if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
+    if (S.locState.length) p.set('location_state', S.locState.join(','));
     if (S.days && S.days < 730) p.set('days', S.days);
     const d = await api(`/api/v1/jobs/browse?${p}`);
     S.jobs = d.jobs || []; S.total = d.total || 0; S.offset = 0;
     scoreKeyword();
   } catch(e) { console.error(e); S.jobs = []; }
   S.busy.jobs = false; render();
+}
+
+async function loadLocations() {
+  try { S.locations = await api('/api/v1/jobs/locations'); render(); } catch { S.locations = null; }
 }
 
 async function loadMore() {
@@ -286,6 +295,8 @@ async function loadMore() {
     if (S.q) p.set('search', S.q);
     const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
     if (et) p.set('employment_type', et);
+    if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
+    if (S.locState.length) p.set('location_state', S.locState.join(','));
     if (S.days && S.days < 730) p.set('days', S.days);
     const d = await api(`/api/v1/jobs/browse?${p}`);
     S.jobs = S.jobs.concat(d.jobs || []); S.total = d.total; S.offset = o;
@@ -569,9 +580,68 @@ function setDaysAndReload(v) {
   loadJobs();
 }
 
+const US_STATES_MAP = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'DC'};
+const CA_PROVINCES_MAP = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland',NS:'Nova Scotia',ON:'Ontario',PE:'PEI',QC:'Quebec',SK:'Saskatchewan'};
+
+function toggleLocCountry(c) {
+  const i = S.locCountry.indexOf(c);
+  if (i >= 0) { S.locCountry.splice(i, 1); S.locState = S.locState.filter(s => { const loc = S.locations; if (!loc) return true; const st = loc.states||{}; const cs = st[c]||{}; return !(s in cs); }); }
+  else S.locCountry.push(c);
+  localStorage.setItem('ch_loc_country', JSON.stringify(S.locCountry));
+  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
+  loadJobs();
+}
+
+function toggleLocState(st) {
+  const i = S.locState.indexOf(st);
+  if (i >= 0) S.locState.splice(i, 1); else S.locState.push(st);
+  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
+  loadJobs();
+}
+
+function clearLocFilter() {
+  S.locCountry = []; S.locState = [];
+  localStorage.removeItem('ch_loc_country');
+  localStorage.removeItem('ch_loc_state');
+  loadJobs();
+}
+
+function renderLocFilter() {
+  const loc = S.locations;
+  const countries = loc ? Object.keys(loc.countries || {}).sort() : [];
+  if (!countries.length && !S.locCountry.length) return '';
+  const hasFilter = S.locCountry.length > 0 || S.locState.length > 0;
+  let html = `<div class="filters" style="margin-top:4px">
+    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()">All Locations</div>
+    ${countries.map(c => {
+      const cnt = loc.countries[c] || 0;
+      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
+    }).join('')}
+  </div>`;
+
+  const selCountries = S.locCountry.filter(c => loc?.states?.[c]);
+  if (selCountries.length) {
+    for (const c of selCountries) {
+      const states = loc.states[c] || {};
+      const codes = Object.keys(states).sort();
+      if (!codes.length) continue;
+      const nameMap = c === 'USA' ? US_STATES_MAP : c === 'Canada' ? CA_PROVINCES_MAP : {};
+      html += `<div class="filters" style="margin-top:2px;padding-top:4px;padding-bottom:4px">
+        <span style="font-size:10px;color:var(--text2);padding:3px 4px">${esc(c)}:</span>
+        ${codes.map(s => {
+          const label = nameMap[s] || s;
+          const cnt = states[s] || 0;
+          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
+        }).join('')}
+      </div>`;
+    }
+  }
+  return html;
+}
+
 async function finishOB() {
   S.view = 'app'; render();
-  await loadJobs(); loadStats();
+  await loadJobs(); loadStats(); loadLocations();
   if (S.key && S.skills.length) runAI();
 }
 
@@ -615,6 +685,7 @@ function renderSidebar(j) {
       <div class="chip ${!S.empFilter?'on':''}" onclick="S.empFilter='';loadJobs()">All Types</div>
       ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empFilter===t?'on':''}" onclick="S.empFilter='${t}';loadJobs()">${t}</div>`).join('')}
     </div>
+    ${renderLocFilter()}
     <div style="padding:4px 12px 8px;font-size:11px;color:var(--text2)">
       Posted: <strong>${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + 'mo' : S.days + 'd'}</strong>
       <input type="range" min="7" max="730" value="${S.days}" style="width:100%;accent-color:var(--accent);height:4px" onchange="setDaysAndReload(this.value)">
@@ -947,7 +1018,7 @@ function render() {
 
 // === Init ===
 (async function() {
-  if (S.resume && S.profile) { S.view = 'app'; render(); loadJobs(); loadStats(); }
+  if (S.resume && S.profile) { S.view = 'app'; render(); loadJobs(); loadStats(); loadLocations(); }
   else { S.view = 'onboarding'; S.step = 1; render(); }
 })();
 </script>
