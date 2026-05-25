@@ -574,6 +574,17 @@ function quickParse(text) {
   return { name: name || 'Unknown', email: em?.[0] || '', phone: ph?.[0] || '', linkedin: li ? 'https://' + li[0] : '', github: gh ? 'https://' + gh[0] : '', education: edu, skills: [...new Set(skills)], target_roles: ['Software Engineer'], preferred_locations: [] };
 }
 
+async function formatResume(text, apiKey) {
+  const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: `Format this resume text into clean, well-structured plain text. Fix spacing, line breaks, and layout issues from PDF/DOCX extraction.\n\nCRITICAL RULES:\n- Do NOT change, add, remove, or rephrase ANY word\n- Do NOT reorder any sections, bullets, or content\n- ONLY fix formatting: proper line breaks between sections, consistent bullet points, clean spacing, remove duplicate spaces\n- Keep exact same section order, bullet order, and all original text verbatim\n- Use consistent formatting: section headers on their own line, one bullet per line, blank line between sections\n\nRaw resume text:\n${text.substring(0, 8000)}\n\nOutput the cleanly formatted resume text only.` }] }], generationConfig: { temperature: 0, maxOutputTokens: 8192 } })
+  });
+  if (!r.ok) return text;
+  const d = await r.json();
+  const formatted = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return formatted.length > 50 ? formatted.trim() : text;
+}
+
 async function aiParse(text, apiKey) {
   const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -721,7 +732,11 @@ function setupOB() {
         const p = await aiParse(S.resume, k);
         S.key = k; localStorage.setItem('ch_gemini_key', k);
         S.profile = p; S.skills = p.skills || [];
-        localStorage.setItem('ch_parsed_profile', JSON.stringify(p)); S.step = 3; render();
+        localStorage.setItem('ch_parsed_profile', JSON.stringify(p));
+        btn.innerHTML = '<span class="spin"></span> Formatting resume...';
+        const formatted = await formatResume(S.resume, k);
+        S.resume = formatted; localStorage.setItem('ch_resume_text', formatted);
+        S.step = 3; render();
       } catch(e) { err.textContent = e.message; btn.disabled = false; btn.textContent = 'Parse with AI'; }
     });
   }
