@@ -427,8 +427,15 @@ async function genDocs(id) {
   const fill = t => {
     let prompt;
     if (t === 'resume') {
-      const mode = document.querySelector('input[name="rmode"]:checked')?.value;
-      prompt = (mode && RESUME_MODES[mode]) ? RESUME_MODES[mode].prompt : getPrompt('resume');
+      const modes = Array.from(document.querySelectorAll('.rmode:checked')).map(c => c.value);
+      if (modes.length === 0) {
+        prompt = getPrompt('resume');
+      } else if (modes.length === 1) {
+        prompt = RESUME_MODES[modes[0]].prompt;
+      } else {
+        const instructions = modes.map(m => RESUME_MODES[m].label + ': ' + RESUME_MODES[m].desc).join('\n');
+        prompt = `You are an ATS resume optimizer. Create a tailored one-page ATS resume applying ALL of these strategies:\n\n${instructions}\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Keep all original metrics/numbers unchanged\n- Mirror JD keywords\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`;
+      }
     } else {
       prompt = getPrompt(t);
     }
@@ -933,10 +940,10 @@ function renderDetail() {
         <label><input type="checkbox" class="gc" value="ats_audit" checked> ATS Audit</label>
       </div>
       <div style="margin:10px 0;padding:10px;background:var(--surface2);border-radius:8px">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Resume Mode</div>
-        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="rewrite" checked style="margin-top:2px"><div><strong>Rewrite for JD</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Rewrite bullets to mirror JD keywords while keeping your metrics</span></div></label>
-        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="reorder" style="margin-top:2px"><div><strong>Reorder by Relevance</strong><br><span style="color:var(--text2);font-size:11px">Reorder bullets and projects by JD relevance, keep text unchanged</span></div></label>
-        <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="projects" style="margin-top:2px"><div><strong>Add Relevant Projects</strong><br><span style="color:var(--text2);font-size:11px">Pull in projects from your profile/context that best match this JD</span></div></label>
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Resume Mode <span style="text-transform:none;font-size:10px">(select multiple)</span></div>
+        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="reorder" checked style="margin-top:2px"><div><strong>Reorder by Relevance</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Reorder bullets and projects by JD relevance, keep text unchanged</span></div></label>
+        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="projects" checked style="margin-top:2px"><div><strong>Add Relevant Projects</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Pull in projects from your profile/context that best match this JD</span></div></label>
+        <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="rewrite" style="margin-top:2px"><div><strong>Rewrite for JD</strong><br><span style="color:var(--text2);font-size:11px">Rewrite bullets to mirror JD keywords while keeping your metrics</span></div></label>
       </div>
       <button class="btn btn-primary" onclick="genDocs(${j.id})" ${S.busy[`g${j.id}`]||!S.key?'disabled':''}>${S.busy[`g${j.id}`]?'<span class="spin"></span> Generating...':'Generate'}</button>
       ${!S.key ? '<p class="hint" style="color:var(--yellow);margin-top:6px">Add key in Settings.</p>' : ''}
