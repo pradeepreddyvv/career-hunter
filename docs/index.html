@@ -243,7 +243,7 @@ const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
   tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 200,
   empTypes: JSON.parse(localStorage.getItem('ch_emp_types') || '[]'),
-  locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '[]'),
+  locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '["USA"]'),
   locState: JSON.parse(localStorage.getItem('ch_loc_state') || '[]'),
   locations: null,
   days: parseInt(localStorage.getItem('ch_days') || '365'),
@@ -251,7 +251,7 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
-  settingsTab: 'general', userMenu: false,
+  settingsTab: 'general', userMenu: false, locOpen: false,
 };
 
 const DEFAULT_PROMPTS = {
@@ -695,24 +695,29 @@ function renderLocFilter() {
   const countries = loc ? Object.keys(loc.countries || {}).sort() : [];
   if (!countries.length && !S.locCountry.length) return '';
   const hasFilter = S.locCountry.length > 0 || S.locState.length > 0;
-  let html = `<div class="filters" style="margin-top:4px">
-    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()">All Locations</div>
-    ${countries.map(c => {
-      const cnt = loc.countries[c] || 0;
-      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
-    }).join('')}
-  </div>`;
-
-  const selCountries = S.locCountry.filter(c => loc?.states?.[c]);
-  if (selCountries.length) {
+  const label = hasFilter ? S.locCountry.join(', ') + (S.locState.length ? ` (${S.locState.length})` : '') : 'All Locations';
+  let html = `<div style="padding:4px 12px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.locOpen=!S.locOpen;render()">
+      <span style="font-size:11px;color:var(--text2)">Location: <strong style="color:${hasFilter?'var(--accent2)':'var(--text2)'}">${esc(label)}</strong></span>
+      <span style="font-size:10px;color:var(--text2)">${S.locOpen?'&#9650;':'&#9660;'}</span>
+    </div>`;
+  if (S.locOpen) {
+    html += `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
+      <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()" style="font-size:10px;padding:2px 8px">All</div>
+      ${countries.map(c => {
+        const cnt = loc.countries[c] || 0;
+        return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')" style="font-size:10px;padding:2px 8px">${esc(c)} <sup>${cnt}</sup></div>`;
+      }).join('')}
+    </div>`;
+    const selCountries = S.locCountry.filter(c => loc?.states?.[c]);
     for (const c of selCountries) {
       const states = loc.states[c] || {};
       const codes = Object.keys(states).sort();
       if (!codes.length) continue;
       const nameMap = c === 'USA' ? US_STATES_MAP : c === 'Canada' ? CA_PROVINCES_MAP : {};
       const selCnt = codes.filter(s => S.locState.includes(s)).length;
-      html += `<div style="padding:4px 12px;border-bottom:1px solid var(--border)">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">${esc(c)}${selCnt ? ` (${selCnt}/${codes.length})` : ''}</div>
+      html += `<div style="margin-top:4px">
+        <div style="font-size:10px;color:var(--text2);margin-bottom:3px">${esc(c)}${selCnt ? ` (${selCnt}/${codes.length})` : ''}</div>
         <div style="display:flex;flex-wrap:wrap;gap:3px;max-height:120px;overflow-y:auto">
         ${codes.map(s => {
           const label = nameMap[s] || s;
@@ -723,6 +728,7 @@ function renderLocFilter() {
       </div>`;
     }
   }
+  html += '</div>';
   return html;
 }
 
