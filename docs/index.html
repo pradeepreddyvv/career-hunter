@@ -125,6 +125,31 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .settings-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:768px){.settings-2col{grid-template-columns:1fr}}
 
+/* Settings sub-tabs */
+.stabs{display:flex;gap:2px;margin-bottom:20px;background:var(--surface2);border-radius:10px;padding:3px}
+.stab{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:.15s}
+.stab:hover{color:var(--text)}
+.stab.on{background:var(--accent);color:white}
+.prof-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.prof-grid label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.prof-grid input,.prof-grid textarea{width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px}
+.prof-grid input:focus,.prof-grid textarea:focus{border-color:var(--accent);outline:none}
+.prof-wide{grid-column:1/-1}
+.exp-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.exp-card .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.exp-card input,.exp-card textarea{width:100%;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;font-family:inherit}
+.exp-card textarea{resize:vertical}
+.prompt-ed{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.prompt-ed h4{font-size:14px;color:var(--accent2);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.prompt-ed .pdesc{font-size:12px;color:var(--text2);margin-bottom:8px}
+.prompt-ed textarea{width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--mono);line-height:1.5;resize:vertical}
+.prompt-ed textarea:focus{border-color:var(--accent);outline:none}
+.prompt-ed .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;margin-right:4px}
+.tag-used{background:var(--green-dim);color:var(--green)}
+.tag-custom{background:var(--accent-dim);color:var(--accent2)}
+.save-float{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 20%);padding:14px 0;display:flex;gap:8px;justify-content:flex-end}
+@media(max-width:600px){.prof-grid{grid-template-columns:1fr}.exp-card .row{grid-template-columns:1fr}}
+
 /* Forms */
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px}
@@ -202,7 +227,23 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
+  settingsTab: 'general',
 };
+
+const DEFAULT_PROMPTS = {
+  resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nRules:\n- Mirror JD keywords exactly\n- One page only\n- Education > Skills > Experience > Projects\n- Use metrics from the original resume\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput tailored resume only.`,
+  cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs.\n\nRules:\n- Never start with "I"\n- Company-specific hook in paragraph 1\n- Use exact metrics from resume\n- Never say "passionate" or "enthusiastic"\n- Include visa authorization line in closing\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput cover letter only.`,
+  outreach: `Generate outreach messages for this job application.\n\nReturn JSON:\n{"linkedin_message":"300 chars max connection request","cold_email":{"subject":"...","body":"150-200 words"},"referral_ask":"100-150 words"}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
+  ats_audit: `ATS audit: extract top 20 JD keywords, check which appear in the resume, calculate coverage.\n\nReturn JSON:\n{"coverage_pct":0,"matched_keywords":[],"missing_keywords":[],"suggestions":["specific suggestion to add each missing keyword"]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
+  interview_prep: `Generate interview prep for this role.\n\nReturn JSON:\n{"behavioral":[{"question":"...","star_hint":"..."}],"technical":[{"question":"...","approach":"..."}],"talking_points":["..."],"questions_to_ask":["..."],"themes":["..."]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
+  scoring: `Score how well this resume matches the job (0-100).\n\n85-100: Perfect match\n70-84: Strong match\n55-69: Decent match\n40-54: Weak match\n0-39: Poor match\n\nReturn JSON:\n{"score":0,"summary":"...","recommendation":"STRONG_APPLY|APPLY|MAYBE|SKIP","matched_skills":[],"missing_skills":[]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
+};
+
+function loadPrompts() {
+  try { const p = localStorage.getItem('ch_prompts'); return p ? JSON.parse(p) : {}; } catch { return {}; }
+}
+function getPrompt(key) { const custom = loadPrompts(); return custom[key] || DEFAULT_PROMPTS[key] || ''; }
+function savePrompts(prompts) { localStorage.setItem('ch_prompts', JSON.stringify(prompts)); }
 
 try { const pp = localStorage.getItem('ch_parsed_profile'); if (pp) S.profile = JSON.parse(pp); } catch {}
 if (S.profile) S.skills = S.profile.skills || [];
@@ -311,12 +352,8 @@ async function genDocs(id) {
   if (!types.length) { toast('Select at least one doc type', false); return; }
   S.busy[`g${id}`] = true; render();
   const jd = S.detail.description.substring(0, 5000);
-  const prompts = {
-    resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nJob: ${S.detail.title} at ${S.detail.company}\nJD:\n${jd}\n\nResume:\n${S.resume}\n\nOutput tailored resume only.`,
-    cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs, company-specific hook, exact metrics, never start with "I".\n\nJob: ${S.detail.title} at ${S.detail.company}\nJD:\n${jd}\n\nResume:\n${S.resume}\n\nOutput cover letter only.`,
-    outreach: `Generate outreach messages. Return JSON: {"linkedin_message":"...","cold_email":{"subject":"...","body":"..."},"referral_ask":"..."}\n\nJob: ${S.detail.title} at ${S.detail.company}\nJD:\n${jd}\n\nResume:\n${S.resume}`,
-    ats_audit: `ATS audit: extract top 20 JD keywords, check resume coverage, return JSON: {"coverage_pct":0,"matched_keywords":[],"missing_keywords":[],"suggestions":[]}\n\nJob: ${S.detail.title} at ${S.detail.company}\nJD:\n${jd}\n\nResume:\n${S.resume}`,
-  };
+  const fill = t => getPrompt(t).replace(/\{title\}/g, S.detail.title).replace(/\{company\}/g, S.detail.company).replace(/\{jd\}/g, jd).replace(/\{resume\}/g, S.resume);
+  const prompts = { resume: fill('resume'), cover_letter: fill('cover_letter'), outreach: fill('outreach'), ats_audit: fill('ats_audit') };
   for (const t of types) {
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${S.key}`, {
@@ -663,23 +700,233 @@ function renderStatsTab() {
 }
 
 function renderSettings() {
-  return `<h2>Settings</h2><p class="subtitle">API key, resume, and server configuration.</p>
-    <div class="settings-2col">
-      <div class="card"><h3>Gemini API Key</h3>
-        <p class="muted" style="margin-bottom:10px">${S.key ? 'Key set. Used for AI scoring and docs.' : 'Required for AI features.'} <a href="https://aistudio.google.com/apikey" target="_blank">Get free key</a></p>
-        <div class="field"><input id="sk" type="password" placeholder="AIzaSy..." value="${esc(S.key)}"></div>
-        <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" onclick="saveKey()">Save</button>${S.key?'<button class="btn btn-danger btn-sm" onclick="rmKey()">Remove</button>':''}</div>
-      </div>
-      <div class="card"><h3>Resume</h3>
-        <p class="muted" style="margin-bottom:10px">${S.resume ? `${S.resume.length.toLocaleString()} chars, ${S.skills.length} skills` : 'No resume loaded'}</p>
-        <button class="btn btn-ghost btn-sm" onclick="S.view='onboarding';S.step=1;render()">Re-upload</button>
-      </div>
+  const st = S.settingsTab;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><h2>Settings</h2></div>
+    <div class="stabs">
+      <div class="stab ${st==='general'?'on':''}" onclick="S.settingsTab='general';render()">General</div>
+      <div class="stab ${st==='profile'?'on':''}" onclick="S.settingsTab='profile';render()">Profile Data</div>
+      <div class="stab ${st==='prompts'?'on':''}" onclick="S.settingsTab='prompts';render()">AI Prompts</div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>API Server</h3>
-      <div class="field"><label>Pipeline Server URL</label><input id="su" value="${esc(API)}" style="font-family:var(--mono);font-size:12px"></div>
-      <button class="btn btn-ghost btn-sm" onclick="let u=document.getElementById('su')?.value?.replace(/\\/+$/,'');if(u){localStorage.setItem('cp_api_url',u);location.reload()}">Update</button>
+    ${st==='general' ? renderSettingsGeneral() : st==='profile' ? renderSettingsProfile() : renderSettingsPrompts()}`;
+}
+
+function renderSettingsGeneral() {
+  return `<div class="settings-2col">
+    <div class="card"><h3>Gemini API Key</h3>
+      <p class="muted" style="margin-bottom:10px">${S.key ? 'Key set. Used for AI scoring and docs.' : 'Required for AI features.'} <a href="https://aistudio.google.com/apikey" target="_blank">Get free key</a></p>
+      <div class="field"><input id="sk" type="password" placeholder="AIzaSy..." value="${esc(S.key)}"></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" onclick="saveKey()">Save</button>${S.key?'<button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="rmKey()">Remove</button>':''}</div>
     </div>
-    ${S.skills.length ? `<div class="card" style="margin-top:14px"><h3>Skills (${S.skills.length})</h3><div class="skills-list" style="margin-top:8px">${S.skills.map(s=>`<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}`;
+    <div class="card"><h3>Resume</h3>
+      <p class="muted" style="margin-bottom:10px">${S.resume ? `${S.resume.length.toLocaleString()} chars, ${S.skills.length} skills` : 'No resume loaded'}</p>
+      <button class="btn btn-ghost btn-sm" onclick="S.view='onboarding';S.step=1;render()">Re-upload</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>API Server</h3>
+    <div class="field"><label>Pipeline Server URL</label><input id="su" value="${esc(API)}" style="font-family:var(--mono);font-size:12px"></div>
+    <button class="btn btn-ghost btn-sm" onclick="let u=document.getElementById('su')?.value?.replace(/\\/+$/,'');if(u){localStorage.setItem('cp_api_url',u);location.reload()}">Update</button>
+  </div>
+  ${S.skills.length ? `<div class="card" style="margin-top:14px"><h3>Extracted Skills (${S.skills.length})</h3><div class="skills-list" style="margin-top:8px">${S.skills.map(s=>`<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}`;
+}
+
+function renderSettingsProfile() {
+  const p = S.profile || {};
+  const exp = p.experience || [];
+  const proj = p.projects || [];
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div><p class="muted">Your profile is used by all AI features — resume generation, cover letters, scoring, and interview prep.</p></div>
+    <button class="btn btn-primary" onclick="saveProfileFromSettings()">Save Profile</button>
+  </div>
+
+  <div class="card"><h3>Identity & Contact</h3>
+    <div class="prof-grid">
+      <div><label>Full Name</label><input id="sp_name" value="${esc(p.name||'')}"></div>
+      <div><label>Email</label><input id="sp_email" value="${esc(p.email||'')}"></div>
+      <div><label>Phone</label><input id="sp_phone" value="${esc(p.phone||'')}"></div>
+      <div><label>LinkedIn</label><input id="sp_linkedin" value="${esc(p.linkedin||'')}"></div>
+      <div><label>GitHub</label><input id="sp_github" value="${esc(p.github||'')}"></div>
+      <div><label>Portfolio</label><input id="sp_portfolio" value="${esc(p.portfolio||'')}"></div>
+      <div><label>Location</label><input id="sp_location" value="${esc(p.location||'')}"></div>
+      <div><label>Visa Status</label><input id="sp_visa" value="${esc(p.visa||'')}"></div>
+      <div><label>Availability</label><input id="sp_availability" value="${esc(p.availability||'')}"></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Education</h3>
+    <div class="prof-grid">
+      <div><label>University</label><input id="sp_school" value="${esc(p.education||'')}"></div>
+      <div><label>Degree</label><input id="sp_degree" value="${esc(p.degree||'')}"></div>
+      <div><label>GPA</label><input id="sp_gpa" value="${esc(p.gpa||'')}"></div>
+      <div class="prof-wide"><label>Coursework</label><input id="sp_coursework" value="${esc((p.coursework||[]).join(', '))}"></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Technical Skills</h3>
+    <p class="muted" style="margin-bottom:10px">Comma-separated. These are used for keyword matching and scoring.</p>
+    <div class="prof-grid" style="grid-template-columns:1fr">
+      <div><label>All Skills</label><textarea id="sp_skills" rows="3" style="font-size:13px">${esc((p.skills||[]).join(', '))}</textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0">Work Experience</h3>
+      <button class="btn btn-ghost btn-sm" onclick="addExpFromSettings()">+ Add</button>
+    </div>
+    ${exp.length ? exp.map((e,i) => `<div class="exp-card">
+      <div class="row">
+        <div><label style="font-size:11px;color:var(--text2)">Title</label><input id="se_title_${i}" value="${esc(e.title||'')}"></div>
+        <div><label style="font-size:11px;color:var(--text2)">Company</label><input id="se_company_${i}" value="${esc(e.company||'')}"></div>
+        <div><label style="font-size:11px;color:var(--text2)">Dates</label><input id="se_dates_${i}" value="${esc(e.dates||'')}"></div>
+      </div>
+      <label style="font-size:11px;color:var(--text2)">Bullets (one per line)</label>
+      <textarea id="se_bullets_${i}" rows="3">${esc((e.bullets||[]).join('\\n'))}</textarea>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px;color:var(--red)" onclick="rmExpFromSettings(${i})">Remove</button>
+    </div>`).join('') : '<p class="muted">No experience entries. Click + Add to create one.</p>'}
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3 style="margin:0">Projects</h3>
+      <button class="btn btn-ghost btn-sm" onclick="addProjFromSettings()">+ Add</button>
+    </div>
+    ${proj.length ? proj.map((pr,i) => `<div class="exp-card">
+      <div class="row">
+        <div><label style="font-size:11px;color:var(--text2)">Name</label><input id="sp_pname_${i}" value="${esc(pr.name||'')}"></div>
+        <div><label style="font-size:11px;color:var(--text2)">Tech Stack</label><input id="sp_ptech_${i}" value="${esc(pr.tech||'')}"></div>
+        <div><label style="font-size:11px;color:var(--text2)">URL</label><input id="sp_purl_${i}" value="${esc(pr.url||'')}"></div>
+      </div>
+      <label style="font-size:11px;color:var(--text2)">Description</label>
+      <textarea id="sp_pdesc_${i}" rows="2">${esc(pr.description||'')}</textarea>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px;color:var(--red)" onclick="rmProjFromSettings(${i})">Remove</button>
+    </div>`).join('') : '<p class="muted">No projects. Click + Add to create one.</p>'}
+  </div>
+
+  <div class="card"><h3>Target Roles</h3>
+    <div class="prof-grid" style="grid-template-columns:1fr">
+      <div><label>Target Roles (comma-separated)</label><input id="sp_roles" value="${esc((p.target_roles||[]).join(', '))}"></div>
+      <div><label>Preferred Locations (comma-separated)</label><input id="sp_locations" value="${esc((p.preferred_locations||[]).join(', '))}"></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Experience Summary</h3>
+    <textarea id="sp_summary" rows="4" style="width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">${esc(p.experience_summary||'')}</textarea>
+  </div>
+
+  <div class="save-float"><button class="btn btn-ghost" onclick="S.profile=null;localStorage.removeItem('ch_parsed_profile');S.skills=[];toast('Profile cleared');render()">Clear Profile</button><button class="btn btn-primary" onclick="saveProfileFromSettings()">Save Profile</button></div>`;
+}
+
+function renderSettingsPrompts() {
+  const custom = loadPrompts();
+  const defs = [
+    { key: 'resume', name: 'Resume Generation', desc: 'Creates a tailored ATS-optimized resume. Variables: {title}, {company}, {jd}, {resume}', rows: 10 },
+    { key: 'cover_letter', name: 'Cover Letter', desc: 'Generates a tailored cover letter. Variables: {title}, {company}, {jd}, {resume}', rows: 8 },
+    { key: 'outreach', name: 'Outreach Messages', desc: 'LinkedIn DM, cold email, referral ask. Variables: {title}, {company}, {jd}, {resume}', rows: 6 },
+    { key: 'ats_audit', name: 'ATS Audit', desc: 'Keyword coverage analysis. Variables: {title}, {company}, {jd}, {resume}', rows: 6 },
+    { key: 'interview_prep', name: 'Interview Prep', desc: 'Behavioral + technical questions. Variables: {title}, {company}, {jd}, {resume}', rows: 6 },
+    { key: 'scoring', name: 'AI Scoring', desc: 'Resume-job match scoring. Variables: {title}, {company}, {jd}, {resume}', rows: 6 },
+  ];
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div><p class="muted">Customize the AI prompts used for document generation and scoring. Use {title}, {company}, {jd}, {resume} as placeholders.</p></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="if(confirm('Reset all prompts to defaults?')){localStorage.removeItem('ch_prompts');toast('Prompts reset');render()}">Reset All</button>
+      <button class="btn btn-primary" onclick="savePromptsFromSettings()">Save Prompts</button>
+    </div>
+  </div>
+  ${defs.map(d => {
+    const isCustom = !!custom[d.key];
+    const val = custom[d.key] || DEFAULT_PROMPTS[d.key] || '';
+    return `<div class="prompt-ed">
+      <h4><span>${esc(d.name)}</span><span>${isCustom ? '<span class="tag tag-custom">Custom</span>' : '<span class="tag tag-used">Default</span>'}${isCustom ? `<button class="btn btn-ghost btn-sm" style="margin-left:6px;font-size:11px" onclick="resetOnePrompt('${d.key}')">Reset</button>` : ''}</span></h4>
+      <p class="pdesc">${esc(d.desc)}</p>
+      <textarea id="pr_${d.key}" rows="${d.rows}">${esc(val)}</textarea>
+    </div>`;
+  }).join('')}
+  <div class="save-float"><button class="btn btn-primary" onclick="savePromptsFromSettings()">Save Prompts</button></div>`;
+}
+
+function saveProfileFromSettings() {
+  const g = id => document.getElementById(id)?.value?.trim() || '';
+  const p = S.profile || {};
+  p.name = g('sp_name'); p.email = g('sp_email'); p.phone = g('sp_phone');
+  p.linkedin = g('sp_linkedin'); p.github = g('sp_github'); p.portfolio = g('sp_portfolio');
+  p.location = g('sp_location'); p.visa = g('sp_visa'); p.availability = g('sp_availability');
+  p.education = g('sp_school'); p.degree = g('sp_degree'); p.gpa = g('sp_gpa');
+  p.coursework = g('sp_coursework').split(',').map(s=>s.trim()).filter(Boolean);
+  p.skills = g('sp_skills').split(',').map(s=>s.trim()).filter(Boolean);
+  p.target_roles = g('sp_roles').split(',').map(s=>s.trim()).filter(Boolean);
+  p.preferred_locations = g('sp_locations').split(',').map(s=>s.trim()).filter(Boolean);
+  p.experience_summary = g('sp_summary');
+
+  const exp = []; let ei = 0;
+  while (document.getElementById('se_title_' + ei)) {
+    const title = g('se_title_' + ei), company = g('se_company_' + ei), dates = g('se_dates_' + ei);
+    const bullets = (document.getElementById('se_bullets_' + ei)?.value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+    if (title || company) exp.push({ title, company, dates, bullets });
+    ei++;
+  }
+  p.experience = exp;
+
+  const proj = []; let pi = 0;
+  while (document.getElementById('sp_pname_' + pi)) {
+    const name = g('sp_pname_' + pi), tech = g('sp_ptech_' + pi), url = g('sp_purl_' + pi);
+    const description = g('sp_pdesc_' + pi);
+    if (name) proj.push({ name, tech, url, description });
+    pi++;
+  }
+  p.projects = proj;
+
+  S.profile = p; S.skills = p.skills || [];
+  localStorage.setItem('ch_parsed_profile', JSON.stringify(p));
+  toast('Profile saved'); render();
+}
+
+function addExpFromSettings() {
+  if (!S.profile) S.profile = {};
+  if (!S.profile.experience) S.profile.experience = [];
+  S.profile.experience.push({ title: '', company: '', dates: '', bullets: [] });
+  localStorage.setItem('ch_parsed_profile', JSON.stringify(S.profile));
+  render();
+}
+function rmExpFromSettings(i) {
+  if (!S.profile?.experience) return;
+  S.profile.experience.splice(i, 1);
+  localStorage.setItem('ch_parsed_profile', JSON.stringify(S.profile));
+  render();
+}
+function addProjFromSettings() {
+  if (!S.profile) S.profile = {};
+  if (!S.profile.projects) S.profile.projects = [];
+  S.profile.projects.push({ name: '', tech: '', url: '', description: '' });
+  localStorage.setItem('ch_parsed_profile', JSON.stringify(S.profile));
+  render();
+}
+function rmProjFromSettings(i) {
+  if (!S.profile?.projects) return;
+  S.profile.projects.splice(i, 1);
+  localStorage.setItem('ch_parsed_profile', JSON.stringify(S.profile));
+  render();
+}
+
+function savePromptsFromSettings() {
+  const custom = loadPrompts();
+  const keys = ['resume','cover_letter','outreach','ats_audit','interview_prep','scoring'];
+  keys.forEach(k => {
+    const el = document.getElementById('pr_' + k);
+    if (!el) return;
+    const val = el.value.trim();
+    if (val && val !== DEFAULT_PROMPTS[k]) custom[k] = val;
+    else delete custom[k];
+  });
+  savePrompts(custom);
+  toast('Prompts saved'); render();
+}
+
+function resetOnePrompt(key) {
+  const custom = loadPrompts();
+  delete custom[key];
+  savePrompts(custom);
+  toast(key.replace(/_/g,' ') + ' reset to default'); render();
 }
 
 function saveKey() { const k = document.getElementById('sk')?.value?.trim(); if (!k) { toast('Enter a key', false); return; } S.key = k; localStorage.setItem('ch_gemini_key', k); toast('Key saved'); render(); }

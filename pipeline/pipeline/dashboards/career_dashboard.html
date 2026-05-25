@@ -526,7 +526,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     if (path.includes(a.getAttribute('href'))) a.classList.add('active');
   });
 })();
-const API_BASE = window.location.origin;
+const API_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
 const STORE_READ = `${API_BASE}/webhook/profile-store`;
 const STORE_WRITE = `${API_BASE}/webhook/profile-store-save`;
 const PROMPT_STORAGE_KEY = 'ch_prompts_v2';
@@ -1675,11 +1677,11 @@ function switchTab(id) {
 
 // ===== DEFAULT PROFILE =====
 const DEFAULT_PROFILE = {
-  name: 'Your Name', email: 'your.email@example.com', phone: '+1 (555) 000-0000',
-  linkedin: 'linkedin.com/in/yourusername', github: 'github.com/yourusername', portfolio: '',
+  name: '[Your Name]', email: 'your.email@example.com', phone: '',
+  linkedin: 'linkedin.com/in/yourprofile', github: 'github.com/yourprofile', portfolio: '',
   visa: 'F-1 ([Work Authorization], no sponsorship required)', location: 'Tempe, AZ',
-  availability: '[Availability Dates]', school: 'Your University',
-  degree: 'MS Computer Science', gpa: 'X.X/4.0', coursework: '', gradDate: 'Dec 2026',
+  availability: 'May 27 – Aug 7, 2026', school: '[Your University]',
+  degree: 'MS Computer Science', gpa: '[GPA]', coursework: '', gradDate: 'Dec 2026',
   targetRoles: 'SDE Intern, ML Engineer, Fullstack', blacklist: 'TikTok, ByteDance',
   skills: {languages:'Java, Python, JavaScript/TypeScript, SQL, C++', frameworks:'Spring Boot, React.js, Next.js, FastAPI, Flask, TensorFlow/Keras',
     cloud:'AWS (EC2, S3, CloudHub), Docker, Kubernetes, Nginx', databases:'Oracle DB, MySQL, PostgreSQL, MongoDB, Redis',
@@ -1742,5 +1744,6 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+<script src="config.js"></script>
 </body>
 </html>

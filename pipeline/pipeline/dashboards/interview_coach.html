@@ -69,45 +69,8 @@ body { background: #0a0a0f; color: #e5e5e5; font-family: 'Inter', -apple-system,
   <div class="nav-divider"></div>
   <a href="./career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
 </nav>
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-box">
-    <h2>Interview Coach</h2>
-    <p>Enter password to continue</p>
-    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter')window._doLogin()">
-    <div class="auth-err" id="authErr"></div>
-    <button onclick="window._doLogin()">Sign In</button>
-  </div>
-</div>
-<script>
-(function(){
-  const API = window.location.origin + '/webhook/task-hub-api';
-  const EXPIRY_DAYS = 100;
-  function saveAuth(pw) { localStorage.setItem('th_pw', JSON.stringify({ pw, expires: Date.now() + EXPIRY_DAYS * 86400000 })); }
-  function getSavedAuth() {
-    try { const d = JSON.parse(localStorage.getItem('th_pw')); if (!d || Date.now() > d.expires) { localStorage.removeItem('th_pw'); return null; } return d.pw; }
-    catch { localStorage.removeItem('th_pw'); return null; }
-  }
-  window._doLogin = function() {
-    const pw = document.getElementById('authPassword').value;
-    const errEl = document.getElementById('authErr');
-    errEl.textContent = '';
-    fetch(API, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({action:'auth',password:pw}) })
-      .then(r => r.json()).then(d => {
-        if (d.ok) { saveAuth(pw); document.getElementById('authOverlay').style.display='none'; document.getElementById('app').style.display=''; }
-        else { errEl.textContent = 'Wrong password'; document.getElementById('authPassword').select(); }
-      }).catch(() => { errEl.textContent = 'Connection error'; });
-  };
-  const saved = getSavedAuth();
-  if (saved) {
-    fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'auth',password:saved}) })
-      .then(r=>r.json()).then(d=> {
-        if(d.ok){ document.getElementById('authOverlay').style.display='none'; document.getElementById('app').style.display=''; }
-        else { localStorage.removeItem('th_pw'); }
-      }).catch(()=>{});
-  }
-})();
-</script>
-<div id="app" style="display:none;margin-left:42px"></div>
+<div class="auth-overlay" id="authOverlay" style="display:none"></div>
+<div id="app" style="margin-left:42px"></div>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script>
@@ -122,9 +85,12 @@ body { background: #0a0a0f; color: #e5e5e5; font-family: 'Inter', -apple-system,
   });
 })();
 
-const GEMINI_KEY = '';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent';
-const N8N_API_BASE = window.location.origin + '/webhook/interview-coach-api';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const _N8N = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin;
+const N8N_API_BASE = _N8N + '/webhook/interview-coach-api';
 
 // ═══════════════════════════════════════════════════
 // QUESTIONS DATABASE
@@ -172,7 +138,9 @@ let DEFAULT_QTA = [
 // ═══════════════════════════════════════════════════
 // EDIT INFRASTRUCTURE
 // ═══════════════════════════════════════════════════
-const IDATA_BASE = (location.origin.includes('localhost') ? location.origin : 'http://localhost:5678');
+const IDATA_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : (location.origin.includes('localhost') ? location.origin : 'https://drinks-started-recovery-street.trycloudflare.com');
 const IDATA_READ = IDATA_BASE + '/webhook/interview-data';
 const IDATA_WRITE = IDATA_BASE + '/webhook/interview-data';
 const PAGE_NAME = 'coach';
@@ -848,7 +816,7 @@ function App() {
   // ── Header ──
   const header = h('header', { className:'h-14 border-b border-white/10 flex items-center justify-between px-6 bg-gray-950/80 backdrop-blur sticky top-0 z-50' },
     h('div', { className:'flex items-center gap-3' },
-      h('span', { className:'text-lg font-bold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent' }, 'Amazon Interview Coach'),
+      h('span', { className:'text-lg font-bold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent' }, '[Target] Interview Coach'),
       h('span', { className:'text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 font-medium' }, 'SDE INTERN')
     ),
     h('nav', { className:'flex gap-1' },
@@ -1332,5 +1300,6 @@ const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(React.createElement(App));
 </script>
 <div class="edit-overlay" id="coach-edit-overlay"><div class="edit-box"></div></div>
+<script src="config.js"></script>
 </body>
 </html>

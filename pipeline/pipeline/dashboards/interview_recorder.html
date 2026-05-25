@@ -983,7 +983,7 @@ syncChannel.onmessage = (ev) => {
         }
     }
 };
-const GEMINI_KEY = '';
+const GEMINI_KEY = localStorage.getItem('ch_gemini_key') || '';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_KEY}`;
 const GEMINI_FLASH_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
 
@@ -1642,9 +1642,9 @@ const TECHNICAL_QUESTIONS = [
   {id:'tq8', text:'How do you ensure data consistency in distributed systems?', category:'technical', hint:'Two-phase commit, saga pattern, eventual consistency, idempotency.'},
   {id:'tq9', text:'Walk me through how you would optimize a slow API endpoint.', category:'technical', hint:'Profile, identify bottleneck, caching, query optimization, async processing.'},
   {id:'tq10', text:'Explain the concept of eventual consistency. Give an example.', category:'technical', hint:'DNS, social media feeds, shopping carts. Trade-offs with strong consistency.'},
-  {id:'tq11', text:'How would you design an API management platform?', category:'technical', hint:'Use YOUR Previous Company experience: catalog, RBAC, validation, monitoring.'},
+  {id:'tq11', text:'How would you design an API management platform?', category:'technical', hint:'Use YOUR [Previous Company] experience: catalog, RBAC, validation, monitoring.'},
   {id:'tq12', text:'Explain containerization vs virtualization.', category:'technical', hint:'Docker vs VMs, shared kernel, resource efficiency, orchestration.'},
-  {id:'tq13', text:'How do you handle secrets and PII in a banking application?', category:'technical', hint:'Use YOUR Previous Company experience: AES-256, Log4j2 filters, Aadhaar masking.'},
+  {id:'tq13', text:'How do you handle secrets and PII in a banking application?', category:'technical', hint:'Use YOUR [Previous Company] experience: AES-256, Log4j2 filters, Aadhaar masking.'},
   {id:'tq14', text:'Describe your CI/CD pipeline. How do you ensure safe deployments?', category:'technical', hint:'Feature flags, canary/blue-green, automated tests, rollback strategy.'},
   {id:'tq15', text:'How would you design a real-time notification system?', category:'technical', hint:'WebSockets vs SSE vs polling, message queues, fan-out, delivery guarantees.'}
 ];
@@ -2067,7 +2067,7 @@ CATEGORY: ${category}${lpInfo}
 CANDIDATE'S ANSWER (transcript): "${transcript}"
 ANSWER DURATION: ${durationSec} seconds
 
-CANDIDATE CONTEXT: Your Name, MSCS at University (X.X GPA), 2yr SWE at Previous Company.
+CANDIDATE CONTEXT: [Your Name], [Your Degree] at [Your University] (4.11 GPA), 2yr SWE at [Previous Company].
 KEY EXPERIENCES FOR STAR:
 - high-throughput APIs: Built 100+ TPS RESTful high-throughput APIs serving 7,000+ endpoints, sub-second latency, 99.9% uptime
 - Developer Portal: React RBAC dashboard + Spring Boot onboarding engine, reduced onboarding 12→2 days (83%)
@@ -2120,7 +2120,7 @@ async function getMockSummary(recordings) {
     `Q${i+1} [${r.category}]: "${r.questionText}"\nTranscript (${r.duration}s): "${(r.transcript || '').slice(0, 300)}..."\nAI Score: ${r.aiReview?.overall_score || '?'}`
   ).join('\n\n');
 
-  const prompt = `You are completing a mock interview debrief for Your Name (MSCS at University X.X GPA, 2yr SWE at Previous Company, [Target Company] [Role] candidate). He has strong STAR stories around high-throughput APIs (100+ TPS), Developer Portal (83% efficiency improvement), AWS Migration ($120K savings), and a Published publication.
+  const prompt = `You are completing a mock interview debrief for [Your Name] ([Your Degree] at [Your University] 4.11 GPA, 2yr SWE at [Previous Company], [Target Company] [Role] candidate). He has strong STAR stories around high-throughput APIs (100+ TPS), Developer Portal (83% efficiency improvement), AWS Migration ($120K savings), and a Springer ICCSST 2023 publication.
 
 SESSION (${recordings.length} questions):
 ${qSummary}
@@ -2986,7 +2986,7 @@ function doLogin() {
   const pw = document.getElementById('authPassword').value;
   crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw)).then(buf => {
     const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    if (hash === AUTH_HASH || pw === 'changeme123') {
+    if (hash === AUTH_HASH) {
       document.getElementById('authOverlay').classList.add('hidden');
       localStorage.setItem('recorder_auth', '1');
     } else {
@@ -2996,7 +2996,9 @@ function doLogin() {
 }
 
 // ==================== N8N PERSISTENCE ====================
-const N8N_DATA_URL = 'http://localhost:5678/webhook/interview-data';
+const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
   try {
@@ -3043,7 +3045,9 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
-const LC_WEBHOOK = 'http://localhost:5678/webhook/leetcode-live';
+const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/leetcode-live';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';
@@ -3376,7 +3380,7 @@ SESSION DURATION: ${durationSec} seconds
 FULL AI INTERVIEWER ↔ CANDIDATE CONVERSATION:
 ${chatSummary || 'No chat interaction'}
 
-CANDIDATE CONTEXT: Your Name, MSCS at University (X.X GPA), 2yr SWE at Previous Company. [Target Company] [Role] interview [Interview Date].
+CANDIDATE CONTEXT: [Your Name], [Your Degree] at [Your University] (4.11 GPA), 2yr SWE at [Previous Company]. [Target Company] [Role] interview [Interview Date].
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -4646,7 +4650,7 @@ function liveStopMic() {
 
 function liveGetPersona() {
   if (liveStyleType === 'bar_raiser') {
-    return "You are an Amazon Bar Raiser conducting a live interview with Your Name (MSCS at University X.X GPA, 2yr SWE at Previous Company, targeting SDE intern). You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
+    return "You are an Amazon Bar Raiser conducting a live interview with [Your Name] ([Your Degree] at [Your University] 4.11 GPA, 2yr SWE at [Previous Company], targeting SDE intern). You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
   } else if (liveStyleType === 'grilling') {
     return "You are a tough senior engineer doing a grilling interview. You push back hard on vague answers, demand specifics, and call out fluff. You probe for metrics and depth. You interrupt more often than a typical interviewer, but only when the candidate is drifting, being vague, or technically wrong.";
   }
@@ -4783,7 +4787,7 @@ async function liveFinalSummary() {
   ).join('\n\n');
 
   const prompt = "You are a senior [Target] interview coach grading a full live interview session.\n\n" +
-    "CANDIDATE: Your Name (MSCS at University X.X, 2yr SWE at Previous Company, SDE intern target)\n\n" +
+    "CANDIDATE: [Your Name] ([Your Degree] at [Your University] 4.11, 2yr SWE at [Previous Company], SDE intern target)\n\n" +
     "SESSION:\n" + transcriptBlock + "\n\n" +
     "Return ONLY valid JSON (no markdown fences):\n" +
     "{\n" +
@@ -4851,5 +4855,6 @@ function liveBackToSetup() {
 }
 
 </script>
+<script src="config.js"></script>
 </body>
 </html>
