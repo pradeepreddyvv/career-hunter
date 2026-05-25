@@ -120,6 +120,10 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .diff-old{padding:6px 10px;background:rgba(248,113,113,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--red);border-right:1px solid var(--border)}
 .diff-new{padding:6px 10px;background:rgba(74,222,128,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--green)}
 .diff-skip{text-align:center;padding:4px;font-size:10px;color:var(--text2);background:var(--surface);border-bottom:1px solid var(--border)}
+.otab-body{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;border-top:1px solid var(--border)}
+.otab-body .msg-block{font-size:13px;line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
+.otab-body .email-subject{font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;padding:8px 12px;background:var(--surface);border-radius:6px}
+.otab-body .msg-block p{margin:0}
 
 /* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;z-index:1000;box-shadow:var(--shadow);animation:slideUp .25s ease}
@@ -427,6 +431,55 @@ function renderResumeTabs(jobId, content) {
     <div class="rtabs">${tb('side','Side by Side')}${tb('diff','Changes')}</div>
     ${body}
   </div>`;
+}
+
+function renderOutreachTabs(jobId, raw) {
+  let data;
+  try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch { return null; }
+  const tab = S.outreachTab?.[jobId] || 'linkedin';
+  const linkedin = data.linkedin_message || '';
+  const emailSubject = data.cold_email?.subject || '';
+  const emailBody = data.cold_email?.body || '';
+  const referral = data.referral_ask || '';
+
+  let body, copyText;
+  if (tab === 'email') {
+    copyText = `Subject: ${emailSubject}\n\n${emailBody}`;
+    body = `<div class="otab-body">${emailSubject ? `<div class="email-subject">Subject: ${esc(emailSubject)}</div>` : ''}<div class="msg-block">${esc(emailBody)}</div></div>`;
+  } else if (tab === 'referral') {
+    copyText = referral;
+    body = `<div class="otab-body"><div class="msg-block">${esc(referral)}</div></div>`;
+  } else {
+    copyText = linkedin;
+    body = `<div class="otab-body"><div class="msg-block">${esc(linkedin)}</div>${linkedin.length ? `<div style="margin-top:8px;font-size:10px;color:var(--text2)">${linkedin.length} / 300 chars</div>` : ''}</div>`;
+  }
+
+  const tb = (id, label) => `<div class="rtab ${tab===id?'on':''}" onclick="setOutreachTab(${jobId},'${id}')">${label}</div>`;
+  return `<div class="doc-block">
+    <h4><span>Outreach</span><button class="btn btn-ghost btn-sm" onclick="copyOutreach(${jobId})">Copy</button></h4>
+    <div class="rtabs">${tb('linkedin','LinkedIn')}${tb('email','Cold Email')}${tb('referral','Referral')}</div>
+    ${body}
+  </div>`;
+}
+
+function setOutreachTab(jobId, tab) {
+  if (!S.outreachTab) S.outreachTab = {};
+  S.outreachTab[jobId] = tab;
+  render();
+}
+
+function copyOutreach(jobId) {
+  const docs = S.docs[jobId] || {};
+  if (!docs.outreach) return;
+  let data;
+  try { const m = docs.outreach.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : docs.outreach); } catch { navigator.clipboard.writeText(docs.outreach); toast('Copied!'); return; }
+  const tab = S.outreachTab?.[jobId] || 'linkedin';
+  let text;
+  if (tab === 'email') text = `Subject: ${data.cold_email?.subject||''}\n\n${data.cold_email?.body||''}`;
+  else if (tab === 'referral') text = data.referral_ask || '';
+  else text = data.linkedin_message || '';
+  navigator.clipboard.writeText(text);
+  toast('Copied!');
 }
 
 function setResumeTab(jobId, tab) {
@@ -1098,6 +1151,7 @@ function renderDetail() {
 
     ${hasDocs ? Object.entries(docs).map(([t, c]) => {
       if (t === 'resume' && S.resume) return renderResumeTabs(j.id, c);
+      if (t === 'outreach') { const r = renderOutreachTabs(j.id, c); if (r) return r; }
       const l = t.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
       let dc = c; try { const p = JSON.parse(c.match(/\{[\s\S]*\}/)?.[0] || c); dc = JSON.stringify(p, null, 2); } catch {}
       return `<div class="doc-block"><h4><span>${esc(l)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(c).replace(/</g,'\\u003c')});toast('Copied!')">Copy</button></h4><pre>${esc(dc)}</pre></div>`;
