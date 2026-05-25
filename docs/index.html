@@ -251,13 +251,32 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
-  settingsTab: 'general', userMenu: false, locOpen: false,
+  settingsTab: 'general', userMenu: false, locOpen: false, rolesOpen: false, typesOpen: false,
+  userContext: localStorage.getItem('ch_user_context') || '',
+};
+
+const RESUME_MODES = {
+  reorder: {
+    label: 'Reorder by Relevance',
+    desc: 'Reorder experience bullets and projects by JD relevance',
+    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REORDERING content for maximum relevance.\n\nStrategy:\n1. Analyze the JD — identify top 5 must-have skills and key responsibilities\n2. Reorder experience bullets: put the most JD-relevant bullets FIRST under each role\n3. Reorder projects: put the most relevant project FIRST\n4. Reorder skills: JD-matched skills come first in each category\n5. Keep all original text and metrics unchanged — only reorder\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Do NOT rewrite or modify any bullet text — only reorder\n- Mirror JD section ordering in skills list\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
+  },
+  rewrite: {
+    label: 'Rewrite for JD',
+    desc: 'Rewrite bullets to mirror JD keywords while keeping metrics',
+    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REWRITING bullets to match the JD.\n\nStrategy:\n1. Analyze JD — extract every keyword, technology, and skill mentioned\n2. Rewrite experience bullets to naturally incorporate JD keywords\n3. Keep all original metrics and numbers EXACTLY as-is (do not fabricate)\n4. Mirror JD terminology (e.g. if JD says "CI/CD pipelines", use that exact phrase)\n5. Emphasize achievements that align with JD requirements\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Keep all metrics/numbers from original resume unchanged\n- No objective section\n- Every rewritten bullet must still be truthful to the original\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
+  },
+  projects: {
+    label: 'Add Relevant Projects',
+    desc: 'Select and highlight projects from your profile that match the JD',
+    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume, selecting the MOST RELEVANT projects and experience from all available data.\n\nStrategy:\n1. Analyze JD — identify key skills, technologies, and responsibilities\n2. From all experience and projects provided (resume + context), select the ones most relevant to this JD\n3. If the candidate has projects not in the resume but in their context/profile that are MORE relevant, include those instead\n4. Reorder and prioritize by JD relevance\n5. Trim less relevant items to stay within one page\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Use exact metrics from original sources\n- Mirror JD keywords\n- No objective section\n- Include 2-3 most relevant projects max\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
+  }
 };
 
 const DEFAULT_PROMPTS = {
-  resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nRules:\n- Mirror JD keywords exactly\n- One page only\n- Education > Skills > Experience > Projects\n- Use metrics from the original resume\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput tailored resume only.`,
-  cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs.\n\nRules:\n- Never start with "I"\n- Company-specific hook in paragraph 1\n- Use exact metrics from resume\n- Never say "passionate" or "enthusiastic"\n- Include visa authorization line in closing\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput cover letter only.`,
-  outreach: `Generate outreach messages for this job application.\n\nReturn JSON:\n{"linkedin_message":"300 chars max connection request","cold_email":{"subject":"...","body":"150-200 words"},"referral_ask":"100-150 words"}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
+  resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nRules:\n- Mirror JD keywords exactly\n- One page only\n- Education > Skills > Experience > Projects\n- Use metrics from the original resume\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`,
+  cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs.\n\nRules:\n- Never start with "I"\n- Company-specific hook in paragraph 1\n- Use exact metrics from resume\n- Never say "passionate" or "enthusiastic"\n- Include visa authorization line in closing\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput cover letter only.`,
+  outreach: `Generate outreach messages for this job application.\n\nReturn JSON:\n{"linkedin_message":"300 chars max connection request","cold_email":{"subject":"...","body":"150-200 words"},"referral_ask":"100-150 words"}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}`,
   ats_audit: `ATS audit: extract top 20 JD keywords, check which appear in the resume, calculate coverage.\n\nReturn JSON:\n{"coverage_pct":0,"matched_keywords":[],"missing_keywords":[],"suggestions":["specific suggestion to add each missing keyword"]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
   interview_prep: `Generate interview prep for this role.\n\nReturn JSON:\n{"behavioral":[{"question":"...","star_hint":"..."}],"technical":[{"question":"...","approach":"..."}],"talking_points":["..."],"questions_to_ask":["..."],"themes":["..."]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
   scoring: `Score how well this resume matches the job (0-100).\n\n85-100: Perfect match\n70-84: Strong match\n55-69: Decent match\n40-54: Weak match\n0-39: Poor match\n\nReturn JSON:\n{"score":0,"summary":"...","recommendation":"STRONG_APPLY|APPLY|MAYBE|SKIP","matched_skills":[],"missing_skills":[]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
@@ -292,7 +311,7 @@ async function loadJobs() {
     if (S.role) p.set('role_category', S.role);
     if (S.company) p.set('company', S.company);
     if (S.q) p.set('search', S.q);
-    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
+    const et = S.empTypes.length ? S.empTypes.join(',') : '';
     if (et) p.set('employment_type', et);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
     if (S.locState.length) p.set('location_state', S.locState.join(','));
@@ -315,7 +334,7 @@ async function loadMore() {
     const p = new URLSearchParams({ limit: S.limit, offset: o });
     if (S.role) p.set('role_category', S.role);
     if (S.q) p.set('search', S.q);
-    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
+    const et = S.empTypes.length ? S.empTypes.join(',') : '';
     if (et) p.set('employment_type', et);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
     if (S.locState.length) p.set('location_state', S.locState.join(','));
@@ -354,7 +373,7 @@ async function runAI() {
   if (!top.length) { toast('No jobs to score', false); return; }
   S.aiProg = { done: 0, total: top.length }; render();
   const fd = async id => { try { return await api(`/api/v1/jobs/browse/${id}`); } catch { return null; } };
-  const r = await CH_SCORER.aiScoreBatch(S.resume, top, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); });
+  const r = await CH_SCORER.aiScoreBatch(S.resume, top, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); }, S.userContext);
   r.forEach(s => { S.scores[s.job_id] = s; });
   S.method = 'ai'; S.aiProg = null;
   CH_SCORER.setCachedScores(CH_SCORER.getResumeHash(S.resume), Object.values(S.scores));
@@ -374,7 +393,14 @@ async function runML() {
   S.mlProg = false; render();
 }
 
-function sorted() { return [...S.jobs].sort((a, b) => (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0)); }
+function sorted() {
+  return [...S.jobs].sort((a, b) => {
+    const da = a.posted_at ? new Date(a.posted_at).getTime() : 0;
+    const db = b.posted_at ? new Date(b.posted_at).getTime() : 0;
+    if (da !== db) return db - da;
+    return (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0);
+  });
+}
 
 // === Doc Generation ===
 async function genDocs(id) {
@@ -385,13 +411,24 @@ async function genDocs(id) {
   if (!types.length) { toast('Select at least one doc type', false); return; }
   S.busy[`g${id}`] = true; render();
   const jd = S.detail.description.substring(0, 5000);
-  const fill = t => getPrompt(t).replace(/\{title\}/g, S.detail.title).replace(/\{company\}/g, S.detail.company).replace(/\{jd\}/g, jd).replace(/\{resume\}/g, S.resume);
-  const prompts = { resume: fill('resume'), cover_letter: fill('cover_letter'), outreach: fill('outreach'), ats_audit: fill('ats_audit') };
+  const ctx = S.userContext ? `\nCandidate Context:\n${S.userContext}\n` : '';
+  const profileCtx = S.profile ? `\nProfile: ${JSON.stringify({experience: S.profile.experience, projects: S.profile.projects, skills: S.profile.skills}).substring(0, 2000)}` : '';
+  const contextBlock = ctx + profileCtx;
+  const fill = t => {
+    let prompt;
+    if (t === 'resume') {
+      const mode = document.querySelector('input[name="rmode"]:checked')?.value;
+      prompt = (mode && RESUME_MODES[mode]) ? RESUME_MODES[mode].prompt : getPrompt('resume');
+    } else {
+      prompt = getPrompt(t);
+    }
+    return prompt.replace(/\{title\}/g, S.detail.title).replace(/\{company\}/g, S.detail.company).replace(/\{jd\}/g, jd).replace(/\{resume\}/g, S.resume).replace(/\{context\}/g, contextBlock);
+  };
   for (const t of types) {
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${S.key}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompts[t] }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 16000 } })
+        body: JSON.stringify({ contents: [{ parts: [{ text: fill(t) }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 16000 } })
       });
       if (!r.ok) throw new Error(`${r.status}`);
       const d = await r.json();
@@ -515,8 +552,13 @@ function renderOB() {
       </div>
       ${(p.skills||[]).length ? `<div style="margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Skills (${p.skills.length})</div><div class="skills-list">${p.skills.map(s => `<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}
       ${p.experience_summary ? `<div class="card" style="padding:12px;margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Experience</div><div style="font-size:13px;line-height:1.5">${esc(p.experience_summary)}</div></div>` : ''}
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Context About You <span style="font-size:9px;color:var(--text2);text-transform:none">(optional)</span></div>
+        <textarea id="ob_context" rows="3" placeholder="E.g. I'm a grad student targeting SDE internships, strong in backend/distributed systems, looking for roles at mid-to-large tech companies..." style="width:100%;font-size:13px;line-height:1.5;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);resize:vertical">${esc(S.userContext)}</textarea>
+        <div style="font-size:10px;color:var(--text2);margin-top:4px">Used by AI scoring and document generation. Stored locally only.</div>
+      </div>
       ${S.key ? `<div class="card" style="padding:10px 14px;margin-bottom:14px;border-left:3px solid var(--accent)"><span style="font-size:13px">&#10024; Jobs will be auto-scored with Gemini AI using your key for best match accuracy.</span></div>` : ''}
-      <div class="ob-actions"><button class="btn btn-ghost" onclick="S.step=2;render()">Back</button><button class="btn btn-primary" onclick="S.step=4;render()" style="padding:10px 28px;font-size:14px">Continue</button></div>
+      <div class="ob-actions"><button class="btn btn-ghost" onclick="S.step=2;render()">Back</button><button class="btn btn-primary" onclick="saveContext();S.step=4;render()" style="padding:10px 28px;font-size:14px">Continue</button></div>
     </div></div>`;
   }
 
@@ -605,11 +647,22 @@ function setupOB() {
   }
 }
 
+function saveContext() {
+  const el = document.getElementById('ob_context') || document.getElementById('sp_context');
+  if (el) { S.userContext = el.value; localStorage.setItem('ch_user_context', S.userContext); }
+}
+
 function toggleEmpType(t) {
   const i = S.empTypes.indexOf(t);
   if (i >= 0) S.empTypes.splice(i, 1); else S.empTypes.push(t);
   localStorage.setItem('ch_emp_types', JSON.stringify(S.empTypes));
   render();
+}
+function toggleEmpAndReload(t) {
+  const i = S.empTypes.indexOf(t);
+  if (i >= 0) S.empTypes.splice(i, 1); else S.empTypes.push(t);
+  localStorage.setItem('ch_emp_types', JSON.stringify(S.empTypes));
+  loadJobs();
 }
 
 function setDays(v) {
@@ -786,13 +839,25 @@ function renderSidebar(j) {
   return `<div class="sidebar">
     <div class="sidebar-search"><input placeholder="Search jobs..." value="${esc(S.q)}" oninput="onSearch(this.value)"></div>
     <div class="sidebar-info"><span>${j.length} of ${S.total.toLocaleString()}</span><button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 8px;font-size:10px">Refresh</button></div>
-    <div class="filters">
-      <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All Roles</div>
-      ${roles.map(r => `<div class="chip ${S.role===r?'on':''}" onclick="S.role='${esc(r)}';loadJobs()">${esc(r)}</div>`).join('')}
+    <div style="padding:4px 12px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.rolesOpen=!S.rolesOpen;render()">
+        <span style="font-size:11px;color:var(--text2)">Role: <strong style="color:${S.role?'var(--accent2)':'var(--text2)'}">${S.role||'All'}</strong></span>
+        <span style="font-size:10px;color:var(--text2)">${S.rolesOpen?'&#9650;':'&#9660;'}</span>
+      </div>
+      ${S.rolesOpen ? `<div class="filters" style="margin-top:6px">
+        <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All</div>
+        ${roles.map(r => `<div class="chip ${S.role===r?'on':''}" onclick="S.role='${esc(r)}';loadJobs()">${esc(r)}</div>`).join('')}
+      </div>` : ''}
     </div>
-    <div class="filters" style="margin-top:4px">
-      <div class="chip ${!S.empFilter?'on':''}" onclick="S.empFilter='';loadJobs()">All Types</div>
-      ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empFilter===t?'on':''}" onclick="S.empFilter='${t}';loadJobs()">${t}</div>`).join('')}
+    <div style="padding:4px 12px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.typesOpen=!S.typesOpen;render()">
+        <span style="font-size:11px;color:var(--text2)">Type: <strong style="color:${S.empTypes.length?'var(--accent2)':'var(--text2)'}">${S.empTypes.length ? S.empTypes.join(', ') : 'All'}</strong></span>
+        <span style="font-size:10px;color:var(--text2)">${S.typesOpen?'&#9650;':'&#9660;'}</span>
+      </div>
+      ${S.typesOpen ? `<div class="filters" style="margin-top:6px">
+        <div class="chip ${!S.empTypes.length?'on':''}" onclick="S.empTypes=[];localStorage.setItem('ch_emp_types','[]');loadJobs()">All</div>
+        ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empTypes.includes(t)?'on':''}" onclick="toggleEmpAndReload('${t}')">${t}</div>`).join('')}
+      </div>` : ''}
     </div>
     ${renderLocFilter()}
     <div style="padding:4px 12px 8px;font-size:11px;color:var(--text2)">
@@ -844,12 +909,18 @@ function renderDetail() {
     </div>` : ''}
 
     <div class="card"><h3>Generate Documents</h3>
-      <p class="muted" style="margin-bottom:10px">${S.key ? 'Select types and generate tailored materials.' : 'Requires a Gemini API key (free).'}</p>
+      <p class="muted" style="margin-bottom:10px">${S.key ? 'Select types and generation mode.' : 'Requires a Gemini API key (free).'}</p>
       <div class="gen-grid">
         <label><input type="checkbox" class="gc" value="resume" checked> Tailored Resume</label>
         <label><input type="checkbox" class="gc" value="cover_letter" checked> Cover Letter</label>
         <label><input type="checkbox" class="gc" value="outreach" checked> Outreach</label>
         <label><input type="checkbox" class="gc" value="ats_audit" checked> ATS Audit</label>
+      </div>
+      <div style="margin:10px 0;padding:10px;background:var(--surface2);border-radius:8px">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Resume Mode</div>
+        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="rewrite" checked style="margin-top:2px"><div><strong>Rewrite for JD</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Rewrite bullets to mirror JD keywords while keeping your metrics</span></div></label>
+        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="reorder" style="margin-top:2px"><div><strong>Reorder by Relevance</strong><br><span style="color:var(--text2);font-size:11px">Reorder bullets and projects by JD relevance, keep text unchanged</span></div></label>
+        <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px"><input type="radio" name="rmode" value="projects" style="margin-top:2px"><div><strong>Add Relevant Projects</strong><br><span style="color:var(--text2);font-size:11px">Pull in projects from your profile/context that best match this JD</span></div></label>
       </div>
       <button class="btn btn-primary" onclick="genDocs(${j.id})" ${S.busy[`g${j.id}`]||!S.key?'disabled':''}>${S.busy[`g${j.id}`]?'<span class="spin"></span> Generating...':'Generate'}</button>
       ${!S.key ? '<p class="hint" style="color:var(--yellow);margin-top:6px">Add key in Settings.</p>' : ''}
@@ -950,6 +1021,13 @@ function renderSettingsProfile() {
     <p class="muted" style="margin-bottom:10px">Comma-separated. These are used for keyword matching and scoring.</p>
     <div class="prof-grid" style="grid-template-columns:1fr">
       <div><label>All Skills</label><textarea id="sp_skills" rows="3" style="font-size:13px">${esc((p.skills||[]).join(', '))}</textarea></div>
+    </div>
+  </div>
+
+  <div class="card"><h3>Context About You</h3>
+    <p class="muted" style="margin-bottom:10px">Free-text context used by AI scoring and document generation. Stored locally only.</p>
+    <div class="prof-grid" style="grid-template-columns:1fr">
+      <div><textarea id="sp_context" rows="4" placeholder="E.g. I'm a grad student targeting SDE internships, strong in backend/distributed systems..." style="font-size:13px">${esc(S.userContext)}</textarea></div>
     </div>
   </div>
 
@@ -1063,6 +1141,7 @@ function saveProfileFromSettings() {
 
   S.profile = p; S.skills = p.skills || [];
   localStorage.setItem('ch_parsed_profile', JSON.stringify(p));
+  saveContext();
   toast('Profile saved'); render();
 }
 

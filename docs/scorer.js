@@ -39,6 +39,12 @@ const CH_SCORER = (() => {
 
     // ── Tier 1: Keyword match scoring ────────────────────────────────
 
+    const COMMON_SKILLS = new Set([
+        'python','java','javascript','sql','git','linux','html','css',
+        'react','node','node.js','aws','docker','api','rest','agile',
+        'typescript','c++','c#','data','cloud','testing','frontend','backend'
+    ]);
+
     function keywordScore(userSkills, jobKeywords, jobTitle) {
         if (!jobKeywords || jobKeywords.length === 0) return { score: 0, matched: [], missing: [] };
         if (!userSkills || userSkills.length === 0) return { score: 0, matched: [], missing: jobKeywords };
@@ -47,17 +53,19 @@ const CH_SCORER = (() => {
         const matched = jobKeywords.filter(k => userSet.has(k.toLowerCase()));
         const missing = jobKeywords.filter(k => !userSet.has(k.toLowerCase()));
 
-        let score = Math.round((matched.length / jobKeywords.length) * 100);
+        let weightedMatch = 0, weightedTotal = 0;
+        for (const k of jobKeywords) {
+            const w = COMMON_SKILLS.has(k.toLowerCase()) ? 0.6 : 1.0;
+            weightedTotal += w;
+            if (userSet.has(k.toLowerCase())) weightedMatch += w;
+        }
+        let score = Math.round((weightedMatch / weightedTotal) * 100);
 
-        // Bonus for title keyword matches
-        if (jobTitle) {
-            const titleLower = jobTitle.toLowerCase();
-            const titleBonusTerms = ['intern', 'software', 'engineer', 'developer', 'sde', 'swe'];
-            const titleMatches = titleBonusTerms.filter(t => titleLower.includes(t));
-            score += Math.min(titleMatches.length * 3, 10);
+        if (jobKeywords.length < 5) {
+            score = Math.round(score * jobKeywords.length / 5);
         }
 
-        score = Math.min(score, 100);
+        score = Math.min(score, 78);
         return { score, matched, missing };
     }
 
@@ -78,8 +86,9 @@ const CH_SCORER = (() => {
 
     // ── Tier 2: Gemini AI scoring ────────────────────────────────────
 
-    async function aiScoreSingle(resumeText, jobDescription, jobTitle, company, geminiKey) {
-        const prompt = `Score this resume against this job posting. Return ONLY valid JSON.
+    async function aiScoreSingle(resumeText, jobDescription, jobTitle, company, geminiKey, userContext) {
+        const contextBlock = userContext ? `\nCandidate Context:\n${userContext.substring(0, 500)}\n` : '';
+        const prompt = `Score this resume against this job posting. Be strict and honest — only give high scores (80+) for genuinely strong matches where the candidate has most required skills and relevant experience. Return ONLY valid JSON.
 
 Job: ${jobTitle} at ${company}
 Job Description:
@@ -87,6 +96,13 @@ ${jobDescription.substring(0, 3000)}
 
 Resume:
 ${resumeText.substring(0, 4000)}
+${contextBlock}
+Scoring guide:
+- 85-100: Near-perfect match. Has 90%+ of required skills AND directly relevant experience.
+- 70-84: Strong match. Has most required skills AND some relevant experience.
+- 50-69: Moderate match. Has some required skills but missing key requirements.
+- 30-49: Weak match. Few skill overlaps or missing critical requirements.
+- 0-29: Poor match. Wrong field or missing most requirements.
 
 Return JSON: {"score": 0-100, "summary": "one line", "recommendation": "STRONG_APPLY|APPLY|MAYBE|SKIP", "matched_skills": [], "missing_skills": []}`;
 
@@ -111,7 +127,7 @@ Return JSON: {"score": 0-100, "summary": "one line", "recommendation": "STRONG_A
         return JSON.parse(jsonMatch[0]);
     }
 
-    async function aiScoreBatch(resumeText, jobs, geminiKey, fetchJobDetail, onProgress) {
+    async function aiScoreBatch(resumeText, jobs, geminiKey, fetchJobDetail, onProgress, userContext) {
         const results = [];
         const batchSize = 5;
 
@@ -127,7 +143,7 @@ Return JSON: {"score": 0-100, "summary": "one line", "recommendation": "STRONG_A
                     if (!description) return null;
 
                     const result = await aiScoreSingle(
-                        resumeText, description, job.title, job.company, geminiKey
+                        resumeText, description, job.title, job.company, geminiKey, userContext
                     );
                     return {
                         job_id: job.id,
