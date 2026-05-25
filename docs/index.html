@@ -100,6 +100,15 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .doc-block{margin-bottom:16px}
 .doc-block h4{font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
 .doc-block pre{background:var(--surface2);padding:14px;border-radius:8px;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;max-height:360px;overflow-y:auto}
+.rtabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px 8px 0 0;padding:3px 3px 0}
+.rtab{padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border-radius:6px 6px 0 0;transition:.15s;border:1px solid transparent;border-bottom:none}
+.rtab:hover{color:var(--text)}
+.rtab.on{background:var(--surface2);color:var(--accent2);border-color:var(--border)}
+.rtab-body{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;border-top:1px solid var(--border)}
+.rtab-body pre{background:transparent;padding:0;border-radius:0;max-height:360px;overflow-y:auto;margin:0;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;word-wrap:break-word}
+.diff-add{background:rgba(74,222,128,.12);color:var(--green);display:block;padding:0 4px;border-radius:3px;margin:1px 0}
+.diff-rm{background:rgba(248,113,113,.12);color:var(--red);text-decoration:line-through;display:block;padding:0 4px;border-radius:3px;margin:1px 0;opacity:.8}
+.diff-ctx{display:block;padding:0 4px}
 
 /* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;z-index:1000;box-shadow:var(--shadow);animation:slideUp .25s ease}
@@ -258,8 +267,8 @@ const S = {
 const RESUME_MODES = {
   reorder: {
     label: 'Reorder by Relevance',
-    desc: 'Reorder experience bullets and projects by JD relevance',
-    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REORDERING content for maximum relevance.\n\nStrategy:\n1. Analyze the JD — identify top 5 must-have skills and key responsibilities\n2. Reorder experience bullets: put the most JD-relevant bullets FIRST under each role\n3. Reorder projects: put the most relevant project FIRST\n4. Reorder skills: JD-matched skills come first in each category\n5. Keep all original text and metrics unchanged — only reorder\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Do NOT rewrite or modify any bullet text — only reorder\n- Mirror JD section ordering in skills list\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
+    desc: 'Reorder bullets within each position by JD relevance',
+    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REORDERING bullets within each position for maximum relevance.\n\nStrategy:\n1. Analyze the JD — identify top 5 must-have skills and key responsibilities\n2. Within each work experience position: reorder bullets so the most JD-relevant bullets come FIRST\n3. Within each project: reorder description points by JD relevance\n4. Reorder skills: JD-matched skills come first in each category\n5. Keep all original text and metrics EXACTLY unchanged — only reorder\n\nCRITICAL RULES:\n- Do NOT reorder work positions — keep the same company/role order as the original\n- Do NOT reorder project sections — keep projects in the same order\n- ONLY reorder individual bullets WITHIN each position\n- Do NOT rewrite, rephrase, or modify any bullet text\n- One page only\n- Education > Skills > Experience > Projects\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
   },
   rewrite: {
     label: 'Rewrite for JD',
@@ -302,6 +311,68 @@ function toast(msg, ok=true) { const e = document.createElement('div'); e.classN
 function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 function bc(s) { return s >= 70 ? 'badge-h' : s >= 50 ? 'badge-m' : 'badge-l'; }
 function fmtDate(d) { if (!d) return ''; try { const dt = new Date(d); if (isNaN(dt)) return d.slice(0,10); const now = Date.now(); const diff = now - dt.getTime(); if (diff < 86400000) return 'Today'; if (diff < 172800000) return 'Yesterday'; if (diff < 604800000) return Math.floor(diff/86400000) + 'd ago'; if (diff < 2592000000) return Math.floor(diff/604800000) + 'w ago'; return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch { return d.slice(0,10); } }
+
+// === Resume Diff ===
+function lineDiff(oldText, newText) {
+  const a = oldText.split('\n'), b = newText.split('\n');
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => new Uint16Array(n + 1));
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+  const ops = [];
+  let i = m, j = n;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && a[i-1] === b[j-1]) { ops.push({type:'ctx',text:a[i-1]}); i--; j--; }
+    else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) { ops.push({type:'add',text:b[j-1]}); j--; }
+    else { ops.push({type:'rm',text:a[i-1]}); i--; }
+  }
+  ops.reverse();
+  return ops;
+}
+
+function renderResumeTabs(jobId, content) {
+  const tab = S.resumeTab?.[jobId] || 'tailored';
+  let body;
+  if (tab === 'original') {
+    body = `<pre>${esc(S.resume)}</pre>`;
+  } else if (tab === 'changes') {
+    const ops = lineDiff(S.resume, content);
+    const lines = ops.map(o => {
+      const cls = o.type === 'add' ? 'diff-add' : o.type === 'rm' ? 'diff-rm' : 'diff-ctx';
+      const pfx = o.type === 'add' ? '+ ' : o.type === 'rm' ? '- ' : '  ';
+      return `<span class="${cls}">${esc(pfx + o.text)}</span>`;
+    }).join('');
+    body = `<pre>${lines}</pre>`;
+  } else {
+    body = `<pre>${esc(content)}</pre>`;
+  }
+  const tb = (id, label) => `<div class="rtab ${tab===id?'on':''}" onclick="setResumeTab(${jobId},'${id}')">${label}</div>`;
+  return `<div class="doc-block">
+    <h4><span>Resume</span><button class="btn btn-ghost btn-sm" onclick="copyResumeTab(${jobId})">Copy</button></h4>
+    <div class="rtabs">${tb('original','Original')}${tb('tailored','Tailored')}${tb('changes','Changes')}</div>
+    <div class="rtab-body">${body}</div>
+  </div>`;
+}
+
+function setResumeTab(jobId, tab) {
+  if (!S.resumeTab) S.resumeTab = {};
+  S.resumeTab[jobId] = tab;
+  render();
+}
+
+function copyResumeTab(jobId) {
+  const tab = S.resumeTab?.[jobId] || 'tailored';
+  const docs = S.docs[jobId] || {};
+  let text;
+  if (tab === 'original') text = S.resume;
+  else if (tab === 'changes') {
+    const ops = lineDiff(S.resume, docs.resume || '');
+    text = ops.map(o => (o.type === 'add' ? '+ ' : o.type === 'rm' ? '- ' : '  ') + o.text).join('\n');
+  } else text = docs.resume || '';
+  navigator.clipboard.writeText(text);
+  toast('Copied!');
+}
 
 // === Data ===
 async function loadJobs() {
@@ -941,7 +1012,7 @@ function renderDetail() {
       </div>
       <div style="margin:10px 0;padding:10px;background:var(--surface2);border-radius:8px">
         <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Resume Mode <span style="text-transform:none;font-size:10px">(select multiple)</span></div>
-        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="reorder" checked style="margin-top:2px"><div><strong>Reorder by Relevance</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Reorder bullets and projects by JD relevance, keep text unchanged</span></div></label>
+        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="reorder" checked style="margin-top:2px"><div><strong>Reorder by Relevance</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Reorder bullets within each position by JD relevance, keep text unchanged</span></div></label>
         <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="projects" checked style="margin-top:2px"><div><strong>Add Relevant Projects</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Pull in projects from your profile/context that best match this JD</span></div></label>
         <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="rewrite" style="margin-top:2px"><div><strong>Rewrite for JD</strong><br><span style="color:var(--text2);font-size:11px">Rewrite bullets to mirror JD keywords while keeping your metrics</span></div></label>
       </div>
@@ -950,6 +1021,7 @@ function renderDetail() {
     </div>
 
     ${hasDocs ? Object.entries(docs).map(([t, c]) => {
+      if (t === 'resume' && S.resume) return renderResumeTabs(j.id, c);
       const l = t.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
       let dc = c; try { const p = JSON.parse(c.match(/\{[\s\S]*\}/)?.[0] || c); dc = JSON.stringify(p, null, 2); } catch {}
       return `<div class="doc-block"><h4><span>${esc(l)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(c).replace(/</g,'\\u003c')});toast('Copied!')">Copy</button></h4><pre>${esc(dc)}</pre></div>`;
