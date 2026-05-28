@@ -18,12 +18,14 @@ window.CH_CONFIG = {
   gear.onclick = function() { document.getElementById('ch-settings-modal').classList.add('open'); };
   document.body.appendChild(gear);
 
+  function escAttr(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML.replace(/"/g, '&quot;'); }
+
   var modal = document.createElement('div');
   modal.id = 'ch-settings-modal';
   modal.innerHTML = '<div id="ch-settings-box"><h3>Settings <span style="cursor:pointer;font-size:20px;color:#8b8fa8" onclick="document.getElementById(\'ch-settings-modal\').classList.remove(\'open\')">&times;</span></h3>'
-    + '<label>Gemini API Key</label><input id="ch-set-gemini" type="password" placeholder="AIzaSy..." value="' + (localStorage.getItem('ch_gemini_key') || '') + '"><div class="note">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#818cf8">aistudio.google.com/apikey</a></div>'
-    + '<label>Pipeline API URL</label><input id="ch-set-pipeline" placeholder="https://..." value="' + (localStorage.getItem('cp_api_url') || '') + '"><div class="note">Leave empty to use current server</div>'
-    + '<label>n8n Webhook URL</label><input id="ch-set-n8n" placeholder="https://..." value="' + (localStorage.getItem('ch_n8n_url') || '') + '"><div class="note">Leave empty to use current server</div>'
+    + '<label>Gemini API Key</label><input id="ch-set-gemini" type="password" placeholder="AIzaSy..." value="' + escAttr(localStorage.getItem('ch_gemini_key') || '') + '"><div class="note">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#818cf8">aistudio.google.com/apikey</a></div>'
+    + '<label>Pipeline API URL</label><input id="ch-set-pipeline" placeholder="https://..." value="' + escAttr(localStorage.getItem('cp_api_url') || '') + '"><div class="note">Leave empty to use current server</div>'
+    + '<label>n8n Webhook URL</label><input id="ch-set-n8n" placeholder="https://..." value="' + escAttr(localStorage.getItem('ch_n8n_url') || '') + '"><div class="note">Leave empty to use current server</div>'
     + '<div class="actions"><button class="btn-s btn-cancel" onclick="document.getElementById(\'ch-settings-modal\').classList.remove(\'open\')">Cancel</button><button class="btn-s btn-save" onclick="chSaveSettings()">Save & Reload</button></div></div>';
   modal.onclick = function(e) { if (e.target === modal) modal.classList.remove('open'); };
   document.body.appendChild(modal);

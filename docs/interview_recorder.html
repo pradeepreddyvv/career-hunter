@@ -272,14 +272,19 @@ a{color:var(--accent);text-decoration:none}
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 
 /* Auth */
+.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.auth-overlay.hidden{display:none}
 </style>
 </head>
 <body>
 
 <!-- Platform Nav -->
 <nav class="platform-nav">
-<a href="./index.html"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-<a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
+<a href="/"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
+<a href="/interview-coach"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
+<a href="/interview-recorder"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
+<a href="/career-dashboard"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
+<a href="/war-room"><span class="nav-icon">&#9876;</span><span class="nav-label">War Room</span></a>
 </nav>
 
 <!-- Header -->
@@ -2963,6 +2968,7 @@ window.addEventListener('beforeunload', (e) => {
   }
 });
 
+// Auth removed — open access
 
 // ==================== N8N PERSISTENCE ====================
 const N8N_DATA_URL = (localStorage.getItem('ch_n8n_url') || window.location.origin) + '/webhook/interview-data';

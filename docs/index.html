@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Career Hunter</title>
 <style>
-:root{--bg:#0a0b0f;--surface:#13141a;--surface2:#1c1d25;--surface3:#24252f;--border:#2a2b36;--text:#ebedf5;--text2:#7e8299;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--radius:10px;--radius-lg:14px;--shadow:0 2px 12px rgba(0,0,0,.3);--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
+:root{--bg:#0a0b0f;--surface:#13141a;--surface2:#1c1d25;--surface3:#24252f;--border:#2a2b36;--text:#ebedf5;--text2:#7e8299;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--radius:10px;--radius-lg:14px;--shadow:0 2px 12px rgba(0,0,0,.3);--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--muted:#7e8299;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:14px}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -321,7 +321,7 @@ try {
 if (S.resume) setTimeout(loadScoresFromServer, 2000);
 
 // === API ===
-async function api(path) { const r = await fetch(API + path); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
+async function api(path, method, body) { const opts = { method: method || 'GET' }; if (body) { opts.headers = {'Content-Type':'application/json'}; opts.body = JSON.stringify(body); } const r = await fetch(API + path, opts); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
 function toast(msg, ok=true) { const e = document.createElement('div'); e.className = `toast ${ok?'ok':'err'}`; e.textContent = msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 function bc(s) { return s >= 70 ? 'badge-h' : s >= 50 ? 'badge-m' : 'badge-l'; }
@@ -519,6 +519,7 @@ async function loadMore() {
     const p = new URLSearchParams({ limit: S.limit, offset: o });
     if (S.role) p.set('role_category', S.role);
     if (S.q) p.set('search', S.q);
+    if (S.company) p.set('company', S.company);
     const et = S.empTypes.length ? S.empTypes.join(',') : '';
     if (et) p.set('employment_type', et);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
@@ -612,7 +613,11 @@ async function saveScoresToServer() {
 async function loadScoresFromServer() {
   try {
     const creds = getGuestCreds();
-    const r = await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/load?' + new URLSearchParams({ username: creds.username, password: creds.password }));
+    const r = await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/load', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: creds.username, password: creds.password })
+    });
     if (!r.ok) return;
     const d = await r.json();
     if (d.scores) {
