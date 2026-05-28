@@ -3,7 +3,11 @@ import jwt from "jsonwebtoken";
 import { getDb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 
-const JWT_SECRET: string = process.env.JWT_SECRET ?? (() => { throw new Error("JWT_SECRET environment variable is required"); })();
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET environment variable is required");
+  return secret;
+}
 const TOKEN_EXPIRY = "7d";
 
 export interface User {
@@ -29,12 +33,12 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+  return jwt.sign({ userId }, getJwtSecret(), { expiresIn: TOKEN_EXPIRY });
 }
 
 export function verifyToken(token: string): { userId: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string };
+    return jwt.verify(token, getJwtSecret()) as { userId: string };
   } catch {
     return null;
   }
