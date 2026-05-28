@@ -260,8 +260,7 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 
 <script src="scorer.js"></script>
 <script>
-const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:' || location.hostname.includes('github.io')
-  ? 'https://lows-whenever-medical-misc.trycloudflare.com' : location.origin);
+const API = localStorage.getItem('cp_api_url') || location.origin;
 
 const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
@@ -319,6 +318,7 @@ try {
   const c = CH_SCORER.getCachedScores(h);
   if (c?.scores) c.scores.forEach(s => { S.scores[s.job_id] = s; });
 } catch {}
+if (S.resume) setTimeout(loadScoresFromServer, 2000);
 
 // === API ===
 async function api(path) { const r = await fetch(API + path); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
@@ -554,15 +554,22 @@ function scoreKeyword() {
 
 async function runAI() {
   if (!S.key) { toast('Add Gemini key first', false); return; }
-  const top = sorted().slice(0, 50);
-  if (!top.length) { toast('No jobs to score', false); return; }
-  S.aiProg = { done: 0, total: top.length }; render();
+  if (!S.resume) { toast('Upload resume first', false); return; }
+  const sixMonthsAgo = new Date(); sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const candidates = sorted().filter(j => {
+    if (S.scores[j.id]?.method === 'ai') return false;
+    if (j.posted_at) { try { if (new Date(j.posted_at) < sixMonthsAgo) return false; } catch {} }
+    return true;
+  }).slice(0, 200);
+  if (!candidates.length) { toast('All jobs already scored!'); return; }
+  S.aiProg = { done: 0, total: candidates.length }; render();
   const fd = async id => { try { return await api(`/api/v1/jobs/browse/${id}`); } catch { return null; } };
-  const r = await CH_SCORER.aiScoreBatch(S.resume, top, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); }, S.userContext);
+  const r = await CH_SCORER.aiScoreBatch(S.resume, candidates, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); }, S.userContext);
   r.forEach(s => { S.scores[s.job_id] = s; });
   S.method = 'ai'; S.aiProg = null;
   CH_SCORER.setCachedScores(CH_SCORER.getResumeHash(S.resume), Object.values(S.scores));
-  toast(`AI scored ${r.length} jobs`); render();
+  saveScoresToServer();
+  toast(`AI scored ${r.length} jobs (${Object.keys(S.scores).length} total cached)`); render();
 }
 
 async function runML() {
@@ -576,6 +583,53 @@ async function runML() {
     toast(`ML scored ${(r.scores||[]).length} jobs`);
   } catch (e) { toast('ML scoring unavailable: ' + e.message, false); }
   S.mlProg = false; render();
+}
+
+// === Guest Account + Score Persistence ===
+function getGuestCreds() {
+  let creds = null;
+  try { creds = JSON.parse(localStorage.getItem('ch_guest_creds')); } catch {}
+  if (creds?.username && creds?.password) return creds;
+  const id = Math.random().toString(36).slice(2, 8);
+  creds = { username: 'guest_' + id, password: Math.random().toString(36).slice(2, 10) };
+  localStorage.setItem('ch_guest_creds', JSON.stringify(creds));
+  return creds;
+}
+
+async function saveScoresToServer() {
+  try {
+    const creds = getGuestCreds();
+    const scores = Object.values(S.scores).filter(s => s.method === 'ai');
+    if (!scores.length) return;
+    await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: creds.username, password: creds.password, scores, resume_hash: CH_SCORER.getResumeHash(S.resume) })
+    });
+  } catch (e) { console.warn('Score save failed:', e); }
+}
+
+async function loadScoresFromServer() {
+  try {
+    const creds = getGuestCreds();
+    const r = await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/load?' + new URLSearchParams({ username: creds.username, password: creds.password }));
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.scores) {
+      let loaded = 0;
+      d.scores.forEach(s => {
+        if (!S.scores[s.job_id] || S.scores[s.job_id].method !== 'ai') {
+          S.scores[s.job_id] = s;
+          loaded++;
+        }
+      });
+      if (loaded > 0) {
+        CH_SCORER.setCachedScores(CH_SCORER.getResumeHash(S.resume), Object.values(S.scores));
+        toast(`Loaded ${loaded} saved scores from server`);
+        render();
+      }
+    }
+  } catch (e) { console.warn('Score load failed:', e); }
 }
 
 function sorted() {
@@ -644,6 +698,7 @@ async function genDocs(id) {
 
 // === Resume Parsing ===
 async function handleFile(file) {
+  if (file.size > 5 * 1024 * 1024) { alert('File too large (max 5MB)'); return; }
   const ext = file.name.split('.').pop().toLowerCase();
   const zone = document.getElementById('uz');
   S.fname = file.name;
@@ -1006,7 +1061,6 @@ function renderLocFilter() {
 async function finishOB() {
   S.view = 'app'; render();
   await loadJobs(); loadStats(); loadLocations();
-  if (S.key && S.skills.length) runAI();
 }
 
 // === App ===
@@ -1015,9 +1069,7 @@ function renderApp() {
   return `<header>
     <div class="logo">Career Hunter</div>
     <div class="nav">
-      <a href="./interview_coach.html">Interview</a>
-      <a href="./interview_recorder.html">Recording</a>
-      <a href="./career_dashboard.html">Analytics</a>
+      <a href="./interview_recorder.html">Recording Studio</a>
     </div>
     <div class="actions">
       ${S.skills.length ? `<span style="font-size:11px;color:var(--text2)">${S.skills.length} skills</span>` : ''}
@@ -1032,8 +1084,7 @@ function renderApp() {
           </div>
           <div class="ud-item" onclick="S.tab='settings';S.settingsTab='profile';S.userMenu=false;render()">Profile</div>
           <div class="ud-item" onclick="S.tab='settings';S.settingsTab='general';S.userMenu=false;render()">Settings</div>
-          <a class="ud-item" href="./interview_coach.html">Interview Coach</a>
-          <a class="ud-item" href="./career_dashboard.html">Analytics</a>
+          <a class="ud-item" href="./interview_recorder.html">Recording Studio</a>
           <div class="ud-sep"></div>
           <div class="ud-item danger" onclick="signOut()">Sign Out</div>
         </div>` : ''}
@@ -1172,7 +1223,7 @@ function renderStatsTab() {
       <div class="stat"><div class="label">Companies</div><div class="val">${Object.keys(s.by_company||{}).length}</div></div>
       <div class="stat"><div class="label">Last Fetch</div><div class="val" style="font-size:13px">${esc(s.last_fetched||'Never')}</div></div>
     </div>
-    ${S.skills.length ? `<div class="card"><h3>Job Scoring</h3><p class="muted" style="margin-bottom:10px">Score jobs against your resume for best fit.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="btn btn-primary" onclick="runML()" ${S.mlProg?'disabled':''}>${S.mlProg?'Scoring...':'ML Score (Free)'}</button><button class="btn btn-ghost" onclick="runAI()" ${!S.key||S.aiProg?'disabled':''}>${S.aiProg?'Scoring...':'Gemini AI Score'}</button></div><p class="hint" style="font-size:11px;color:var(--muted)">ML Score runs on server (free, no key). Gemini AI uses your key for higher accuracy.</p></div>` : ''}
+    ${S.skills.length ? `<div class="card"><h3>Job Scoring</h3><p class="muted" style="margin-bottom:10px">Score jobs against your resume for best fit.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="btn btn-primary" onclick="runML()" ${S.mlProg?'disabled':''}>${S.mlProg?'Scoring...':'ML Score (Free)'}</button><button class="btn btn-ghost" onclick="runAI()" ${!S.key||S.aiProg?'disabled':''}>${S.aiProg?'Scoring...':('Gemini AI Score' + (Object.values(S.scores).filter(s=>s.method==='ai').length ? ` (${Object.values(S.scores).filter(s=>s.method==='ai').length} cached)` : ''))}</button></div><p class="hint" style="font-size:11px;color:var(--muted)">ML Score runs on server (free, no key). Gemini AI uses your key for higher accuracy.</p></div>` : ''}
     <div class="settings-2col">
       <div class="card"><h3>By Source</h3><table><thead><tr><th>Source</th><th>Count</th></tr></thead><tbody>${Object.entries(s.by_source||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>
       <div class="card"><h3>By Role</h3><table><thead><tr><th>Role</th><th>Count</th></tr></thead><tbody>${Object.entries(s.by_role||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>
@@ -1201,6 +1252,18 @@ function renderSettingsGeneral() {
     <div class="card"><h3>Resume</h3>
       <p class="muted" style="margin-bottom:10px">${S.resume ? `${S.resume.length.toLocaleString()} chars, ${S.skills.length} skills` : 'No resume loaded'}</p>
       <button class="btn btn-ghost btn-sm" onclick="S.view='onboarding';S.step=1;render()">Re-upload</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Score Sync</h3>
+    <p class="muted" style="margin-bottom:8px">Your AI scores are saved locally and can be synced to the server. Use these credentials on another device to load your scores.</p>
+    <div style="font-family:monospace;font-size:12px;background:var(--surface);padding:10px;border-radius:6px;margin-bottom:8px">
+      <div>Username: <strong>${esc(getGuestCreds().username)}</strong></div>
+      <div>Password: <strong>${esc(getGuestCreds().password)}</strong></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="saveScoresToServer().then(()=>toast('Scores saved!'))">Save to Server</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadScoresFromServer()">Load from Server</button>
+      <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(JSON.stringify(getGuestCreds()));toast('Credentials copied!')">Copy Credentials</button>
     </div>
   </div>
   <div class="card" style="margin-top:14px"><h3>API Server</h3>

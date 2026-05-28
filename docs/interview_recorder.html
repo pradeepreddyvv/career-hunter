@@ -272,8 +272,6 @@ a{color:var(--accent);text-decoration:none}
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 
 /* Auth */
-.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
-.auth-overlay.hidden{display:none}
 </style>
 </head>
 <body>
@@ -281,9 +279,7 @@ a{color:var(--accent);text-decoration:none}
 <!-- Platform Nav -->
 <nav class="platform-nav">
 <a href="./index.html"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-<a href="./interview_coach.html"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
 <a href="./interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
-<a href="./career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
 </nav>
 
 <!-- Header -->
@@ -804,24 +800,13 @@ a{color:var(--accent);text-decoration:none}
   <div class="countdown-text" id="countdown-text">Get ready...</div>
 </div>
 
-<!-- Auth Gate -->
-<div class="auth-overlay hidden" id="authOverlay">
-  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;max-width:360px;width:90%">
-    <h2 style="margin-bottom:8px">&#127909; Recording Studio</h2>
-    <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Enter password to continue</p>
-    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"
-      style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:8px">
-    <div id="authErr" style="color:var(--red);font-size:12px;margin-bottom:8px;min-height:16px"></div>
-    <button onclick="doLogin()" class="btn btn-primary" style="width:100%;padding:12px">Sign In</button>
-  </div>
-</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ==================== CONSTANTS ====================
-const SM_TTS_KEY = 'XuhQfNsKGoiGrcDLXyiCgbCOTumJoEAo';
+const SM_TTS_KEY = localStorage.getItem('ch_sm_tts_key') || '';
 const SM_TTS_URL = 'https://preview.tts.speechmatics.com/generate';
 let smTtsVoice = 'jack'; // 'jack' (US male) or 'theo' (UK male)
 let smCurrentAudio = null;
@@ -2939,8 +2924,6 @@ function formatDuration(sec) {
 document.addEventListener('keydown', (e) => {
   // Don't trigger shortcuts when typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (document.getElementById('authOverlay')?.classList.contains('hidden') === false) return;
-
   const activeTab = document.querySelector('.tab-content.active')?.id;
 
   switch(e.code) {
@@ -2980,25 +2963,9 @@ window.addEventListener('beforeunload', (e) => {
   }
 });
 
-// ==================== AUTH ====================
-const AUTH_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'; // sha256 of 'password'
-function doLogin() {
-  const pw = document.getElementById('authPassword').value;
-  crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw)).then(buf => {
-    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    if (hash === AUTH_HASH) {
-      document.getElementById('authOverlay').classList.add('hidden');
-      localStorage.setItem('recorder_auth', '1');
-    } else {
-      document.getElementById('authErr').textContent = 'Wrong password';
-    }
-  });
-}
 
 // ==================== N8N PERSISTENCE ====================
-const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? 'https://drinks-started-recovery-street.trycloudflare.com'
-  : window.location.origin) + '/webhook/interview-data';
+const N8N_DATA_URL = (localStorage.getItem('ch_n8n_url') || window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
   try {
@@ -3020,9 +2987,6 @@ async function saveToN8n(key, data) {
 
 // ==================== INIT ====================
 async function init() {
-  // Auth disabled — personal tool
-  document.getElementById('authOverlay').classList.add('hidden');
-
   await openDB();
 
   // Load custom questions from n8n
@@ -3045,9 +3009,7 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
-const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? 'https://drinks-started-recovery-street.trycloudflare.com'
-  : window.location.origin) + '/webhook/leetcode-live';
+const LC_WEBHOOK = (localStorage.getItem('ch_n8n_url') || window.location.origin) + '/webhook/leetcode-live';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';

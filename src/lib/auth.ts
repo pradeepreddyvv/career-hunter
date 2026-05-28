@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import { getDb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 
-const JWT_SECRET = process.env.JWT_SECRET || "career-hunter-dev-secret-change-in-production";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required");
 const TOKEN_EXPIRY = "7d";
 
 export interface User {

@@ -129,7 +129,8 @@ Return JSON: {"score": 0-100, "summary": "one line", "recommendation": "STRONG_A
 
     async function aiScoreBatch(resumeText, jobs, geminiKey, fetchJobDetail, onProgress, userContext) {
         const results = [];
-        const batchSize = 5;
+        let consecutiveFails = 0;
+        const batchSize = 3;
 
         for (let i = 0; i < jobs.length; i += batchSize) {
             const batch = jobs.slice(i, i + batchSize);
@@ -162,14 +163,24 @@ Return JSON: {"score": 0-100, "summary": "one line", "recommendation": "STRONG_A
             });
 
             const batchResults = await Promise.all(promises);
-            results.push(...batchResults.filter(Boolean));
+            const successes = batchResults.filter(Boolean);
+            results.push(...successes);
+            if (successes.length === 0) {
+                consecutiveFails++;
+                if (consecutiveFails >= 2) {
+                    console.warn('Too many failures, stopping AI scoring');
+                    break;
+                }
+            } else {
+                consecutiveFails = 0;
+            }
 
             if (onProgress) {
                 onProgress(Math.min(i + batchSize, jobs.length), jobs.length);
             }
 
             if (i + batchSize < jobs.length) {
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, 1500));
             }
         }
 
