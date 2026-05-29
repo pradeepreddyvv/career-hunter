@@ -281,7 +281,7 @@ a{color:var(--accent);text-decoration:none}
 <!-- Platform Nav -->
 <nav class="platform-nav">
 <a href="/"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-<a href="/interview-recorder"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
+<a href="/interview-recorder" class="active"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
 <a href="/career-dashboard"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
 </nav>
 
@@ -803,6 +803,17 @@ a{color:var(--accent);text-decoration:none}
   <div class="countdown-text" id="countdown-text">Get ready...</div>
 </div>
 
+<!-- Auth Gate -->
+<div class="auth-overlay hidden" id="authOverlay">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;max-width:360px;width:90%">
+    <h2 style="margin-bottom:8px">&#127909; Recording Studio</h2>
+    <p style="color:var(--text2);font-size:13px;margin-bottom:16px">Enter password to continue</p>
+    <input type="password" id="authPassword" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"
+      style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:8px">
+    <div id="authErr" style="color:var(--red);font-size:12px;margin-bottom:8px;min-height:16px"></div>
+    <button onclick="doLogin()" class="btn btn-primary" style="width:100%;padding:12px">Sign In</button>
+  </div>
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -2055,7 +2066,9 @@ CATEGORY: ${category}${lpInfo}
 CANDIDATE'S ANSWER (transcript): "${transcript}"
 ANSWER DURATION: ${durationSec} seconds
 
-CANDIDATE CONTEXT: The candidate's profile and experiences are stored in their settings. Use the transcript content to evaluate their STAR story quality, specificity of metrics, and communication clarity.
+CANDIDATE CONTEXT: Use the candidate's profile from their settings/onboarding data.
+If no profile is set, use these placeholders: [Your Name], [Your Degree] at [Your University], [X] years at [Previous Company].
+The candidate should fill in their profile via the Settings page for personalized feedback.
 [Target Company] [Role] interview.
 
 Return ONLY valid JSON (no markdown fences):
@@ -2101,7 +2114,7 @@ async function getMockSummary(recordings) {
     `Q${i+1} [${r.category}]: "${r.questionText}"\nTranscript (${r.duration}s): "${(r.transcript || '').slice(0, 300)}..."\nAI Score: ${r.aiReview?.overall_score || '?'}`
   ).join('\n\n');
 
-  const prompt = `You are completing a mock interview debrief for a software engineering candidate. Review their responses, identify strengths and areas for improvement, and provide actionable coaching.
+  const prompt = `You are completing a mock interview debrief for a candidate preparing for a [Target Company] [Role] interview. Evaluate their answers based on the STAR framework, technical depth, and communication clarity.
 
 SESSION (${recordings.length} questions):
 ${qSummary}
@@ -2920,6 +2933,8 @@ function formatDuration(sec) {
 document.addEventListener('keydown', (e) => {
   // Don't trigger shortcuts when typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (document.getElementById('authOverlay')?.classList.contains('hidden') === false) return;
+
   const activeTab = document.querySelector('.tab-content.active')?.id;
 
   switch(e.code) {
@@ -2959,10 +2974,25 @@ window.addEventListener('beforeunload', (e) => {
   }
 });
 
-// Auth removed — open access
+// ==================== AUTH ====================
+const AUTH_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'; // sha256 of 'password'
+function doLogin() {
+  const pw = document.getElementById('authPassword').value;
+  crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw)).then(buf => {
+    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    if (hash === AUTH_HASH) {
+      document.getElementById('authOverlay').classList.add('hidden');
+      localStorage.setItem('recorder_auth', '1');
+    } else {
+      document.getElementById('authErr').textContent = 'Wrong password';
+    }
+  });
+}
 
 // ==================== N8N PERSISTENCE ====================
-const N8N_DATA_URL = (localStorage.getItem('ch_n8n_url') || window.location.origin) + '/webhook/interview-data';
+const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
   try {
@@ -2984,6 +3014,9 @@ async function saveToN8n(key, data) {
 
 // ==================== INIT ====================
 async function init() {
+  // Auth disabled — personal tool
+  document.getElementById('authOverlay').classList.add('hidden');
+
   await openDB();
 
   // Load custom questions from n8n
@@ -3006,7 +3039,9 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
-const LC_WEBHOOK = (localStorage.getItem('ch_n8n_url') || window.location.origin) + '/webhook/leetcode-live';
+const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  : window.location.origin) + '/webhook/leetcode-live';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';
@@ -3339,7 +3374,7 @@ SESSION DURATION: ${durationSec} seconds
 FULL AI INTERVIEWER ↔ CANDIDATE CONVERSATION:
 ${chatSummary || 'No chat interaction'}
 
-CANDIDATE CONTEXT: Evaluate the candidate based on their responses during this session. [Target Company] [Role] interview.
+CANDIDATE CONTEXT: Evaluate the candidate's code based on correctness, complexity analysis, and code quality.
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -4609,7 +4644,7 @@ function liveStopMic() {
 
 function liveGetPersona() {
   if (liveStyleType === 'bar_raiser') {
-    return "You are an Amazon Bar Raiser conducting a live interview. You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
+    return "You are an Amazon Bar Raiser conducting a live interview with a candidate targeting an SDE intern role. You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
   } else if (liveStyleType === 'grilling') {
     return "You are a tough senior engineer doing a grilling interview. You push back hard on vague answers, demand specifics, and call out fluff. You probe for metrics and depth. You interrupt more often than a typical interviewer, but only when the candidate is drifting, being vague, or technically wrong.";
   }
@@ -4746,7 +4781,7 @@ async function liveFinalSummary() {
   ).join('\n\n');
 
   const prompt = "You are a senior [Target] interview coach grading a full live interview session.\n\n" +
-    "CANDIDATE: [Your Name] ([Your Degree] at [Your University] 4.11, 2yr SWE at [Previous Company], SDE intern target)\n\n" +
+    "CANDIDATE: Evaluate the candidate based on their interview responses below.\n\n" +
     "SESSION:\n" + transcriptBlock + "\n\n" +
     "Return ONLY valid JSON (no markdown fences):\n" +
     "{\n" +

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Career Hunter</title>
 <style>
-:root{--bg:#0a0b0f;--surface:#13141a;--surface2:#1c1d25;--surface3:#24252f;--border:#2a2b36;--text:#ebedf5;--text2:#7e8299;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--radius:10px;--radius-lg:14px;--shadow:0 2px 12px rgba(0,0,0,.3);--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--muted:#7e8299;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
+:root{--bg:#0a0b0f;--surface:#13141a;--surface2:#1c1d25;--surface3:#24252f;--border:#2a2b36;--text:#ebedf5;--text2:#7e8299;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--radius:10px;--radius-lg:14px;--shadow:0 2px 12px rgba(0,0,0,.3);--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
 html{font-size:14px}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -100,30 +100,6 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .doc-block{margin-bottom:16px}
 .doc-block h4{font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
 .doc-block pre{background:var(--surface2);padding:14px;border-radius:8px;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;word-wrap:break-word;max-height:360px;overflow-y:auto}
-.rtabs{display:flex;gap:2px;margin-bottom:0;padding:3px 3px 0;background:var(--surface2);border-radius:8px 8px 0 0}
-.rtab{padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border-radius:6px 6px 0 0;transition:.15s;border:1px solid transparent;border-bottom:none}
-.rtab:hover{color:var(--text)}
-.rtab.on{color:var(--accent2);border-color:var(--border);background:var(--surface2)}
-.rsbs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:0 0 8px 8px;overflow:hidden}
-.rsbs-col{background:var(--surface2);padding:10px;overflow-y:auto;max-height:420px}
-.rsbs-col pre{background:transparent;padding:0;margin:0;font-size:11.5px;font-family:var(--mono);line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
-.rsbs-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-.rdiff{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;max-height:420px;overflow-y:auto}
-.diff-summary{display:flex;gap:14px;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:12px;font-size:12px;align-items:center}
-.diff-stat{display:flex;align-items:center;gap:4px;font-weight:600}
-.diff-group{margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.diff-group-header{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);padding:6px 10px;background:var(--surface);border-bottom:1px solid var(--border)}
-.diff-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
-.diff-pair:last-child{border-bottom:none}
-.diff-pair-full{padding:6px 10px;border-bottom:1px solid var(--border);font-size:11.5px;font-family:var(--mono);line-height:1.5}
-.diff-pair-full:last-child{border-bottom:none}
-.diff-old{padding:6px 10px;background:rgba(248,113,113,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--red);border-right:1px solid var(--border)}
-.diff-new{padding:6px 10px;background:rgba(74,222,128,.08);font-size:11.5px;font-family:var(--mono);line-height:1.5;color:var(--green)}
-.diff-skip{text-align:center;padding:4px;font-size:10px;color:var(--text2);background:var(--surface);border-bottom:1px solid var(--border)}
-.otab-body{background:var(--surface2);padding:14px;border-radius:0 0 8px 8px;border-top:1px solid var(--border)}
-.otab-body .msg-block{font-size:13px;line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
-.otab-body .email-subject{font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;padding:8px 12px;background:var(--surface);border-radius:6px}
-.otab-body .msg-block p{margin:0}
 
 /* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:12.5px;z-index:1000;box-shadow:var(--shadow);animation:slideUp .25s ease}
@@ -230,27 +206,6 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 .hidden{display:none!important}
 @media(max-width:900px){.sidebar{width:240px}}
 @media(max-width:600px){.sidebar{display:none}.main{flex-direction:column}.settings-2col{grid-template-columns:1fr}.parse-opts{grid-template-columns:1fr}.profile-grid{grid-template-columns:1fr}.gen-grid{grid-template-columns:1fr}}
-
-/* User Menu */
-.user-menu{position:relative}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9b85ff);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid transparent;user-select:none}
-.user-avatar:hover{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-dim)}
-.user-drop{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px;min-width:210px;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:100;animation:fadeIn .15s ease}
-.user-drop .ud-head{padding:10px 12px;border-bottom:1px solid var(--border);margin-bottom:4px}
-.user-drop .ud-name{font-size:13px;font-weight:600}
-.user-drop .ud-email{font-size:11px;color:var(--text2);margin-top:2px}
-.user-drop a.ud-item,.user-drop .ud-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12.5px;color:var(--text);border-radius:6px;cursor:pointer;transition:all .12s;text-decoration:none}
-.user-drop .ud-item:hover{background:var(--surface2)}
-.user-drop .ud-item.danger{color:var(--red)}
-.user-drop .ud-item.danger:hover{background:var(--red-dim)}
-.ud-sep{height:1px;background:var(--border);margin:4px 0}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-
-/* OB Location prefs */
-.ob-loc-states{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
-.ob-loc-states .loc-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.ob-loc-states .loc-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:140px;overflow-y:auto}
-.ob-section-title{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:6px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -260,13 +215,14 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 
 <script src="scorer.js"></script>
 <script>
-const API = localStorage.getItem('cp_api_url') || location.origin;
+const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:' || location.hostname.includes('github.io')
+  ? 'https://lows-whenever-medical-misc.trycloudflare.com' : location.origin);
 
 const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
   tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 200,
   empTypes: JSON.parse(localStorage.getItem('ch_emp_types') || '[]'),
-  locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '["USA"]'),
+  locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '[]'),
   locState: JSON.parse(localStorage.getItem('ch_loc_state') || '[]'),
   locations: null,
   days: parseInt(localStorage.getItem('ch_days') || '365'),
@@ -274,32 +230,13 @@ const S = {
   fname: '', profile: null, step: 1, skills: [], scores: {},
   method: 'keyword', key: localStorage.getItem('ch_gemini_key') || '',
   banner: !localStorage.getItem('ch_banner_off'), aiProg: null, stats: null,
-  settingsTab: 'general', userMenu: false, locOpen: false, rolesOpen: false, typesOpen: false, sortMode: 'relevance',
-  userContext: localStorage.getItem('ch_user_context') || '',
-};
-
-const RESUME_MODES = {
-  reorder: {
-    label: 'Reorder by Relevance',
-    desc: 'Reorder bullets within each position by JD relevance',
-    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REORDERING bullets within each position for maximum relevance.\n\nStrategy:\n1. Analyze the JD — identify top 5 must-have skills and key responsibilities\n2. Within each work experience position: reorder bullets so the most JD-relevant bullets come FIRST\n3. Within each project: reorder description points by JD relevance\n4. Reorder skills: JD-matched skills come first in each category\n5. Keep all original text and metrics EXACTLY unchanged — only reorder\n\nCRITICAL RULES:\n- Do NOT reorder work positions — keep the same company/role order as the original\n- Do NOT reorder project sections — keep projects in the same order\n- ONLY reorder individual bullets WITHIN each position\n- Do NOT rewrite, rephrase, or modify any bullet text\n- One page only\n- Education > Skills > Experience > Projects\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
-  },
-  rewrite: {
-    label: 'Rewrite for JD',
-    desc: 'Rewrite bullets to mirror JD keywords while keeping metrics',
-    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume by REWRITING bullets to match the JD.\n\nStrategy:\n1. Analyze JD — extract every keyword, technology, and skill mentioned\n2. Rewrite experience bullets to naturally incorporate JD keywords\n3. Keep all original metrics and numbers EXACTLY as-is (do not fabricate)\n4. Mirror JD terminology (e.g. if JD says "CI/CD pipelines", use that exact phrase)\n5. Emphasize achievements that align with JD requirements\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Keep all metrics/numbers from original resume unchanged\n- No objective section\n- Every rewritten bullet must still be truthful to the original\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
-  },
-  projects: {
-    label: 'Add Relevant Projects',
-    desc: 'Select and highlight projects from your profile that match the JD',
-    prompt: `You are an ATS resume optimizer. Create a tailored one-page ATS resume, selecting the MOST RELEVANT projects and experience from all available data.\n\nStrategy:\n1. Analyze JD — identify key skills, technologies, and responsibilities\n2. From all experience and projects provided (resume + context), select the ones most relevant to this JD\n3. If the candidate has projects not in the resume but in their context/profile that are MORE relevant, include those instead\n4. Reorder and prioritize by JD relevance\n5. Trim less relevant items to stay within one page\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Use exact metrics from original sources\n- Mirror JD keywords\n- No objective section\n- Include 2-3 most relevant projects max\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`
-  }
+  settingsTab: 'general',
 };
 
 const DEFAULT_PROMPTS = {
-  resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nRules:\n- Mirror JD keywords exactly\n- One page only\n- Education > Skills > Experience > Projects\n- Use metrics from the original resume\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`,
-  cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs.\n\nRules:\n- Never start with "I"\n- Company-specific hook in paragraph 1\n- Use exact metrics from resume\n- Never say "passionate" or "enthusiastic"\n- Include visa authorization line in closing\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput cover letter only.`,
-  outreach: `Generate outreach messages for this job application.\n\nReturn JSON:\n{"linkedin_message":"300 chars max connection request","cold_email":{"subject":"...","body":"150-200 words"},"referral_ask":"100-150 words"}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}`,
+  resume: `You are an ATS resume optimizer. Create a tailored one-page ATS resume.\n\nRules:\n- Mirror JD keywords exactly\n- One page only\n- Education > Skills > Experience > Projects\n- Use metrics from the original resume\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput tailored resume only.`,
+  cover_letter: `Write a tailored cover letter. 250-320 words, 4 paragraphs.\n\nRules:\n- Never start with "I"\n- Company-specific hook in paragraph 1\n- Use exact metrics from resume\n- Never say "passionate" or "enthusiastic"\n- Include visa authorization line in closing\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n\nOutput cover letter only.`,
+  outreach: `Generate outreach messages for this job application.\n\nReturn JSON:\n{"linkedin_message":"300 chars max connection request","cold_email":{"subject":"...","body":"150-200 words"},"referral_ask":"100-150 words"}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
   ats_audit: `ATS audit: extract top 20 JD keywords, check which appear in the resume, calculate coverage.\n\nReturn JSON:\n{"coverage_pct":0,"matched_keywords":[],"missing_keywords":[],"suggestions":["specific suggestion to add each missing keyword"]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
   interview_prep: `Generate interview prep for this role.\n\nReturn JSON:\n{"behavioral":[{"question":"...","star_hint":"..."}],"technical":[{"question":"...","approach":"..."}],"talking_points":["..."],"questions_to_ask":["..."],"themes":["..."]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
   scoring: `Score how well this resume matches the job (0-100).\n\n85-100: Perfect match\n70-84: Strong match\n55-69: Decent match\n40-54: Weak match\n0-39: Poor match\n\nReturn JSON:\n{"score":0,"summary":"...","recommendation":"STRONG_APPLY|APPLY|MAYBE|SKIP","matched_skills":[],"missing_skills":[]}\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}`,
@@ -318,175 +255,12 @@ try {
   const c = CH_SCORER.getCachedScores(h);
   if (c?.scores) c.scores.forEach(s => { S.scores[s.job_id] = s; });
 } catch {}
-if (S.resume) setTimeout(loadScoresFromServer, 2000);
 
 // === API ===
-async function api(path, method, body) { const opts = { method: method || 'GET' }; if (body) { opts.headers = {'Content-Type':'application/json'}; opts.body = JSON.stringify(body); } const r = await fetch(API + path, opts); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
+async function api(path) { const r = await fetch(API + path); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
 function toast(msg, ok=true) { const e = document.createElement('div'); e.className = `toast ${ok?'ok':'err'}`; e.textContent = msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 function bc(s) { return s >= 70 ? 'badge-h' : s >= 50 ? 'badge-m' : 'badge-l'; }
-function fmtDate(d) { if (!d) return ''; try { const dt = new Date(d); if (isNaN(dt)) return d.slice(0,10); const now = Date.now(); const diff = now - dt.getTime(); if (diff < 86400000) return 'Today'; if (diff < 172800000) return 'Yesterday'; if (diff < 604800000) return Math.floor(diff/86400000) + 'd ago'; if (diff < 2592000000) return Math.floor(diff/604800000) + 'w ago'; return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } catch { return d.slice(0,10); } }
-
-// === Resume Diff ===
-function lineDiff(oldText, newText) {
-  const a = oldText.split('\n'), b = newText.split('\n');
-  const m = a.length, n = b.length;
-  const dp = Array.from({length: m + 1}, () => new Uint16Array(n + 1));
-  for (let i = 1; i <= m; i++)
-    for (let j = 1; j <= n; j++)
-      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
-  const ops = [];
-  let i = m, j = n;
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && a[i-1] === b[j-1]) { ops.push({type:'ctx',text:a[i-1]}); i--; j--; }
-    else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) { ops.push({type:'add',text:b[j-1]}); j--; }
-    else { ops.push({type:'rm',text:a[i-1]}); i--; }
-  }
-  ops.reverse();
-  return ops;
-}
-
-function renderDiffGroups(ops) {
-  const added = ops.filter(o => o.type === 'add').length;
-  const removed = ops.filter(o => o.type === 'rm').length;
-  const unchanged = ops.filter(o => o.type === 'ctx').length;
-
-  let html = `<div class="diff-summary">
-    <span style="font-size:13px;font-weight:600">Changes</span>
-    ${added ? `<span class="diff-stat" style="color:var(--green)">+${added} added</span>` : ''}
-    ${removed ? `<span class="diff-stat" style="color:var(--red)">&minus;${removed} removed</span>` : ''}
-    <span class="diff-stat" style="color:var(--text2)">${unchanged} unchanged</span>
-  </div>`;
-
-  if (!added && !removed) return html + '<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px">No changes detected</div>';
-
-  // Group ops into change blocks with context
-  const CTX = 5;
-  const groups = [];
-  let cur = null;
-  for (let i = 0; i < ops.length; i++) {
-    const o = ops[i];
-    if (o.type !== 'ctx') {
-      if (!cur) { cur = { start: Math.max(0, i - CTX), ops: [] }; for (let c = Math.max(0, i - CTX); c < i; c++) cur.ops.push({...ops[c], role: 'ctx'}); }
-      cur.ops.push({...o, role: o.type});
-      cur.end = i;
-    } else if (cur) {
-      const gap = i - cur.end;
-      if (gap <= CTX * 2 + 1) { cur.ops.push({...o, role: 'ctx'}); cur.end = i; }
-      else { for (let c = cur.end + 1; c <= cur.end + CTX; c++) if (c < ops.length) cur.ops.push({...ops[c], role: 'ctx'}); groups.push(cur); cur = null; }
-    }
-  }
-  if (cur) { for (let c = cur.end + 1; c <= Math.min(cur.end + CTX, ops.length - 1); c++) cur.ops.push({...ops[c], role: 'ctx'}); groups.push(cur); }
-
-  let skipped = 0;
-  let prevEnd = -1;
-  for (const g of groups) {
-    const skip = g.start - prevEnd - 1;
-    if (skip > 0) { skipped += skip; html += `<div class="diff-skip">${skip} unchanged lines</div>`; }
-    html += '<div class="diff-group">';
-    // Collect consecutive rm/add pairs for side-by-side, ctx lines as full-width
-    let i = 0;
-    while (i < g.ops.length) {
-      const op = g.ops[i];
-      if (op.role === 'ctx') {
-        html += `<div class="diff-pair-full">${esc(op.text)}</div>`;
-        i++;
-      } else {
-        // Collect consecutive rm then add
-        const rms = [], adds = [];
-        while (i < g.ops.length && g.ops[i].role === 'rm') { rms.push(g.ops[i].text); i++; }
-        while (i < g.ops.length && g.ops[i].role === 'add') { adds.push(g.ops[i].text); i++; }
-        const rows = Math.max(rms.length, adds.length);
-        for (let r = 0; r < rows; r++) {
-          html += `<div class="diff-pair">
-            <div class="diff-old">${r < rms.length ? esc(rms[r]) : '&nbsp;'}</div>
-            <div class="diff-new">${r < adds.length ? esc(adds[r]) : '&nbsp;'}</div>
-          </div>`;
-        }
-      }
-    }
-    html += '</div>';
-    prevEnd = g.start + g.ops.length - 1;
-  }
-  const tailSkip = ops.length - prevEnd - 1;
-  if (tailSkip > 0) html += `<div class="diff-skip">${tailSkip} unchanged lines</div>`;
-  return html;
-}
-
-function renderResumeTabs(jobId, content) {
-  const tab = S.resumeTab?.[jobId] || 'side';
-  let body;
-  if (tab === 'diff') {
-    const ops = lineDiff(S.resume, content);
-    body = `<div class="rdiff">${renderDiffGroups(ops)}</div>`;
-  } else {
-    body = `<div class="rsbs">
-      <div class="rsbs-col"><div class="rsbs-label">Original</div><pre>${esc(S.resume)}</pre></div>
-      <div class="rsbs-col"><div class="rsbs-label">Tailored</div><pre>${esc(content)}</pre></div>
-    </div>`;
-  }
-  const tb = (id, label) => `<div class="rtab ${tab===id?'on':''}" onclick="setResumeTab(${jobId},'${id}')">${label}</div>`;
-  return `<div class="doc-block">
-    <h4><span>Resume</span><div style="display:flex;gap:4px"><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(content).replace(/</g,'\\u003c')});toast('Copied tailored!')">Copy Tailored</button><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(S.resume).replace(/</g,'\\u003c')});toast('Copied original!')">Copy Original</button></div></h4>
-    <div class="rtabs">${tb('side','Side by Side')}${tb('diff','Changes')}</div>
-    ${body}
-  </div>`;
-}
-
-function renderOutreachTabs(jobId, raw) {
-  let data;
-  try { const m = raw.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : raw); } catch { return null; }
-  const tab = S.outreachTab?.[jobId] || 'linkedin';
-  const linkedin = data.linkedin_message || '';
-  const emailSubject = data.cold_email?.subject || '';
-  const emailBody = data.cold_email?.body || '';
-  const referral = data.referral_ask || '';
-
-  let body, copyText;
-  if (tab === 'email') {
-    copyText = `Subject: ${emailSubject}\n\n${emailBody}`;
-    body = `<div class="otab-body">${emailSubject ? `<div class="email-subject">Subject: ${esc(emailSubject)}</div>` : ''}<div class="msg-block">${esc(emailBody)}</div></div>`;
-  } else if (tab === 'referral') {
-    copyText = referral;
-    body = `<div class="otab-body"><div class="msg-block">${esc(referral)}</div></div>`;
-  } else {
-    copyText = linkedin;
-    body = `<div class="otab-body"><div class="msg-block">${esc(linkedin)}</div>${linkedin.length ? `<div style="margin-top:8px;font-size:10px;color:var(--text2)">${linkedin.length} / 300 chars</div>` : ''}</div>`;
-  }
-
-  const tb = (id, label) => `<div class="rtab ${tab===id?'on':''}" onclick="setOutreachTab(${jobId},'${id}')">${label}</div>`;
-  return `<div class="doc-block">
-    <h4><span>Outreach</span><button class="btn btn-ghost btn-sm" onclick="copyOutreach(${jobId})">Copy</button></h4>
-    <div class="rtabs">${tb('linkedin','LinkedIn')}${tb('email','Cold Email')}${tb('referral','Referral')}</div>
-    ${body}
-  </div>`;
-}
-
-function setOutreachTab(jobId, tab) {
-  if (!S.outreachTab) S.outreachTab = {};
-  S.outreachTab[jobId] = tab;
-  render();
-}
-
-function copyOutreach(jobId) {
-  const docs = S.docs[jobId] || {};
-  if (!docs.outreach) return;
-  let data;
-  try { const m = docs.outreach.match(/\{[\s\S]*\}/); data = JSON.parse(m ? m[0] : docs.outreach); } catch { navigator.clipboard.writeText(docs.outreach); toast('Copied!'); return; }
-  const tab = S.outreachTab?.[jobId] || 'linkedin';
-  let text;
-  if (tab === 'email') text = `Subject: ${data.cold_email?.subject||''}\n\n${data.cold_email?.body||''}`;
-  else if (tab === 'referral') text = data.referral_ask || '';
-  else text = data.linkedin_message || '';
-  navigator.clipboard.writeText(text);
-  toast('Copied!');
-}
-
-function setResumeTab(jobId, tab) {
-  if (!S.resumeTab) S.resumeTab = {};
-  S.resumeTab[jobId] = tab;
-  render();
-}
 
 // === Data ===
 async function loadJobs() {
@@ -496,7 +270,7 @@ async function loadJobs() {
     if (S.role) p.set('role_category', S.role);
     if (S.company) p.set('company', S.company);
     if (S.q) p.set('search', S.q);
-    const et = S.empTypes.length ? S.empTypes.join(',') : '';
+    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
     if (et) p.set('employment_type', et);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
     if (S.locState.length) p.set('location_state', S.locState.join(','));
@@ -519,8 +293,7 @@ async function loadMore() {
     const p = new URLSearchParams({ limit: S.limit, offset: o });
     if (S.role) p.set('role_category', S.role);
     if (S.q) p.set('search', S.q);
-    if (S.company) p.set('company', S.company);
-    const et = S.empTypes.length ? S.empTypes.join(',') : '';
+    const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
     if (et) p.set('employment_type', et);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
     if (S.locState.length) p.set('location_state', S.locState.join(','));
@@ -555,22 +328,15 @@ function scoreKeyword() {
 
 async function runAI() {
   if (!S.key) { toast('Add Gemini key first', false); return; }
-  if (!S.resume) { toast('Upload resume first', false); return; }
-  const sixMonthsAgo = new Date(); sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  const candidates = sorted().filter(j => {
-    if (S.scores[j.id]?.method === 'ai') return false;
-    if (j.posted_at) { try { if (new Date(j.posted_at) < sixMonthsAgo) return false; } catch {} }
-    return true;
-  }).slice(0, 200);
-  if (!candidates.length) { toast('All jobs already scored!'); return; }
-  S.aiProg = { done: 0, total: candidates.length }; render();
+  const top = sorted().slice(0, 50);
+  if (!top.length) { toast('No jobs to score', false); return; }
+  S.aiProg = { done: 0, total: top.length }; render();
   const fd = async id => { try { return await api(`/api/v1/jobs/browse/${id}`); } catch { return null; } };
-  const r = await CH_SCORER.aiScoreBatch(S.resume, candidates, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); }, S.userContext);
+  const r = await CH_SCORER.aiScoreBatch(S.resume, top, S.key, fd, (d, t) => { S.aiProg = { done: d, total: t }; render(); });
   r.forEach(s => { S.scores[s.job_id] = s; });
   S.method = 'ai'; S.aiProg = null;
   CH_SCORER.setCachedScores(CH_SCORER.getResumeHash(S.resume), Object.values(S.scores));
-  saveScoresToServer();
-  toast(`AI scored ${r.length} jobs (${Object.keys(S.scores).length} total cached)`); render();
+  toast(`AI scored ${r.length} jobs`); render();
 }
 
 async function runML() {
@@ -586,75 +352,7 @@ async function runML() {
   S.mlProg = false; render();
 }
 
-// === Guest Account + Score Persistence ===
-function getGuestCreds() {
-  let creds = null;
-  try { creds = JSON.parse(localStorage.getItem('ch_guest_creds')); } catch {}
-  if (creds?.username && creds?.password) return creds;
-  const id = Math.random().toString(36).slice(2, 8);
-  creds = { username: 'guest_' + id, password: Math.random().toString(36).slice(2, 10) };
-  localStorage.setItem('ch_guest_creds', JSON.stringify(creds));
-  return creds;
-}
-
-async function saveScoresToServer() {
-  try {
-    const creds = getGuestCreds();
-    const scores = Object.values(S.scores).filter(s => s.method === 'ai');
-    if (!scores.length) return;
-    await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: creds.username, password: creds.password, scores, resume_hash: CH_SCORER.getResumeHash(S.resume) })
-    });
-  } catch (e) { console.warn('Score save failed:', e); }
-}
-
-async function loadScoresFromServer() {
-  try {
-    const creds = getGuestCreds();
-    const r = await fetch((localStorage.getItem('cp_api_url') || location.origin) + '/api/v1/scores/load', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: creds.username, password: creds.password })
-    });
-    if (!r.ok) return;
-    const d = await r.json();
-    if (d.scores) {
-      let loaded = 0;
-      d.scores.forEach(s => {
-        if (!S.scores[s.job_id] || S.scores[s.job_id].method !== 'ai') {
-          S.scores[s.job_id] = s;
-          loaded++;
-        }
-      });
-      if (loaded > 0) {
-        CH_SCORER.setCachedScores(CH_SCORER.getResumeHash(S.resume), Object.values(S.scores));
-        toast(`Loaded ${loaded} saved scores from server`);
-        render();
-      }
-    }
-  } catch (e) { console.warn('Score load failed:', e); }
-}
-
-function sorted() {
-  return [...S.jobs].sort((a, b) => {
-    if (S.sortMode === 'score') return (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0);
-    if (S.sortMode === 'date') {
-      const da = a.posted_at ? new Date(a.posted_at).getTime() : 0;
-      const db = b.posted_at ? new Date(b.posted_at).getTime() : 0;
-      return db - da;
-    }
-    // relevance: recent + high score combined
-    const sa = S.scores[a.id]?.score||0, sb = S.scores[b.id]?.score||0;
-    const now = Date.now();
-    const da = a.posted_at ? (now - new Date(a.posted_at).getTime()) / 86400000 : 999;
-    const db = b.posted_at ? (now - new Date(b.posted_at).getTime()) / 86400000 : 999;
-    const ra = sa * 0.6 + Math.max(0, 100 - da * 2) * 0.4;
-    const rb = sb * 0.6 + Math.max(0, 100 - db * 2) * 0.4;
-    return rb - ra;
-  });
-}
+function sorted() { return [...S.jobs].sort((a, b) => (S.scores[b.id]?.score||0) - (S.scores[a.id]?.score||0)); }
 
 // === Doc Generation ===
 async function genDocs(id) {
@@ -665,31 +363,13 @@ async function genDocs(id) {
   if (!types.length) { toast('Select at least one doc type', false); return; }
   S.busy[`g${id}`] = true; render();
   const jd = S.detail.description.substring(0, 5000);
-  const ctx = S.userContext ? `\nCandidate Context:\n${S.userContext}\n` : '';
-  const profileCtx = S.profile ? `\nProfile: ${JSON.stringify({experience: S.profile.experience, projects: S.profile.projects, skills: S.profile.skills}).substring(0, 2000)}` : '';
-  const contextBlock = ctx + profileCtx;
-  const fill = t => {
-    let prompt;
-    if (t === 'resume') {
-      const modes = Array.from(document.querySelectorAll('.rmode:checked')).map(c => c.value);
-      if (modes.length === 0) {
-        prompt = getPrompt('resume');
-      } else if (modes.length === 1) {
-        prompt = RESUME_MODES[modes[0]].prompt;
-      } else {
-        const instructions = modes.map(m => RESUME_MODES[m].label + ': ' + RESUME_MODES[m].desc).join('\n');
-        prompt = `You are an ATS resume optimizer. Create a tailored one-page ATS resume applying ALL of these strategies:\n\n${instructions}\n\nRules:\n- One page only\n- Education > Skills > Experience > Projects\n- Keep all original metrics/numbers unchanged\n- Mirror JD keywords\n- No objective section\n\nJob: {title} at {company}\nJD:\n{jd}\n\nResume:\n{resume}\n{context}\nOutput tailored resume only.`;
-      }
-    } else {
-      prompt = getPrompt(t);
-    }
-    return prompt.replace(/\{title\}/g, S.detail.title).replace(/\{company\}/g, S.detail.company).replace(/\{jd\}/g, jd).replace(/\{resume\}/g, S.resume).replace(/\{context\}/g, contextBlock);
-  };
+  const fill = t => getPrompt(t).replace(/\{title\}/g, S.detail.title).replace(/\{company\}/g, S.detail.company).replace(/\{jd\}/g, jd).replace(/\{resume\}/g, S.resume);
+  const prompts = { resume: fill('resume'), cover_letter: fill('cover_letter'), outreach: fill('outreach'), ats_audit: fill('ats_audit') };
   for (const t of types) {
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${S.key}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: fill(t) }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 16000 } })
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompts[t] }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 16000 } })
       });
       if (!r.ok) throw new Error(`${r.status}`);
       const d = await r.json();
@@ -703,7 +383,6 @@ async function genDocs(id) {
 
 // === Resume Parsing ===
 async function handleFile(file) {
-  if (file.size > 5 * 1024 * 1024) { alert('File too large (max 5MB)'); return; }
   const ext = file.name.split('.').pop().toLowerCase();
   const zone = document.getElementById('uz');
   S.fname = file.name;
@@ -754,17 +433,6 @@ function quickParse(text) {
   const m = text.match(/(?:B\.?S\.?|M\.?S\.?|Bachelor|Master|Ph\.?D|MBA)[\w\s,.]+(University|Institute|College)[\w\s,.]*/i);
   if (m) edu = m[0].substring(0, 120);
   return { name: name || 'Unknown', email: em?.[0] || '', phone: ph?.[0] || '', linkedin: li ? 'https://' + li[0] : '', github: gh ? 'https://' + gh[0] : '', education: edu, skills: [...new Set(skills)], target_roles: ['Software Engineer'], preferred_locations: [] };
-}
-
-async function formatResume(text, apiKey) {
-  const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: `Format this resume text into clean, well-structured plain text. Fix spacing, line breaks, and layout issues from PDF/DOCX extraction.\n\nCRITICAL RULES:\n- Do NOT change, add, remove, or rephrase ANY word\n- Do NOT reorder any sections, bullets, or content\n- ONLY fix formatting: proper line breaks between sections, consistent bullet points, clean spacing, remove duplicate spaces\n- Keep exact same section order, bullet order, and all original text verbatim\n- Use consistent formatting: section headers on their own line, one bullet per line, blank line between sections\n\nRaw resume text:\n${text.substring(0, 8000)}\n\nOutput the cleanly formatted resume text only.` }] }], generationConfig: { temperature: 0, maxOutputTokens: 8192 } })
-  });
-  if (!r.ok) return text;
-  const d = await r.json();
-  const formatted = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  return formatted.length > 50 ? formatted.trim() : text;
 }
 
 async function aiParse(text, apiKey) {
@@ -825,57 +493,29 @@ function renderOB() {
       </div>
       ${(p.skills||[]).length ? `<div style="margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Skills (${p.skills.length})</div><div class="skills-list">${p.skills.map(s => `<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}
       ${p.experience_summary ? `<div class="card" style="padding:12px;margin-bottom:14px"><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Experience</div><div style="font-size:13px;line-height:1.5">${esc(p.experience_summary)}</div></div>` : ''}
-      <div style="margin-bottom:14px">
-        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Context About You <span style="font-size:9px;color:var(--text2);text-transform:none">(optional)</span></div>
-        <textarea id="ob_context" rows="3" placeholder="E.g. I'm a grad student targeting SDE internships, strong in backend/distributed systems, looking for roles at mid-to-large tech companies..." style="width:100%;font-size:13px;line-height:1.5;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);resize:vertical">${esc(S.userContext)}</textarea>
-        <div style="font-size:10px;color:var(--text2);margin-top:4px">Used by AI scoring and document generation. Stored locally only.</div>
-      </div>
       ${S.key ? `<div class="card" style="padding:10px 14px;margin-bottom:14px;border-left:3px solid var(--accent)"><span style="font-size:13px">&#10024; Jobs will be auto-scored with Gemini AI using your key for best match accuracy.</span></div>` : ''}
-      <div class="ob-actions"><button class="btn btn-ghost" onclick="S.step=2;render()">Back</button><button class="btn btn-primary" onclick="saveContext();S.step=4;render()" style="padding:10px 28px;font-size:14px">Continue</button></div>
+      <div class="ob-actions"><button class="btn btn-ghost" onclick="S.step=2;render()">Back</button><button class="btn btn-primary" onclick="S.step=4;render()" style="padding:10px 28px;font-size:14px">Continue</button></div>
     </div></div>`;
   }
 
   if (s === 4) {
     const types = ['Internship','New Grad','Full-Time','Contract','Co-op','Part-Time'];
-    const obCountries = ['USA','Canada','Remote'];
-    const usStates = Object.entries(US_STATES_MAP).sort((a,b) => a[1].localeCompare(b[1]));
-    const caProvs = Object.entries(CA_PROVINCES_MAP).sort((a,b) => a[1].localeCompare(b[1]));
-    const showUS = S.locCountry.includes('USA');
-    const showCA = S.locCountry.includes('Canada');
-    const usSelected = S.locState.filter(s => s in US_STATES_MAP).length;
-    const caSelected = S.locState.filter(s => s in CA_PROVINCES_MAP).length;
-    return `<div class="ob-page"><div class="ob-box" style="max-width:620px">${bar}
+    return `<div class="ob-page"><div class="ob-box">${bar}
       <h2>What are you looking for?</h2>
-      <p class="sub">Select job types and preferred locations. We'll filter and score matching jobs.</p>
-
-      <div class="ob-section-title">Job Type</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+      <p class="sub">Select the types of positions you're interested in. We'll only show and score matching jobs.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px">
         ${types.map(t => `<div class="chip ${S.empTypes.includes(t)?'on':''}" onclick="toggleEmpType('${t}')" style="padding:8px 16px;font-size:13px;cursor:pointer">${t}</div>`).join('')}
       </div>
-
-      <div class="ob-section-title">Preferred Location</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div class="chip ${!S.locCountry.length?'on':''}" onclick="clearOBLoc()" style="padding:6px 14px;font-size:12px">All Locations</div>
-        ${obCountries.map(c => `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleOBLocCountry('${c}')" style="padding:6px 14px;font-size:12px">${c}</div>`).join('')}
-      </div>
-      ${showUS ? `<div class="ob-loc-states">
-        <div class="loc-label">US States${usSelected ? ` (${usSelected} selected)` : ' (all)'}</div>
-        <div class="loc-chips">${usStates.map(([c,n]) => `<div class="chip ${S.locState.includes(c)?'on':''}" onclick="toggleOBLocState('${c}')" style="font-size:10px;padding:3px 8px">${n}</div>`).join('')}</div>
-      </div>` : ''}
-      ${showCA ? `<div class="ob-loc-states">
-        <div class="loc-label">Provinces${caSelected ? ` (${caSelected} selected)` : ' (all)'}</div>
-        <div class="loc-chips">${caProvs.map(([c,n]) => `<div class="chip ${S.locState.includes(c)?'on':''}" onclick="toggleOBLocState('${c}')" style="font-size:10px;padding:3px 8px">${n}</div>`).join('')}</div>
-      </div>` : ''}
-
+      ${S.empTypes.length === 0 ? '<p style="color:var(--text2);font-size:12px;margin-bottom:14px">No preference selected — all job types will be shown.</p>' : `<p style="color:var(--accent);font-size:12px;margin-bottom:14px">${S.empTypes.length} type${S.empTypes.length>1?'s':''} selected</p>`}
       <div style="margin:18px 0 14px">
-        <div class="ob-section-title">Posted within: <strong id="daysLabel">${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days'}</strong></div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Posted within: <strong id="daysLabel">${S.days >= 730 ? 'All time' : S.days >= 365 ? '1 year' : S.days >= 30 ? Math.round(S.days/30) + ' months' : S.days + ' days'}</strong></div>
         <input type="range" min="7" max="730" value="${S.days}" style="width:100%;accent-color:var(--accent)" oninput="setDays(this.value)">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2)"><span>1 week</span><span>6 months</span><span>1 year</span><span>2 years</span></div>
       </div>
       <div class="ob-actions">
         <button class="btn btn-ghost" onclick="S.step=3;render()">Back</button>
         <button class="btn btn-primary" onclick="finishOB()" style="padding:10px 28px;font-size:14px">
-          ${S.empTypes.length ? 'Find ' + S.empTypes.join(' & ') + ' Jobs' : 'Find Jobs'}${S.locCountry.length ? ' in ' + S.locCountry.join(', ') : ''}
+          ${S.empTypes.length ? 'Find ' + S.empTypes.join(' & ') + ' Jobs' : 'Show All Jobs'}
         </button>
       </div>
     </div></div>`;
@@ -914,19 +554,10 @@ function setupOB() {
         const p = await aiParse(S.resume, k);
         S.key = k; localStorage.setItem('ch_gemini_key', k);
         S.profile = p; S.skills = p.skills || [];
-        localStorage.setItem('ch_parsed_profile', JSON.stringify(p));
-        btn.innerHTML = '<span class="spin"></span> Formatting resume...';
-        const formatted = await formatResume(S.resume, k);
-        S.resume = formatted; localStorage.setItem('ch_resume_text', formatted);
-        S.step = 3; render();
+        localStorage.setItem('ch_parsed_profile', JSON.stringify(p)); S.step = 3; render();
       } catch(e) { err.textContent = e.message; btn.disabled = false; btn.textContent = 'Parse with AI'; }
     });
   }
-}
-
-function saveContext() {
-  const el = document.getElementById('ob_context') || document.getElementById('sp_context');
-  if (el) { S.userContext = el.value; localStorage.setItem('ch_user_context', S.userContext); }
 }
 
 function toggleEmpType(t) {
@@ -934,12 +565,6 @@ function toggleEmpType(t) {
   if (i >= 0) S.empTypes.splice(i, 1); else S.empTypes.push(t);
   localStorage.setItem('ch_emp_types', JSON.stringify(S.empTypes));
   render();
-}
-function toggleEmpAndReload(t) {
-  const i = S.empTypes.indexOf(t);
-  if (i >= 0) S.empTypes.splice(i, 1); else S.empTypes.push(t);
-  localStorage.setItem('ch_emp_types', JSON.stringify(S.empTypes));
-  loadJobs();
 }
 
 function setDays(v) {
@@ -981,91 +606,43 @@ function clearLocFilter() {
   loadJobs();
 }
 
-function getInitials() {
-  const n = S.profile?.name || '';
-  if (!n) return '?';
-  const p = n.split(' ').filter(Boolean);
-  return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : p[0][0].toUpperCase();
-}
-
-function signOut() {
-  if (!confirm('Sign out? This clears your resume, profile, and all settings.')) return;
-  Object.keys(localStorage).filter(k => k.startsWith('ch_') || k === 'cp_api_url').forEach(k => localStorage.removeItem(k));
-  Object.assign(S, { view:'onboarding', step:1, resume:'', profile:null, skills:[], scores:{}, docs:{}, key:'', jobs:[], total:0, sel:null, detail:null, stats:null, empTypes:[], locCountry:[], locState:[], banner:true, fname:'', userMenu:false, locations:null });
-  render();
-}
-
-function toggleOBLocCountry(c) {
-  const i = S.locCountry.indexOf(c);
-  if (i >= 0) {
-    S.locCountry.splice(i, 1);
-    if (c === 'USA') S.locState = S.locState.filter(s => !(s in US_STATES_MAP));
-    else if (c === 'Canada') S.locState = S.locState.filter(s => !(s in CA_PROVINCES_MAP));
-  } else S.locCountry.push(c);
-  localStorage.setItem('ch_loc_country', JSON.stringify(S.locCountry));
-  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
-  render();
-}
-
-function toggleOBLocState(st) {
-  const i = S.locState.indexOf(st);
-  if (i >= 0) S.locState.splice(i, 1); else S.locState.push(st);
-  localStorage.setItem('ch_loc_state', JSON.stringify(S.locState));
-  render();
-}
-
-function clearOBLoc() {
-  S.locCountry = []; S.locState = [];
-  localStorage.removeItem('ch_loc_country');
-  localStorage.removeItem('ch_loc_state');
-  render();
-}
-
 function renderLocFilter() {
   const loc = S.locations;
   const countries = loc ? Object.keys(loc.countries || {}).sort() : [];
   if (!countries.length && !S.locCountry.length) return '';
   const hasFilter = S.locCountry.length > 0 || S.locState.length > 0;
-  const label = hasFilter ? S.locCountry.join(', ') + (S.locState.length ? ` (${S.locState.length})` : '') : 'All Locations';
-  let html = `<div style="padding:4px 12px;border-bottom:1px solid var(--border)">
-    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.locOpen=!S.locOpen;render()">
-      <span style="font-size:11px;color:var(--text2)">Location: <strong style="color:${hasFilter?'var(--accent2)':'var(--text2)'}">${esc(label)}</strong></span>
-      <span style="font-size:10px;color:var(--text2)">${S.locOpen?'&#9650;':'&#9660;'}</span>
-    </div>`;
-  if (S.locOpen) {
-    html += `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
-      <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()" style="font-size:10px;padding:2px 8px">All</div>
-      ${countries.map(c => {
-        const cnt = loc.countries[c] || 0;
-        return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')" style="font-size:10px;padding:2px 8px">${esc(c)} <sup>${cnt}</sup></div>`;
-      }).join('')}
-    </div>`;
-    const selCountries = S.locCountry.filter(c => loc?.states?.[c]);
+  let html = `<div class="filters" style="margin-top:4px">
+    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()">All Locations</div>
+    ${countries.map(c => {
+      const cnt = loc.countries[c] || 0;
+      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
+    }).join('')}
+  </div>`;
+
+  const selCountries = S.locCountry.filter(c => loc?.states?.[c]);
+  if (selCountries.length) {
     for (const c of selCountries) {
       const states = loc.states[c] || {};
       const codes = Object.keys(states).sort();
       if (!codes.length) continue;
       const nameMap = c === 'USA' ? US_STATES_MAP : c === 'Canada' ? CA_PROVINCES_MAP : {};
-      const selCnt = codes.filter(s => S.locState.includes(s)).length;
-      html += `<div style="margin-top:4px">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:3px">${esc(c)}${selCnt ? ` (${selCnt}/${codes.length})` : ''}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:3px;max-height:120px;overflow-y:auto">
+      html += `<div class="filters" style="margin-top:2px;padding-top:4px;padding-bottom:4px">
+        <span style="font-size:10px;color:var(--text2);padding:3px 4px">${esc(c)}:</span>
         ${codes.map(s => {
           const label = nameMap[s] || s;
           const cnt = states[s] || 0;
-          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 7px">${esc(label)} <sup>${cnt}</sup></div>`;
+          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
         }).join('')}
-        </div>
       </div>`;
     }
   }
-  html += '</div>';
   return html;
 }
 
 async function finishOB() {
   S.view = 'app'; render();
   await loadJobs(); loadStats(); loadLocations();
+  if (S.key && S.skills.length) runAI();
 }
 
 // === App ===
@@ -1074,26 +651,13 @@ function renderApp() {
   return `<header>
     <div class="logo">Career Hunter</div>
     <div class="nav">
-      <a href="./interview_recorder.html">Recording Studio</a>
+      <a href="/interview-recorder">Recording</a>
+      <a href="/career-dashboard">Dashboard</a>
     </div>
     <div class="actions">
       ${S.skills.length ? `<span style="font-size:11px;color:var(--text2)">${S.skills.length} skills</span>` : ''}
-      ${S.key ? '<span style="font-size:11px;color:var(--green)">AI ready</span>' : ''}
+      ${S.key ? '<span style="font-size:11px;color:var(--green)">Key set</span>' : ''}
       <button class="btn btn-ghost btn-sm" onclick="S.tab='settings';render()">Settings</button>
-      <div class="user-menu">
-        <div class="user-avatar" onclick="event.stopPropagation();S.userMenu=!S.userMenu;render()">${getInitials()}</div>
-        ${S.userMenu ? `<div class="user-drop" onclick="event.stopPropagation()">
-          <div class="ud-head">
-            <div class="ud-name">${esc(S.profile?.name||'User')}</div>
-            ${S.profile?.email ? `<div class="ud-email">${esc(S.profile.email)}</div>` : ''}
-          </div>
-          <div class="ud-item" onclick="S.tab='settings';S.settingsTab='profile';S.userMenu=false;render()">Profile</div>
-          <div class="ud-item" onclick="S.tab='settings';S.settingsTab='general';S.userMenu=false;render()">Settings</div>
-          <a class="ud-item" href="./interview_recorder.html">Recording Studio</a>
-          <div class="ud-sep"></div>
-          <div class="ud-item danger" onclick="signOut()">Sign Out</div>
-        </div>` : ''}
-      </div>
     </div>
   </header>
   ${S.banner && !S.key ? `<div class="banner"><span>Add a free <a href="https://aistudio.google.com/apikey" target="_blank">Gemini key</a> for AI scoring &amp; doc generation.</span><button class="btn btn-primary btn-sm" onclick="S.tab='settings';render()">Add Key</button><span class="x" onclick="S.banner=false;localStorage.setItem('ch_banner_off','1');render()">&times;</span></div>` : ''}
@@ -1111,32 +675,14 @@ function renderSidebar(j) {
   const roles = [...new Set(S.jobs.map(j => j.role_category).filter(Boolean))].sort();
   return `<div class="sidebar">
     <div class="sidebar-search"><input placeholder="Search jobs..." value="${esc(S.q)}" oninput="onSearch(this.value)"></div>
-    <div class="sidebar-info">
-      <span>${j.length} of ${S.total.toLocaleString()}</span>
-      <div style="display:flex;gap:2px;align-items:center">
-        ${['relevance','score','date'].map(m => `<button class="btn btn-ghost btn-sm" style="padding:2px 6px;font-size:10px;${S.sortMode===m?'background:var(--accent);color:#fff;border-radius:4px':''}" onclick="S.sortMode='${m}';render()">${m==='relevance'?'Best':m==='score'?'Score':'New'}</button>`).join('')}
-        <button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 6px;font-size:10px">&#8635;</button>
-      </div>
+    <div class="sidebar-info"><span>${j.length} of ${S.total.toLocaleString()}</span><button class="btn btn-ghost btn-sm" onclick="loadJobs()" style="padding:2px 8px;font-size:10px">Refresh</button></div>
+    <div class="filters">
+      <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All Roles</div>
+      ${roles.map(r => `<div class="chip ${S.role===r?'on':''}" onclick="S.role='${esc(r)}';loadJobs()">${esc(r)}</div>`).join('')}
     </div>
-    <div style="padding:4px 12px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.rolesOpen=!S.rolesOpen;render()">
-        <span style="font-size:11px;color:var(--text2)">Role: <strong style="color:${S.role?'var(--accent2)':'var(--text2)'}">${S.role||'All'}</strong></span>
-        <span style="font-size:10px;color:var(--text2)">${S.rolesOpen?'&#9650;':'&#9660;'}</span>
-      </div>
-      ${S.rolesOpen ? `<div class="filters" style="margin-top:6px">
-        <div class="chip ${!S.role?'on':''}" onclick="S.role='';loadJobs()">All</div>
-        ${roles.map(r => `<div class="chip ${S.role===r?'on':''}" onclick="S.role='${esc(r)}';loadJobs()">${esc(r)}</div>`).join('')}
-      </div>` : ''}
-    </div>
-    <div style="padding:4px 12px;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="S.typesOpen=!S.typesOpen;render()">
-        <span style="font-size:11px;color:var(--text2)">Type: <strong style="color:${S.empTypes.length?'var(--accent2)':'var(--text2)'}">${S.empTypes.length ? S.empTypes.join(', ') : 'All'}</strong></span>
-        <span style="font-size:10px;color:var(--text2)">${S.typesOpen?'&#9650;':'&#9660;'}</span>
-      </div>
-      ${S.typesOpen ? `<div class="filters" style="margin-top:6px">
-        <div class="chip ${!S.empTypes.length?'on':''}" onclick="S.empTypes=[];localStorage.setItem('ch_emp_types','[]');loadJobs()">All</div>
-        ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empTypes.includes(t)?'on':''}" onclick="toggleEmpAndReload('${t}')">${t}</div>`).join('')}
-      </div>` : ''}
+    <div class="filters" style="margin-top:4px">
+      <div class="chip ${!S.empFilter?'on':''}" onclick="S.empFilter='';loadJobs()">All Types</div>
+      ${['Internship','New Grad','Full-Time','Contract'].map(t => `<div class="chip ${S.empFilter===t?'on':''}" onclick="S.empFilter='${t}';loadJobs()">${t}</div>`).join('')}
     </div>
     ${renderLocFilter()}
     <div style="padding:4px 12px 8px;font-size:11px;color:var(--text2)">
@@ -1145,7 +691,7 @@ function renderSidebar(j) {
     </div>
     <div class="job-list">
       ${j.length===0 ? '<div class="empty" style="padding:30px"><p>No jobs found</p></div>' :
-        j.map(x => { const sc = S.scores[x.id]?.score||0; const et = x.employment_type; const dt = fmtDate(x.posted_at); const loc = (x.location||'').length > 22 ? (x.location||'').slice(0,20)+'...' : (x.location||''); return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}${et && et!=='Full-Time'?` <span style="font-size:9px;padding:1px 5px;background:var(--surface2);border-radius:3px;color:var(--accent2)">${esc(et)}</span>`:''}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${loc?`<span>${esc(loc)}</span>`:''}${dt?`<span style="margin-left:auto;color:var(--text2)">${esc(dt)}</span>`:''}</div></div>`; }).join('')}
+        j.map(x => { const sc = S.scores[x.id]?.score||0; const et = x.employment_type; return `<div class="jc ${S.sel?.id===x.id?'sel':''}" onclick="selectJob(${x.id})"><div class="t">${esc(x.title)}</div><div class="c">${esc(x.company)}${et && et!=='Full-Time'?` <span class="label" style="font-size:9px;padding:1px 5px;background:var(--surface-hover);border-radius:3px">${esc(et)}</span>`:''}</div><div class="m">${sc?`<span class="badge ${bc(sc)}">${sc}%</span>`:''}${esc(x.source||'')} ${esc((x.location||'').slice(0,20))}</div></div>`; }).join('')}
       ${j.length < S.total ? `<div style="text-align:center;padding:10px"><button class="btn btn-ghost btn-sm" onclick="loadMore()" ${S.busy.more?'disabled':''}>${S.busy.more?'Loading...':'Load More'}</button></div>` : ''}
     </div>
   </div>`;
@@ -1168,12 +714,7 @@ function renderDetail() {
       <div>
         <h2>${esc(j.title)}</h2>
         <div style="font-size:15px;color:var(--accent2);margin-top:2px">${esc(j.company)}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:12px;color:var(--text2);align-items:center">
-          ${j.location ? `<span>${esc(j.location)}</span>` : ''}
-          ${j.employment_type ? `<span class="tag">${esc(j.employment_type)}</span>` : ''}
-          ${j.posted_at ? `<span>Posted ${esc(fmtDate(j.posted_at))}</span>` : ''}
-          ${j.source ? `<span class="tag">${esc(j.source)}</span>` : ''}
-        </div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">${esc(j.location||'')}${j.posted_at ? ` &middot; ${esc(j.posted_at)}` : ''}</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         ${sc ? `<span class="badge ${bc(sc.score)}" style="font-size:15px;padding:5px 14px">${sc.score}%</span>` : ''}
@@ -1188,26 +729,18 @@ function renderDetail() {
     </div>` : ''}
 
     <div class="card"><h3>Generate Documents</h3>
-      <p class="muted" style="margin-bottom:10px">${S.key ? 'Select types and generation mode.' : 'Requires a Gemini API key (free).'}</p>
+      <p class="muted" style="margin-bottom:10px">${S.key ? 'Select types and generate tailored materials.' : 'Requires a Gemini API key (free).'}</p>
       <div class="gen-grid">
         <label><input type="checkbox" class="gc" value="resume" checked> Tailored Resume</label>
-        <label><input type="checkbox" class="gc" value="cover_letter"> Cover Letter</label>
-        <label><input type="checkbox" class="gc" value="outreach"> Outreach</label>
-        <label><input type="checkbox" class="gc" value="ats_audit"> ATS Audit</label>
-      </div>
-      <div style="margin:10px 0;padding:10px;background:var(--surface2);border-radius:8px">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Resume Mode <span style="text-transform:none;font-size:10px">(select multiple)</span></div>
-        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="reorder" checked style="margin-top:2px"><div><strong>Reorder by Relevance</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Reorder bullets within each position by JD relevance, keep text unchanged</span></div></label>
-        <label style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="projects" checked style="margin-top:2px"><div><strong>Add Relevant Projects</strong> <span style="color:var(--accent);font-size:10px">(Recommended)</span><br><span style="color:var(--text2);font-size:11px">Pull in projects from your profile/context that best match this JD</span></div></label>
-        <label style="display:flex;align-items:flex-start;gap:6px;cursor:pointer;font-size:12px"><input type="checkbox" class="rmode" value="rewrite" style="margin-top:2px"><div><strong>Rewrite for JD</strong><br><span style="color:var(--text2);font-size:11px">Rewrite bullets to mirror JD keywords while keeping your metrics</span></div></label>
+        <label><input type="checkbox" class="gc" value="cover_letter" checked> Cover Letter</label>
+        <label><input type="checkbox" class="gc" value="outreach" checked> Outreach</label>
+        <label><input type="checkbox" class="gc" value="ats_audit" checked> ATS Audit</label>
       </div>
       <button class="btn btn-primary" onclick="genDocs(${j.id})" ${S.busy[`g${j.id}`]||!S.key?'disabled':''}>${S.busy[`g${j.id}`]?'<span class="spin"></span> Generating...':'Generate'}</button>
       ${!S.key ? '<p class="hint" style="color:var(--yellow);margin-top:6px">Add key in Settings.</p>' : ''}
     </div>
 
     ${hasDocs ? Object.entries(docs).map(([t, c]) => {
-      if (t === 'resume' && S.resume) return renderResumeTabs(j.id, c);
-      if (t === 'outreach') { const r = renderOutreachTabs(j.id, c); if (r) return r; }
       const l = t.replace(/_/g, ' ').replace(/\b\w/g, x => x.toUpperCase());
       let dc = c; try { const p = JSON.parse(c.match(/\{[\s\S]*\}/)?.[0] || c); dc = JSON.stringify(p, null, 2); } catch {}
       return `<div class="doc-block"><h4><span>${esc(l)}</span><button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(c).replace(/</g,'\\u003c')});toast('Copied!')">Copy</button></h4><pre>${esc(dc)}</pre></div>`;
@@ -1215,7 +748,7 @@ function renderDetail() {
 
     ${d?.description ? `<div class="card" style="margin-top:14px"><h3>Job Description</h3><pre style="background:var(--surface2);padding:14px;border-radius:8px;font-size:12.5px;font-family:var(--mono);line-height:1.6;white-space:pre-wrap;max-height:500px;overflow-y:auto">${esc(d.description)}</pre></div>` : ''}
 
-    ${j.role_category ? `<div style="margin-top:6px"><span class="tag">${esc(j.role_category)}</span>${j.ats && j.ats !== j.source ? ` <span class="tag">${esc(j.ats)}</span>` : ''}</div>` : ''}`;
+    <div style="display:flex;gap:6px;margin-top:6px"><span class="tag">${esc(j.source||'')}</span><span class="tag">${esc(j.ats||'')}</span><span class="tag">${esc(j.role_category||'')}</span></div>`;
 }
 
 function renderStatsTab() {
@@ -1228,7 +761,7 @@ function renderStatsTab() {
       <div class="stat"><div class="label">Companies</div><div class="val">${Object.keys(s.by_company||{}).length}</div></div>
       <div class="stat"><div class="label">Last Fetch</div><div class="val" style="font-size:13px">${esc(s.last_fetched||'Never')}</div></div>
     </div>
-    ${S.skills.length ? `<div class="card"><h3>Job Scoring</h3><p class="muted" style="margin-bottom:10px">Score jobs against your resume for best fit.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="btn btn-primary" onclick="runML()" ${S.mlProg?'disabled':''}>${S.mlProg?'Scoring...':'ML Score (Free)'}</button><button class="btn btn-ghost" onclick="runAI()" ${!S.key||S.aiProg?'disabled':''}>${S.aiProg?'Scoring...':('Gemini AI Score' + (Object.values(S.scores).filter(s=>s.method==='ai').length ? ` (${Object.values(S.scores).filter(s=>s.method==='ai').length} cached)` : ''))}</button></div><p class="hint" style="font-size:11px;color:var(--muted)">ML Score runs on server (free, no key). Gemini AI uses your key for higher accuracy.</p></div>` : ''}
+    ${S.skills.length ? `<div class="card"><h3>Job Scoring</h3><p class="muted" style="margin-bottom:10px">Score jobs against your resume for best fit.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><button class="btn btn-primary" onclick="runML()" ${S.mlProg?'disabled':''}>${S.mlProg?'Scoring...':'ML Score (Free)'}</button><button class="btn btn-ghost" onclick="runAI()" ${!S.key||S.aiProg?'disabled':''}>${S.aiProg?'Scoring...':'Gemini AI Score'}</button></div><p class="hint" style="font-size:11px;color:var(--muted)">ML Score runs on server (free, no key). Gemini AI uses your key for higher accuracy.</p></div>` : ''}
     <div class="settings-2col">
       <div class="card"><h3>By Source</h3><table><thead><tr><th>Source</th><th>Count</th></tr></thead><tbody>${Object.entries(s.by_source||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>
       <div class="card"><h3>By Role</h3><table><thead><tr><th>Role</th><th>Count</th></tr></thead><tbody>${Object.entries(s.by_role||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>
@@ -1257,18 +790,6 @@ function renderSettingsGeneral() {
     <div class="card"><h3>Resume</h3>
       <p class="muted" style="margin-bottom:10px">${S.resume ? `${S.resume.length.toLocaleString()} chars, ${S.skills.length} skills` : 'No resume loaded'}</p>
       <button class="btn btn-ghost btn-sm" onclick="S.view='onboarding';S.step=1;render()">Re-upload</button>
-    </div>
-  </div>
-  <div class="card" style="margin-top:14px"><h3>Score Sync</h3>
-    <p class="muted" style="margin-bottom:8px">Your AI scores are saved locally and can be synced to the server. Use these credentials on another device to load your scores.</p>
-    <div style="font-family:monospace;font-size:12px;background:var(--surface);padding:10px;border-radius:6px;margin-bottom:8px">
-      <div>Username: <strong>${esc(getGuestCreds().username)}</strong></div>
-      <div>Password: <strong>${esc(getGuestCreds().password)}</strong></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost btn-sm" onclick="saveScoresToServer().then(()=>toast('Scores saved!'))">Save to Server</button>
-      <button class="btn btn-ghost btn-sm" onclick="loadScoresFromServer()">Load from Server</button>
-      <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(JSON.stringify(getGuestCreds()));toast('Credentials copied!')">Copy Credentials</button>
     </div>
   </div>
   <div class="card" style="margin-top:14px"><h3>API Server</h3>
@@ -1314,13 +835,6 @@ function renderSettingsProfile() {
     <p class="muted" style="margin-bottom:10px">Comma-separated. These are used for keyword matching and scoring.</p>
     <div class="prof-grid" style="grid-template-columns:1fr">
       <div><label>All Skills</label><textarea id="sp_skills" rows="3" style="font-size:13px">${esc((p.skills||[]).join(', '))}</textarea></div>
-    </div>
-  </div>
-
-  <div class="card"><h3>Context About You</h3>
-    <p class="muted" style="margin-bottom:10px">Free-text context used by AI scoring and document generation. Stored locally only.</p>
-    <div class="prof-grid" style="grid-template-columns:1fr">
-      <div><textarea id="sp_context" rows="4" placeholder="E.g. I'm a grad student targeting SDE internships, strong in backend/distributed systems..." style="font-size:13px">${esc(S.userContext)}</textarea></div>
     </div>
   </div>
 
@@ -1434,7 +948,6 @@ function saveProfileFromSettings() {
 
   S.profile = p; S.skills = p.skills || [];
   localStorage.setItem('ch_parsed_profile', JSON.stringify(p));
-  saveContext();
   toast('Profile saved'); render();
 }
 
@@ -1503,7 +1016,6 @@ function render() {
 }
 
 // === Init ===
-document.addEventListener('click', () => { if (S.userMenu) { S.userMenu = false; render(); } });
 (async function() {
   if (S.resume && S.profile) { S.view = 'app'; render(); loadJobs(); loadStats(); loadLocations(); }
   else { S.view = 'onboarding'; S.step = 1; render(); }
