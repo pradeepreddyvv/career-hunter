@@ -281,10 +281,8 @@ a{color:var(--accent);text-decoration:none}
 <!-- Platform Nav -->
 <nav class="platform-nav">
 <a href="/"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-<a href="/interview-coach"><span class="nav-icon">&#127908;</span><span class="nav-label">Interview Coach</span></a>
 <a href="/interview-recorder"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
 <a href="/career-dashboard"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
-<a href="/war-room"><span class="nav-icon">&#9876;</span><span class="nav-label">War Room</span></a>
 </nav>
 
 <!-- Header -->
@@ -2057,10 +2055,15 @@ CATEGORY: ${category}${lpInfo}
 CANDIDATE'S ANSWER (transcript): "${transcript}"
 ANSWER DURATION: ${durationSec} seconds
 
-CANDIDATE CONTEXT: Use the candidate's profile from their settings/onboarding data.
-If no profile is set, use these placeholders: [Your Name], [Your Degree] at [Your University], [X] years at [Previous Company].
-The candidate should fill in their profile via the Settings page for personalized feedback.
-[Target Company] [Role] interview.
+CANDIDATE CONTEXT: [Your Name], [Your Degree] at [Your University] (4.11 GPA), 2yr SWE at [Previous Company].
+KEY EXPERIENCES FOR STAR:
+- high-throughput APIs: Built 100+ TPS RESTful high-throughput APIs serving 7,000+ endpoints, sub-second latency, 99.9% uptime
+- Developer Portal: React RBAC dashboard + Spring Boot onboarding engine, reduced onboarding 12→2 days (83%)
+- AWS Migration: Migrated 200+ queries, 1,500+ APIs to AWS, saved $120K, zero data loss, 50% cost reduction
+- LLM Email: Built GPT-powered email assistant, cut response time 30%, handles 500+ daily emails
+- Compliance: Log4j2 PII masking, AES-256 encryption, 60% audit efficiency gain
+PROJECTS: ProjectA (Next.js+Spring Boot, live prod), ProjectB (MongoDB sharding, 2M+ records), Published Research (Published pub, YOLO)
+[Target Company] [Role] interview scheduled [Interview Date].
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -2105,7 +2108,7 @@ async function getMockSummary(recordings) {
     `Q${i+1} [${r.category}]: "${r.questionText}"\nTranscript (${r.duration}s): "${(r.transcript || '').slice(0, 300)}..."\nAI Score: ${r.aiReview?.overall_score || '?'}`
   ).join('\n\n');
 
-  const prompt = `You are completing a mock interview debrief for a candidate preparing for a [Target Company] [Role] interview. Evaluate their answers based on the STAR framework, technical depth, and communication clarity.
+  const prompt = `You are completing a mock interview debrief for [Your Name] ([Your Degree] at [Your University] 4.11 GPA, 2yr SWE at [Previous Company], [Target Company] [Role] candidate). He has strong STAR stories around high-throughput APIs (100+ TPS), Developer Portal (83% efficiency improvement), AWS Migration ($120K savings), and a Springer ICCSST 2023 publication.
 
 SESSION (${recordings.length} questions):
 ${qSummary}
@@ -3343,7 +3346,7 @@ SESSION DURATION: ${durationSec} seconds
 FULL AI INTERVIEWER ↔ CANDIDATE CONVERSATION:
 ${chatSummary || 'No chat interaction'}
 
-CANDIDATE CONTEXT: Evaluate the candidate's code based on correctness, complexity analysis, and code quality.
+CANDIDATE CONTEXT: [Your Name], [Your Degree] at [Your University] (4.11 GPA), 2yr SWE at [Previous Company]. [Target Company] [Role] interview [Interview Date].
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -4613,7 +4616,7 @@ function liveStopMic() {
 
 function liveGetPersona() {
   if (liveStyleType === 'bar_raiser') {
-    return "You are an Amazon Bar Raiser conducting a live interview with a candidate targeting an SDE intern role. You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
+    return "You are an Amazon Bar Raiser conducting a live interview with [Your Name] ([Your Degree] at [Your University] 4.11 GPA, 2yr SWE at [Previous Company], targeting SDE intern). You care deeply about Amazon's 16 Leadership Principles. You are sharp but respectful. You probe hard for the candidate's SPECIFIC individual role (not 'we'), concrete metrics, and what they learned. You rarely interrupt unless genuinely needed.";
   } else if (liveStyleType === 'grilling') {
     return "You are a tough senior engineer doing a grilling interview. You push back hard on vague answers, demand specifics, and call out fluff. You probe for metrics and depth. You interrupt more often than a typical interviewer, but only when the candidate is drifting, being vague, or technically wrong.";
   }
@@ -4750,7 +4753,7 @@ async function liveFinalSummary() {
   ).join('\n\n');
 
   const prompt = "You are a senior [Target] interview coach grading a full live interview session.\n\n" +
-    "CANDIDATE: Evaluate the candidate based on their interview responses below.\n\n" +
+    "CANDIDATE: [Your Name] ([Your Degree] at [Your University] 4.11, 2yr SWE at [Previous Company], SDE intern target)\n\n" +
     "SESSION:\n" + transcriptBlock + "\n\n" +
     "Return ONLY valid JSON (no markdown fences):\n" +
     "{\n" +
