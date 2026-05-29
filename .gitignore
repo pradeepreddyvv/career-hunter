@@ -59,5 +59,4 @@ AGENTS.md
 
 # Local scripts and sub-projects
 scripts/
-interview-coach/data/
-interview-coach/node_modules/
+interview-coach/
