@@ -142,11 +142,11 @@ export default function OnboardingPage() {
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">Background</label>
-                  <input value={background} onChange={(e) => setBackground(e.target.value)} placeholder="e.g., CS student at ASU, 2 years backend at fintech" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+                  <input value={background} onChange={(e) => setBackground(e.target.value)} placeholder="e.g., CS student at Stanford, 2 years SDE at a startup" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">Experience</label>
-                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Key achievements with metrics: Built 100+ TPS APIs, reduced costs 50%..." rows={3} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none resize-y" />
+                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Key achievements with metrics: Led migration to microservices, improved latency 40%..." rows={3} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none resize-y" />
                 </div>
                 <div>
                   <label className="text-xs text-gray-400 block mb-1">Skills</label>
