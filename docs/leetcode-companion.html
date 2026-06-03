@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LeetCode Companion — Career Hunter</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0f1e;--surface:#111827;--surface2:#1a2332;--border:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--accent:#7c5cfc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--yellow:#f59e0b}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:0 16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:800px;margin:0 auto;padding:40px 0 80px}
+h1{font-size:28px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.card h2{font-size:18px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:14px;font-weight:600;margin:16px 0 8px;color:var(--text2)}
+.card p,.card li{font-size:14px;line-height:1.7;color:var(--text2)}
+.card ul{padding-left:20px;margin:8px 0}
+.card li{margin-bottom:4px}
+.install-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;border:none;border-radius:10px;cursor:pointer;text-decoration:none;transition:all .15s}
+.install-btn:hover{background:#6d4de8;text-decoration:none;transform:translateY(-1px)}
+.badge{display:inline-block;padding:2px 8px;font-size:11px;font-weight:600;border-radius:6px;margin-left:6px}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-content{flex:1}
+.step-content b{color:var(--text)}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:600px){.features{grid-template-columns:1fr}}
+.feature{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.feature .icon{font-size:20px;margin-bottom:6px}
+.feature .title{font-size:13px;font-weight:600;margin-bottom:4px}
+.feature .desc{font-size:12px;color:var(--text2);line-height:1.5}
+.screenshot{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;margin:16px 0;font-family:'Fira Code',monospace;font-size:11px;color:var(--text2);line-height:1.6;overflow-x:auto;white-space:pre}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);margin-bottom:24px}
+.nav-back:hover{color:var(--text)}
+.prereq{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;margin-bottom:8px;font-size:13px}
+.prereq .check{color:var(--green)}
+code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px;font-family:'Fira Code',monospace}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="https://pradeepreddyvv.github.io/career-hunter/" class="nav-back">&larr; Back to Career Hub</a>
+
+<h1>LeetCode Companion <span class="badge badge-green">v2.1</span></h1>
+<p class="subtitle">AI-powered coding interview partner that lives inside LeetCode and NeetCode. Three coaching personas, voice interaction, and live code capture.</p>
+
+<div class="card" style="text-align:center;padding:32px">
+  <a href="./leetcode-companion.user.js" class="install-btn">Install Userscript</a>
+  <p style="margin-top:12px;font-size:12px;color:var(--text2)">Requires <a href="https://www.tampermonkey.net/" target="_blank">Tampermonkey</a> browser extension</p>
+</div>
+
+<div class="card">
+  <h2>Features</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">&#127908;</div>
+      <div class="title">3 AI Personas</div>
+      <div class="desc"><b>Interviewer</b> — tough but fair, won't give answers. <b>Teacher</b> — patient, explains everything. <b>NeetCode</b> — probes your understanding of solutions.</div>
+    </div>
+    <div class="feature">
+      <div class="icon">&#127911;</div>
+      <div class="title">Voice Interaction</div>
+      <div class="desc">Click-to-talk mic + Live Listen mode where AI interrupts naturally. Speechmatics TTS or browser fallback.</div>
+    </div>
+    <div class="feature">
+      <div class="icon">&#128187;</div>
+      <div class="title">Live Code Capture</div>
+      <div class="desc">Reads your Monaco editor code in real-time. AI sees your current code, visible lines, and problem description.</div>
+    </div>
+    <div class="feature">
+      <div class="icon">&#128221;</div>
+      <div class="title">Full Walkthrough</div>
+      <div class="desc">13-section interview walkthrough: restate, clarify, brute force, optimal, dry run, edge cases, follow-ups.</div>
+    </div>
+    <div class="feature">
+      <div class="icon">&#9889;</div>
+      <div class="title">Quick Actions</div>
+      <div class="desc">One-click buttons: Hint, Review, Complexity, Optimize, Edge Cases, Approach.</div>
+    </div>
+    <div class="feature">
+      <div class="icon">&#128279;</div>
+      <div class="title">Cross-Tab Sync</div>
+      <div class="desc">BroadcastChannel syncs chat, mic, and TTS between the LeetCode tab and Recording Studio.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Installation</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <b>Install Tampermonkey</b>
+      <p>Get it from <a href="https://www.tampermonkey.net/" target="_blank">tampermonkey.net</a> for Chrome, Firefox, Edge, or Safari.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <b>Install the userscript</b>
+      <p>Click the <b>Install Userscript</b> button above. Tampermonkey will detect the script and show an install prompt. Click "Install".</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <b>Configure your Gemini API key</b>
+      <p>Click the Tampermonkey icon in your browser toolbar &rarr; "Career Hunter &mdash; LeetCode Companion" &rarr; <b>Configure Career Hunter</b>. Enter your free <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <b>Open any LeetCode problem</b>
+      <p>Navigate to <a href="https://leetcode.com/problems/two-sum/" target="_blank">leetcode.com/problems/*</a> or <a href="https://neetcode.io/solutions" target="_blank">neetcode.io/solutions/*</a>. You'll see the companion toolbar at the bottom-right.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How It Works</h2>
+
+  <h3>On LeetCode</h3>
+  <p>The companion reads your code from the Monaco editor and the problem description. As you code, click quick-action buttons or use voice to talk with the AI interviewer. It sees your code in real-time and gives contextual feedback.</p>
+
+  <h3>On NeetCode</h3>
+  <p>The AI becomes an <b>explanation interviewer</b>. It reads all solution approaches on the page and tests whether you truly understand them. Walk through each approach out loud — the AI probes with follow-up questions just like a real interview.</p>
+
+  <h3>Live Listen Mode</h3>
+  <p>Click <b>Live</b> for hands-free mode. The AI listens continuously and interrupts naturally when you pause, ask a question, or need a nudge. It decides on its own when to speak vs stay silent.</p>
+
+  <h3>Voice Controls</h3>
+  <ul>
+    <li><b>Mic button</b> — Click-to-talk: hold to speak, release to send</li>
+    <li><b>Live button</b> — Continuous listening with AI-driven interruptions</li>
+    <li><b>Talk Now</b> — Force the AI to respond to your current transcript</li>
+    <li><b>Ctrl+Shift+M</b> — Keyboard shortcut for quick voice</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Configuration</h2>
+  <p>All settings are managed through the Tampermonkey menu (click Tampermonkey icon &rarr; script name &rarr; Configure):</p>
+  <ul>
+    <li><b>Gemini API Key</b> <span class="badge badge-yellow">Required</span> — Free from <a href="https://aistudio.google.com/apikey" target="_blank">AI Studio</a>. Powers all AI features.</li>
+    <li><b>Career Hunter API URL</b> — Webhook URL for code sync (default: <code>localhost:3000</code>). Optional.</li>
+    <li><b>Speechmatics TTS Key</b> — Optional, for high-quality voice. Falls back to browser TTS if not set.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Supported Sites</h2>
+  <div class="prereq"><span class="check">&#10003;</span> <code>leetcode.com/problems/*</code> — Full code capture + AI coaching</div>
+  <div class="prereq"><span class="check">&#10003;</span> <code>neetcode.io/solutions/*</code> — Solution explanation practice</div>
+</div>
+
+<div style="text-align:center;padding:24px;color:var(--text2);font-size:12px">
+  <p>No data is sent to any server. All AI calls go directly from your browser to Gemini using your own API key.</p>
+  <p style="margin-top:8px"><a href="https://github.com/pradeepreddyvv/career-hunter">GitHub</a></p>
+</div>
+
+</div>
+</body>
+</html>
