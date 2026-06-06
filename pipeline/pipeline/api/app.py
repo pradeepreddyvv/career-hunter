@@ -91,14 +91,8 @@ def create_app() -> FastAPI:
 
     # ── Additional dashboard pages ────────────────────────────────────
     DASHBOARD_PAGES: dict[str, str] = {
-        "/interview-coach": "interview_coach.html",
-        "/interview-prep": "interview_command_center.html",
         "/interview-recorder": "interview_recorder.html",
-        "/interview-scorecard": "interview_scorecard.html",
-        "/interview-standalone": "interview_prep_standalone.html",
-        "/company-prep": "amazon_sde_prep.html",
         "/career-dashboard": "career_dashboard.html",
-        "/task-hub": "task_hub.html",
     }
 
     for _path, _filename in DASHBOARD_PAGES.items():
