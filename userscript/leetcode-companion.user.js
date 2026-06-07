@@ -20,7 +20,7 @@
     'use strict';
 
     // ==================== CONFIG (user-configurable via Tampermonkey menu) ====================
-    const WEBHOOK_URL = GM_getValue('webhook_url', 'http://localhost:3000/api/leetcode');
+    const WEBHOOK_URL = GM_getValue('webhook_url', 'http://localhost:8000/api/v1/leetcode/sync');
     const GEMINI_KEY = GM_getValue('gemini_key', '');
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_KEY}`;
     const GEMINI_FLASH_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
@@ -29,7 +29,7 @@
 
     // Settings UI — accessible via Tampermonkey menu
     GM_registerMenuCommand('Configure Career Hunter', () => {
-        const currentWebhook = GM_getValue('webhook_url', 'http://localhost:3000/api/leetcode');
+        const currentWebhook = GM_getValue('webhook_url', 'http://localhost:8000/api/v1/leetcode/sync');
         const currentGemini = GM_getValue('gemini_key', '');
         const currentTTS = GM_getValue('sm_tts_key', '');
 
@@ -650,7 +650,7 @@ OUTPUT RULES:
             method: 'POST',
             url: WEBHOOK_URL,
             headers: { 'Content-Type': 'application/json' },
-            data: JSON.stringify({ type: 'chat', role, text, source: 'extension' }),
+            data: JSON.stringify({ chat: [{ role, text, source: 'extension', time: Date.now() }] }),
             onload: () => {},
             onerror: () => console.warn('[LC AI] Chat sync failed')
         });

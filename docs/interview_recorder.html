@@ -3034,7 +3034,7 @@ document.addEventListener('DOMContentLoaded', init);
 // ==================== LEETCODE LIVE CODING ====================
 const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
   ? (localStorage.getItem('ch_server_url') || '')
-  : window.location.origin) + '/webhook/leetcode-live';
+  : window.location.origin) + '/api/v1/leetcode/sync';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';
@@ -3664,7 +3664,7 @@ async function lcFetchCode() {
   if (lcFetching || lcEditMode) return;
   lcFetching = true;
   try {
-    const r = await fetch(LC_WEBHOOK + '?action=get&since=' + lcLastChatSync);
+    const r = await fetch(LC_WEBHOOK + '?since=' + lcLastChatSync);
     const data = await r.json();
     if (data && data.code) {
       lcCurrentCode = data.code;
@@ -3816,7 +3816,7 @@ function lcSyncToWebhook(role, text) {
   fetch(LC_WEBHOOK, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ type: 'chat', role, text, source: 'portal' })
+    body: JSON.stringify({ chat: [{ role, text, source: 'portal', time: Date.now() }] })
   }).catch(() => {});
 }
 

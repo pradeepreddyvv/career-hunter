@@ -220,7 +220,7 @@ const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:'
 
 const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},
-  tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 200,
+  tab: 'browse', q: '', role: '', empFilter: '', company: '', offset: 0, limit: 100, moreBatch: 50,
   empTypes: JSON.parse(localStorage.getItem('ch_emp_types') || '[]'),
   locCountry: JSON.parse(localStorage.getItem('ch_loc_country') || '[]'),
   locState: JSON.parse(localStorage.getItem('ch_loc_state') || '[]'),
@@ -306,10 +306,10 @@ async function loadLocations() {
 }
 
 async function loadMore() {
-  const o = S.offset + S.limit;
+  const o = S.jobs.length;
   S.busy.more = true; render();
   try {
-    const p = new URLSearchParams({ limit: S.limit, offset: o });
+    const p = new URLSearchParams({ limit: S.moreBatch, offset: o });
     if (S.role) p.set('role_category', S.role);
     if (S.q) p.set('search', S.q);
     const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
@@ -319,7 +319,7 @@ async function loadMore() {
     if (S.locState.length) p.set('location_state', S.locState.join(','));
     if (S.days && S.days < 730) p.set('days', S.days);
     const d = await api(`/api/v1/jobs/browse?${p}`);
-    S.jobs = S.jobs.concat(d.jobs || []); S.total = d.total; S.offset = o;
+    S.jobs = S.jobs.concat(d.jobs || []); S.total = d.total;
     scoreKeyword();
   } catch { toast('Failed to load more', false); }
   S.busy.more = false; render();
@@ -692,6 +692,7 @@ function renderApp() {
       <button class="btn btn-ghost btn-sm" onclick="S.tab='settings';render()">Settings</button>
     </div>
   </header>
+  ${!API ? `<div class="banner" style="background:rgba(248,113,113,.12);border-color:var(--red)"><span style="color:var(--red)">No API server configured. Jobs won't load.</span><button class="btn btn-sm" style="background:var(--red);color:#fff" onclick="S.tab='settings';render()">Set Server URL</button></div>` : ''}
   ${S.banner && !S.key ? `<div class="banner"><span>Add a free <a href="https://aistudio.google.com/apikey" target="_blank">Gemini key</a> for AI scoring &amp; doc generation.</span><button class="btn btn-primary btn-sm" onclick="S.tab='settings';render()">Add Key</button><span class="x" onclick="S.banner=false;localStorage.setItem('ch_banner_off','1');render()">&times;</span></div>` : ''}
   ${S.aiProg ? `<div class="score-bar"><span class="spin" style="width:12px;height:12px"></span><span>AI scoring ${S.aiProg.done}/${S.aiProg.total}</span><div style="flex:1;max-width:180px"><div class="progress"><div class="fill" style="width:${Math.round(S.aiProg.done/S.aiProg.total*100)}%"></div></div></div></div>` : ''}
   <div class="tabs">
@@ -1048,7 +1049,15 @@ function selectJob(id) {
 function render() {
   const el = document.getElementById('app');
   if (S.view === 'loading') { el.innerHTML = '<div class="loading"><span class="spin"></span> Loading...</div>'; return; }
-  if (S.view === 'onboarding') { el.innerHTML = renderOB(); setupOB(); } else { el.innerHTML = renderApp(); }
+  if (S.view === 'onboarding') { el.innerHTML = renderOB(); setupOB(); } else { el.innerHTML = renderApp(); attachScrollListener(); }
+}
+function attachScrollListener() {
+  const list = document.querySelector('.job-list');
+  if (!list) return;
+  list.onscroll = () => {
+    if (S.busy.more || S.jobs.length >= S.total) return;
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 200) loadMore();
+  };
 }
 
 // === Init ===
