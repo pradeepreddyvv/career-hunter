@@ -60,3 +60,13 @@ AGENTS.md
 # Local scripts and sub-projects
 scripts/
 interview-coach/
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+!.env.example
