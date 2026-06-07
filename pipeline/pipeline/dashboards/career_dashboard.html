@@ -8,23 +8,25 @@
 <meta http-equiv="Expires" content="0">
 <title>User's Career Platform</title>
 <style>
-:root{--bg:#0a0e17;--card:#131a2b;--card2:#1a2340;--accent:#3b82f6;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--cyan:#06b6d4;--orange:#f97316;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--radius:12px}
+:root{--bg:#0a0b0f;--card:#13141a;--card2:#1c1d25;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--purple:#8b5cf6;--cyan:#06b6d4;--orange:#f97316;--text:#ebedf5;--text2:#7e8299;--border:#2a2b36;--radius:10px;--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;margin-left:42px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased}
 
-.header{background:linear-gradient(135deg,#131a2b,#1a2340);padding:28px 32px;border-bottom:1px solid var(--border);text-align:center}
-.header h1{font-size:28px;margin-bottom:4px}
-.header h1 span{color:var(--accent)}
-.header p{color:var(--text2);font-size:14px}
-.header .db-status{font-size:11px;margin-top:6px;padding:3px 10px;border-radius:10px;display:inline-block}
-.db-ok{background:rgba(16,185,129,0.15);color:var(--green)}
-.db-err{background:rgba(239,68,68,0.15);color:var(--red)}
-.db-loading{background:rgba(245,158,11,0.15);color:var(--yellow)}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0}
+header .logo{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--accent2)}
+header .nav-links{display:flex;gap:2px;align-items:center}
+header .nav-links a{padding:6px 12px;font-size:12px;color:var(--text2);border-radius:6px;transition:all .15s;text-decoration:none}
+header .nav-links a:hover{background:var(--card2);color:var(--text)}
+header .nav-links a.active{background:var(--accent-dim);color:var(--accent2)}
+header .actions{display:flex;gap:8px;align-items:center}
+.db-ok{background:rgba(52,211,153,0.15);color:var(--green)}
+.db-err{background:rgba(248,113,113,0.15);color:var(--red)}
+.db-loading{background:rgba(251,191,36,0.15);color:var(--yellow)}
 
-.nav{display:flex;background:var(--card);border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:100}
-.nav button{background:none;border:none;color:var(--text2);padding:14px 24px;font-size:14px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:.2s}
-.nav button:hover{color:var(--text);background:#ffffff08}
-.nav button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs{display:flex;gap:2px;padding:0 24px;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:100}
+.tabs button{padding:11px 14px;font-size:12.5px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;font-weight:500}
+.tabs button:hover{color:var(--text)}
+.tabs button.active{color:var(--accent2);border-bottom-color:var(--accent)}
 
 .section{display:none;padding:24px 32px;max-width:1200px;margin:0 auto}
 .section.active{display:block}
@@ -108,33 +110,24 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 @media(max-width:700px){.field-group,.app-grid,.queue-stats{grid-template-columns:1fr}.section{padding:16px}.exp-block .row,.proj-block .row{grid-template-columns:1fr}.qj-row{grid-template-columns:1fr}}
 /* Platform Nav */
-.platform-nav{position:fixed;left:0;top:0;height:100vh;width:42px;background:#0d1117;border-right:1px solid #1e293b;z-index:9999;display:flex;flex-direction:column;gap:2px;padding:8px 4px;transition:width .2s;overflow:hidden}
-.platform-nav:hover{width:200px}
-.platform-nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#94a3b8;font-size:12px;text-decoration:none;white-space:nowrap;transition:.15s}
-.platform-nav a:hover{background:#1e293b;color:#e2e8f0}
-.platform-nav a.active{background:#3b82f620;color:#3b82f6}
-.platform-nav .nav-icon{width:22px;text-align:center;flex-shrink:0;font-size:16px}
-.platform-nav .nav-label{opacity:0;transition:opacity .2s}
-.platform-nav:hover .nav-label{opacity:1}
-.platform-nav .nav-divider{height:1px;background:#1e293b;margin:4px 6px}
 </style>
 </head>
 <body>
 
-<nav class="platform-nav" id="platformNav">
-  <a href="https://pradeepreddyvv.github.io/career-hunter/"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-  <a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
-  <a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html" class="active"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
-  <a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html"><span class="nav-icon">&#128187;</span><span class="nav-label">LeetCode AI</span></a>
-</nav>
+<header>
+  <div class="logo">Career Hunter</div>
+  <div class="nav-links">
+    <a href="https://pradeepreddyvv.github.io/career-hunter/">Career Hub</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html">Recording</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html" class="active">Dashboard</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html">LeetCode AI</a>
+  </div>
+  <div class="actions">
+    <span class="db-status db-loading" id="dbStatus" style="font-size:11px;padding:3px 10px;border-radius:10px">Connecting...</span>
+  </div>
+</header>
 
-<div class="header">
-  <h1><span>User's</span> Career Platform</h1>
-  <p>All tools, profile data, and AI prompts in one place — backed by DB</p>
-  <span class="db-status db-loading" id="dbStatus">Connecting to DB...</span>
-</div>
-
-<div class="nav" id="nav">
+<div class="tabs" id="nav">
   <button class="active" onclick="switchTab('apps')">Apps & Endpoints</button>
   <button onclick="switchTab('profile')">Profile Data</button>
   <button onclick="switchTab('prompts')">AI Prompts</button>
@@ -149,12 +142,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="icon">&#127919;</div>
       <h3>Career Hub</h3>
       <p>Command center. Browse scored jobs, generate resumes + cover letters, track applications, AI chat advisor, outreach generator, Kanban pipeline.</p>
-      <span class="status status-live">LIVE</span>
-    </a>
-    <a href="./interview_coach.html" target="_blank" class="app-card" style="border-left:4px solid var(--green)">
-      <div class="icon">&#127908;</div>
-      <h3>Interview Coach</h3>
-      <p>Practice STAR stories, Amazon LPs, technical questions with AI feedback. Voice recording, mock interviews, company-specific prep.</p>
       <span class="status status-live">LIVE</span>
     </a>
     <a href="./interview_recorder.html" target="_blank" class="app-card" style="border-left:4px solid var(--purple)">
@@ -518,11 +505,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <script>
-// Highlight active nav item
+// Highlight active header nav link
 (function(){
   var path = location.pathname;
-  document.querySelectorAll('.platform-nav a').forEach(function(a) {
-    if (path.includes(a.getAttribute('href'))) a.classList.add('active');
+  document.querySelectorAll('header .nav-links a').forEach(function(a) {
+    var href = a.getAttribute('href');
+    if (href && path.endsWith(href.split('/').pop())) a.classList.add('active');
   });
 })();
 const API_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
@@ -1665,10 +1653,10 @@ function timeSince(date) {
 // ===== TAB SWITCHING =====
 function switchTab(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   const labels = {apps:'Apps',profile:'Profile',prompts:'Prompts',queue:'Queue'};
-  document.querySelectorAll('.nav button').forEach(b => {
+  document.querySelectorAll('.tabs button').forEach(b => {
     if (b.textContent.includes(labels[id])) b.classList.add('active');
   });
   if (id === 'queue') loadQueue();

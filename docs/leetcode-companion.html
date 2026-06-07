@@ -6,10 +6,16 @@
 <title>LeetCode Companion — Career Hunter</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0f1e;--surface:#111827;--surface2:#1a2332;--border:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--accent:#7c5cfc;--green:#22c55e;--blue:#3b82f6;--red:#ef4444;--yellow:#f59e0b}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding:0 16px}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+:root{--bg:#0a0b0f;--surface:#13141a;--surface2:#1c1d25;--surface3:#24252f;--border:#2a2b36;--text:#ebedf5;--text2:#7e8299;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--blue:#3b82f6;--red:#f87171;--yellow:#fbbf24;--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--accent2);text-decoration:none}
+a:hover{color:#b9a5ff}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+header .logo{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--accent2)}
+header .nav-links{display:flex;gap:2px;align-items:center}
+header .nav-links a{padding:6px 12px;font-size:12px;color:var(--text2);border-radius:6px;transition:all .15s}
+header .nav-links a:hover{background:var(--surface2);color:var(--text)}
+header .nav-links a.active{background:var(--accent-dim);color:var(--accent2)}
 .container{max-width:800px;margin:0 auto;padding:40px 0 80px}
 h1{font-size:28px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 .subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
@@ -44,9 +50,17 @@ code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:12px
 </style>
 </head>
 <body>
-<div class="container">
-
-<a href="https://pradeepreddyvv.github.io/career-hunter/" class="nav-back">&larr; Back to Career Hub</a>
+<header>
+  <div class="logo">Career Hunter</div>
+  <div class="nav-links">
+    <a href="https://pradeepreddyvv.github.io/career-hunter/">Career Hub</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html">Recording</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html">Dashboard</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html" class="active">LeetCode AI</a>
+  </div>
+  <div style="width:80px"></div>
+</header>
+<div class="container" style="padding-top:32px">
 
 <h1>LeetCode Companion <span class="badge badge-green">v2.1</span></h1>
 <p class="subtitle">AI-powered coding interview partner that lives inside LeetCode and NeetCode. Three coaching personas, voice interaction, and live code capture.</p>

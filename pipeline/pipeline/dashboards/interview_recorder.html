@@ -5,33 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Interview Recording Studio</title>
 <style>
-:root{--bg:#0a0e17;--bg2:#131a2b;--bg3:#1a2340;--bg4:#252a3a;--accent:#3b82f6;--accent2:#818cf8;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--orange:#f97316;--purple:#8b5cf6;--cyan:#06b6d4;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--border:#1e293b;--radius:10px}
+:root{--bg:#0a0b0f;--bg2:#13141a;--bg3:#1c1d25;--bg4:#24252f;--accent:#7c5cfc;--accent2:#9b85ff;--accent-dim:rgba(124,92,252,.1);--green:#34d399;--green-dim:rgba(52,211,153,.1);--yellow:#fbbf24;--yellow-dim:rgba(251,191,36,.1);--red:#f87171;--red-dim:rgba(248,113,113,.1);--orange:#f97316;--purple:#8b5cf6;--cyan:#06b6d4;--text:#ebedf5;--text2:#7e8299;--text3:#555a6e;--border:#2a2b36;--radius:10px;--font:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;--mono:'SF Mono','Cascadia Code','Consolas',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;margin-left:42px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 button{cursor:pointer;font-family:inherit;border:none;outline:none}
 a{color:var(--accent);text-decoration:none}
 
-/* Platform Nav */
-.platform-nav{position:fixed;left:0;top:0;width:42px;height:100vh;background:#0d1117;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;z-index:999;overflow:hidden;transition:width .2s}
-.platform-nav:hover{width:200px}
-.platform-nav a{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;color:var(--text2);font-size:13px;white-space:nowrap;border-radius:0;transition:.15s}
-.platform-nav a:hover{background:#ffffff0a;color:var(--text)}
-.platform-nav a.active{color:var(--accent);background:rgba(59,130,246,.1)}
-.platform-nav .nav-icon{font-size:18px;min-width:20px;text-align:center}
-.platform-nav .nav-label{opacity:0;transition:opacity .2s}
-.platform-nav:hover .nav-label{opacity:1}
-
 /* Header */
-.header{text-align:center;padding:24px 20px 16px;border-bottom:1px solid var(--border)}
-.header h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
-.header p{color:var(--text2);font-size:13px}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+header .logo{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--accent2)}
+header .nav-links{display:flex;gap:2px;align-items:center}
+header .nav-links a{padding:6px 12px;font-size:12px;color:var(--text2);border-radius:6px;transition:all .15s;text-decoration:none}
+header .nav-links a:hover{background:var(--bg3);color:var(--text)}
+header .nav-links a.active{background:var(--accent-dim);color:var(--accent2)}
+header .actions{display:flex;gap:8px;align-items:center}
+
 
 /* Tabs */
-.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.tabs button{background:none;color:var(--text2);padding:14px 24px;font-size:14px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap;transition:.2s}
-.tabs button:hover{color:var(--text);background:#ffffff08}
-.tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs{display:flex;gap:2px;padding:0 24px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:100}
+.tabs button{padding:11px 14px;font-size:12.5px;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;font-weight:500}
+.tabs button:hover{color:var(--text)}
+.tabs button.active{color:var(--accent2);border-bottom-color:var(--accent)}
 
 .tab-content{display:none;padding:24px;max-width:1200px;margin:0 auto}
 .tab-content.active{display:block}
@@ -278,19 +273,16 @@ a{color:var(--accent);text-decoration:none}
 </head>
 <body>
 
-<!-- Platform Nav -->
-<nav class="platform-nav">
-<a href="https://pradeepreddyvv.github.io/career-hunter/"><span class="nav-icon">&#128188;</span><span class="nav-label">Career Hub</span></a>
-<a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html" class="active"><span class="nav-icon">&#127909;</span><span class="nav-label">Recording Studio</span></a>
-<a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html"><span class="nav-icon">&#128200;</span><span class="nav-label">Dashboard</span></a>
-<a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html"><span class="nav-icon">&#128187;</span><span class="nav-label">LeetCode AI</span></a>
-</nav>
-
-<!-- Header -->
-<div class="header">
-  <h1>&#127909; Interview Recording Studio</h1>
-  <p>Practice with webcam, get AI feedback on your answers, review and improve</p>
-</div>
+<header>
+  <div class="logo">Career Hunter</div>
+  <div class="nav-links">
+    <a href="https://pradeepreddyvv.github.io/career-hunter/">Career Hub</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html" class="active">Recording</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html">Dashboard</a>
+    <a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html">LeetCode AI</a>
+  </div>
+  <div class="actions"></div>
+</header>
 
 <!-- Tabs -->
 <div class="tabs">
@@ -3030,10 +3022,11 @@ async function init() {
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   }
 
-  // Set active nav
+  // Set active header nav link
   const path = location.pathname;
-  document.querySelectorAll('.platform-nav a').forEach(a => {
-    if (path.includes(a.getAttribute('href'))) a.classList.add('active');
+  document.querySelectorAll('header .nav-links a').forEach(a => {
+    var href = a.getAttribute('href');
+    if (href && path.endsWith(href.split('/').pop())) a.classList.add('active');
   });
 }
 
