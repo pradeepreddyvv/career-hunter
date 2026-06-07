@@ -3032,9 +3032,10 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
-const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
+const _lcBase = (location.hostname.includes('github.io') || location.protocol === 'file:')
   ? (localStorage.getItem('cp_api_url') || '')
-  : window.location.origin) + '/api/v1/leetcode/sync';
+  : window.location.origin;
+const LC_WEBHOOK = _lcBase ? _lcBase + '/api/v1/leetcode/sync' : '';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
 let lcCurrentCode = '';
@@ -3662,6 +3663,21 @@ function lcResizeEditor(delta) {
 
 async function lcFetchCode() {
   if (lcFetching || lcEditMode) return;
+  if (!LC_WEBHOOK) {
+    document.getElementById('lc-live-dot').style.background = 'var(--yellow)';
+    document.getElementById('lc-live-status').textContent = 'No server';
+    const body = document.getElementById('lc-code-body');
+    if (body && body.textContent.includes('Install the Tampermonkey')) {
+      body.innerHTML = '<div style="padding:40px;text-align:center;color:var(--yellow)">'
+        + '<div style="font-size:32px;margin-bottom:12px">⚙️</div>'
+        + '<div style="font-size:15px;font-weight:600;margin-bottom:8px">Server URL not configured</div>'
+        + '<div style="font-size:13px;color:var(--text2);margin-bottom:16px">Click the <b>gear icon</b> (bottom-right) and enter your Pipeline API URL to connect.</div>'
+        + '<button onclick="document.getElementById(\'ch-settings-modal\').classList.add(\'open\')" style="padding:8px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Open Settings</button>'
+        + '</div>';
+    }
+    if (lcAutoTimer) { clearInterval(lcAutoTimer); lcAutoTimer = null; }
+    return;
+  }
   lcFetching = true;
   try {
     const r = await fetch(LC_WEBHOOK + '?since=' + lcLastChatSync);
