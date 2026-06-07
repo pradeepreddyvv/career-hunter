@@ -354,7 +354,7 @@ header .actions{display:flex;gap:8px;align-items:center}
   <div class="card">
     <div class="field-group">
       <div><label>Target Roles</label><input id="pTargetRoles" placeholder="SDE Intern, ML Engineer, Fullstack"></div>
-      <div><label>Blacklisted Companies</label><input id="pBlacklist" placeholder="TikTok, ByteDance"></div>
+      <div><label>Blacklisted Companies</label><input id="pBlacklist" placeholder="Company A, Company B"></div>
     </div>
   </div>
 
@@ -701,7 +701,7 @@ VISA RULE
 - hard fail only on explicit constraints like "US citizen only" or "active security clearance required"
 
 BLACKLIST RULE
-- If company is TikTok or ByteDance, score 0 and recommend skip
+- If company is in the user's blacklist, score 0 and recommend skip
 
 OUTPUT FORMAT
 Return valid JSON:
