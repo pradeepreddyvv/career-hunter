@@ -282,8 +282,24 @@ async function loadJobs() {
   S.busy.jobs = false; render();
 }
 
+const US_STATES_MAP = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'DC'};
+const CA_PROVINCES_MAP = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland',NS:'Nova Scotia',ON:'Ontario',PE:'PEI',QC:'Quebec',SK:'Saskatchewan'};
+
+const DEFAULT_LOCATIONS = {
+  countries: { USA: 0, Canada: 0 },
+  states: {
+    USA: Object.fromEntries(Object.keys(US_STATES_MAP).map(k => [k, 0])),
+    Canada: Object.fromEntries(Object.keys(CA_PROVINCES_MAP).map(k => [k, 0]))
+  }
+};
+
 async function loadLocations() {
-  try { S.locations = await api('/api/v1/jobs/locations'); render(); } catch { S.locations = null; }
+  try {
+    const data = await api('/api/v1/jobs/locations');
+    if (data && Object.keys(data.countries || {}).length) { S.locations = data; }
+    else { S.locations = DEFAULT_LOCATIONS; }
+  } catch { S.locations = DEFAULT_LOCATIONS; }
+  render();
 }
 
 async function loadMore() {
@@ -580,9 +596,6 @@ function setDaysAndReload(v) {
   loadJobs();
 }
 
-const US_STATES_MAP = {AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',DC:'DC'};
-const CA_PROVINCES_MAP = {AB:'Alberta',BC:'British Columbia',MB:'Manitoba',NB:'New Brunswick',NL:'Newfoundland',NS:'Nova Scotia',ON:'Ontario',PE:'PEI',QC:'Quebec',SK:'Saskatchewan'};
-
 function toggleLocCountry(c) {
   const i = S.locCountry.indexOf(c);
   if (i >= 0) { S.locCountry.splice(i, 1); S.locState = S.locState.filter(s => { const loc = S.locations; if (!loc) return true; const st = loc.states||{}; const cs = st[c]||{}; return !(s in cs); }); }
@@ -630,7 +643,7 @@ function renderLocFilterFull() {
     <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter();loadJobs();render()">All Locations</div>
     ${countries.map(c => {
       const cnt = loc.countries[c] || 0;
-      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}');loadJobs();render()">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
+      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}');loadJobs();render()">${esc(c)}${cnt ? ` <sup style="font-size:9px">${cnt}</sup>` : ''}</div>`;
     }).join('')}
   </div>`;
 
@@ -646,7 +659,7 @@ function renderLocFilterFull() {
         ${codes.map(s => {
           const label = nameMap[s] || s;
           const cnt = states[s] || 0;
-          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}');loadJobs();render()" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
+          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}');loadJobs();render()" style="font-size:10px;padding:2px 8px">${esc(label)}${cnt ? ` <sup>${cnt}</sup>` : ''}</div>`;
         }).join('')}
         </div></div>`;
     }
@@ -667,7 +680,6 @@ function renderApp() {
     <div class="logo">Career Hunter</div>
     <div class="nav">
       <a href="https://pradeepreddyvv.github.io/career-hunter/interview_recorder.html">Recording</a>
-      <a href="https://pradeepreddyvv.github.io/career-hunter/career_dashboard.html">Dashboard</a>
       <a href="https://pradeepreddyvv.github.io/career-hunter/leetcode-companion.html">LeetCode AI</a>
     </div>
     <div class="actions">
