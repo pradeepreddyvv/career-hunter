@@ -514,7 +514,7 @@ header .actions{display:flex;gap:8px;align-items:center}
   });
 })();
 const API_BASE = (location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  ? (localStorage.getItem('ch_server_url') || '')
   : window.location.origin;
 const STORE_READ = `${API_BASE}/webhook/profile-store`;
 const STORE_WRITE = `${API_BASE}/webhook/profile-store-save`;

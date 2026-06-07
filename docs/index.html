@@ -216,7 +216,7 @@ th{color:var(--text2);font-weight:500;font-size:11px;text-transform:uppercase;le
 <script src="scorer.js"></script>
 <script>
 const API = localStorage.getItem('cp_api_url') || (location.protocol === 'file:' || location.hostname.includes('github.io')
-  ? 'https://lows-whenever-medical-misc.trycloudflare.com' : location.origin);
+  ? '' : location.origin);
 
 const S = {
   view: 'loading', jobs: [], total: 0, sel: null, detail: null, docs: {},

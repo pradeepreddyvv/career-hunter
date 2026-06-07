@@ -2984,7 +2984,7 @@ function doLogin() {
 
 // ==================== N8N PERSISTENCE ====================
 const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  ? (localStorage.getItem('ch_server_url') || '')
   : window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
@@ -3034,7 +3034,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
 const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? 'https://drinks-started-recovery-street.trycloudflare.com'
+  ? (localStorage.getItem('ch_server_url') || '')
   : window.location.origin) + '/webhook/leetcode-live';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
