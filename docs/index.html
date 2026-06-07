@@ -257,7 +257,10 @@ try {
 } catch {}
 
 // === API ===
-async function api(path) { const r = await fetch(API + path); if (!r.ok) throw new Error(`${r.status}`); return r.json(); }
+async function api(path, method, body) {
+  const opts = method === 'POST' ? { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) } : {};
+  const r = await fetch(API + path, opts); if (!r.ok) throw new Error(`${r.status}`); return r.json();
+}
 function toast(msg, ok=true) { const e = document.createElement('div'); e.className = `toast ${ok?'ok':'err'}`; e.textContent = msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 function bc(s) { return s >= 70 ? 'badge-h' : s >= 50 ? 'badge-m' : 'badge-l'; }
@@ -311,6 +314,7 @@ async function loadMore() {
     if (S.q) p.set('search', S.q);
     const et = S.empFilter || (S.empTypes.length ? S.empTypes.join(',') : '');
     if (et) p.set('employment_type', et);
+    if (S.company) p.set('company', S.company);
     if (S.locCountry.length) p.set('location_country', S.locCountry.join(','));
     if (S.locState.length) p.set('location_state', S.locState.join(','));
     if (S.days && S.days < 730) p.set('days', S.days);
@@ -322,7 +326,7 @@ async function loadMore() {
 }
 
 async function loadStats() {
-  try { S.stats = await api('/api/v1/jobs/stats'); } catch(e) { console.error(e); }
+  try { S.stats = await api('/api/v1/jobs/stats'); } catch(e) { S.stats = { total: 0, with_descriptions: 0, companies: 0, sources: {} }; }
 }
 
 async function loadDetail(id) {
@@ -1053,6 +1057,5 @@ function render() {
   else { S.view = 'onboarding'; S.step = 1; render(); }
 })();
 </script>
-<script src="config.js"></script>
 </body>
 </html>
