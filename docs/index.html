@@ -607,15 +607,30 @@ function clearLocFilter() {
 }
 
 function renderLocFilter() {
+  const hasFilter = S.locCountry.length > 0 || S.locState.length > 0;
+  if (!hasFilter && (!S.locations || !Object.keys(S.locations.countries||{}).length)) return '';
+  let label = 'All Locations';
+  if (hasFilter) {
+    const parts = [...S.locCountry];
+    if (S.locState.length) parts.push(S.locState.length + ' states');
+    label = parts.join(', ');
+  }
+  return `<div class="filters" style="margin-top:4px">
+    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter();loadJobs()">All</div>
+    <div class="chip" onclick="S.tab='settings';S.settingsTab='general';render()" style="font-size:10px;cursor:pointer;${hasFilter?'color:var(--accent2);border-color:var(--accent)':''}" title="Edit in Settings">${esc(label)} &#9998;</div>
+  </div>`;
+}
+
+function renderLocFilterFull() {
   const loc = S.locations;
   const countries = loc ? Object.keys(loc.countries || {}).sort() : [];
-  if (!countries.length && !S.locCountry.length) return '';
+  if (!countries.length) return '<p class="muted">No location data yet. Browse some jobs first.</p>';
   const hasFilter = S.locCountry.length > 0 || S.locState.length > 0;
-  let html = `<div class="filters" style="margin-top:4px">
-    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter()">All Locations</div>
+  let html = `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+    <div class="chip ${!hasFilter?'on':''}" onclick="clearLocFilter();loadJobs();render()">All Locations</div>
     ${countries.map(c => {
       const cnt = loc.countries[c] || 0;
-      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}')">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
+      return `<div class="chip ${S.locCountry.includes(c)?'on':''}" onclick="toggleLocCountry('${esc(c)}');loadJobs();render()">${esc(c)} <sup style="font-size:9px">${cnt}</sup></div>`;
     }).join('')}
   </div>`;
 
@@ -626,14 +641,14 @@ function renderLocFilter() {
       const codes = Object.keys(states).sort();
       if (!codes.length) continue;
       const nameMap = c === 'USA' ? US_STATES_MAP : c === 'Canada' ? CA_PROVINCES_MAP : {};
-      html += `<div class="filters" style="margin-top:2px;padding-top:4px;padding-bottom:4px">
-        <span style="font-size:10px;color:var(--text2);padding:3px 4px">${esc(c)}:</span>
+      html += `<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:var(--text2)">${esc(c)} States/Provinces:</span>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
         ${codes.map(s => {
           const label = nameMap[s] || s;
           const cnt = states[s] || 0;
-          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}')" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
+          return `<div class="chip ${S.locState.includes(s)?'on':''}" onclick="toggleLocState('${esc(s)}');loadJobs();render()" style="font-size:10px;padding:2px 8px">${esc(label)} <sup>${cnt}</sup></div>`;
         }).join('')}
-      </div>`;
+        </div></div>`;
     }
   }
   return html;
@@ -796,6 +811,10 @@ function renderSettingsGeneral() {
   <div class="card" style="margin-top:14px"><h3>API Server</h3>
     <div class="field"><label>Pipeline Server URL</label><input id="su" value="${esc(API)}" style="font-family:var(--mono);font-size:12px"></div>
     <button class="btn btn-ghost btn-sm" onclick="let u=document.getElementById('su')?.value?.replace(/\\/+$/,'');if(u){localStorage.setItem('cp_api_url',u);location.reload()}">Update</button>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Location Preferences</h3>
+    <p class="muted" style="margin-bottom:10px">Select countries and states to filter jobs. Changes apply immediately.</p>
+    ${renderLocFilterFull()}
   </div>
   ${S.skills.length ? `<div class="card" style="margin-top:14px"><h3>Extracted Skills (${S.skills.length})</h3><div class="skills-list" style="margin-top:8px">${S.skills.map(s=>`<span class="skill">${esc(s)}</span>`).join('')}</div></div>` : ''}`;
 }
