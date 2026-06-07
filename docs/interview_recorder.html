@@ -2983,7 +2983,7 @@ function doLogin() {
 
 // ==================== N8N PERSISTENCE ====================
 const N8N_DATA_URL = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? (localStorage.getItem('ch_server_url') || '')
+  ? (localStorage.getItem('cp_api_url') || '')
   : window.location.origin) + '/webhook/interview-data';
 
 async function loadFromN8n(key) {
@@ -3033,7 +3033,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ==================== LEETCODE LIVE CODING ====================
 const LC_WEBHOOK = ((location.hostname.includes('github.io') || location.protocol === 'file:')
-  ? (localStorage.getItem('ch_server_url') || '')
+  ? (localStorage.getItem('cp_api_url') || '')
   : window.location.origin) + '/api/v1/leetcode/sync';
 let lcAIEnabled = true;
 let lcPersonaMode = 'interviewer'; // 'teacher' or 'interviewer'
